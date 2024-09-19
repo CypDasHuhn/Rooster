@@ -8,16 +8,6 @@ group = "de.cypdashuhn"
 description = "Rooster Framework"
 version = "1.0-SNAPSHOT"
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(22))
-    }
-}
-
-kotlin {
-    jvmToolchain(22)
-}
-
 repositories {
     mavenCentral()
     maven("https://oss.sonatype.org/content/repositories/snapshots/")
@@ -61,6 +51,16 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(22))
+    }
+}
+
+kotlin {
+    jvmToolchain(22)
 }
 
 tasks.withType<JavaCompile>() {

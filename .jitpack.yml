@@ -1,2 +1,7 @@
 java:
   version: 22
+jdk:
+  - openjdk9
+before_install:
+  - sdk install java 22.0.2-tem
+  - sdk use java 22.0.2-tem
