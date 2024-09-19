@@ -4,9 +4,7 @@ version = "1.0-SNAPSHOT"
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-        vendor = JvmVendorSpec.IBM
-        implementation = JvmImplementation.J9
+        languageVersion = JavaLanguageVersion.of(22)
     }
 }
 
