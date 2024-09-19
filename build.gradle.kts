@@ -1,3 +1,9 @@
+plugins {
+    kotlin("jvm") version "2.0.20"
+    kotlin("plugin.serialization") version "2.0.20"
+    `maven-publish`
+}
+
 group = "de.cypdashuhn"
 description = "Rooster Framework"
 version = "1.0-SNAPSHOT"
@@ -8,10 +14,8 @@ java {
     }
 }
 
-plugins {
-    kotlin("jvm") version "2.0.0"
-    kotlin("plugin.serialization") version "1.9.23"
-    `maven-publish`
+kotlin {
+    jvmToolchain(22)
 }
 
 repositories {
