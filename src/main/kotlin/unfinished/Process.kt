@@ -111,7 +111,7 @@ data class PlayerInputState(
 @OptIn(DelicateCoroutinesApi::class)
 fun noOverlap(cacheKey: String, player: Player, action: suspend (Player) -> Unit) {
     GlobalScope.launch {
-        val inputState = cache.getOrSet(cacheKey, player, {
+        val inputState = cache.get(cacheKey, player, {
             PlayerInputState()
         })
 
@@ -137,5 +137,5 @@ private suspend fun processQueuedInputs(cacheKey: String, player: Player, inputS
     }
     inputState.isProcessing = false
 
-    cache.clear(cacheKey, player)
+    cache.invalidate(cacheKey, player)
 }

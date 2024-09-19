@@ -86,7 +86,7 @@ object ArgumentParser {
         var errorArgumentOverflow = topArgument.errorArgumentOverflow
 
         var cachePosition: Int? = null
-        val cacheInfo = cache.get(CACHE_KEY, sender) as CacheInfo?
+        val cacheInfo = cache.getIfPresent(CACHE_KEY, sender) as CacheInfo?
 
         // TODO: Re-enable caching once thoroughly tested.
         @Suppress("SENSELESS_COMPARISON")

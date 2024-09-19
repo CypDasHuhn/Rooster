@@ -116,7 +116,7 @@ object ListArgument {
                     val condition = if (ignoreCase) displayField.lowerCase() eq arg.lowercase()
                     else displayField eq arg
 
-                    val cacheInfo = cache.get(LIST_FILTERED_CACHE_KEY, sender) as DBCacheInfo?
+                    val cacheInfo = cache.getIfPresent(LIST_FILTERED_CACHE_KEY, sender) as DBCacheInfo?
                     val query = if (cacheInfo != null) {
                         if (arg.startsWith(cacheInfo.arg)) {
                             cacheInfo.query
@@ -143,7 +143,7 @@ object ListArgument {
                 }
             },
             tabCompletions = { argInfo ->
-                val entries = cache.getOrSet(
+                val entries = cache.get(
                     LIST_CACHE_KEY,
                     argInfo.sender,
                     { transaction { entity.wrapRows(entity.table.selectAll()) } },

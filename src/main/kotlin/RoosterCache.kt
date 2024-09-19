@@ -23,19 +23,19 @@ class RoosterCache<K, V>(cacheBuilder: CacheBuilder<Any, Any>) {
     }
     private val generalKey = "general"
 
-    fun get(key: K, sender: CommandSender? = null): V? {
+    fun getIfPresent(key: K, sender: CommandSender? = null): V? {
         val typeKey = sender?.uniqueKey() ?: generalKey
 
         return cache.getIfPresent(typeKey to key)
     }
 
-    fun clear(key: K, sender: CommandSender? = null) {
+    fun invalidate(key: K, sender: CommandSender? = null) {
         val typeKey = sender?.uniqueKey() ?: generalKey
         cache.invalidate(typeKey to key)
     }
 
     private val scheduler: ScheduledExecutorService = Executors.newScheduledThreadPool(1)
-    fun clearLater(key: K, sender: CommandSender? = null, clearTime: Long, unit: TimeUnit) {
+    fun invalidateWithTimeout(key: K, sender: CommandSender? = null, clearTime: Long, unit: TimeUnit) {
         val typeKey = sender?.uniqueKey() ?: generalKey
 
         // Schedule the cache invalidation
@@ -55,10 +55,10 @@ class RoosterCache<K, V>(cacheBuilder: CacheBuilder<Any, Any>) {
 
         cache.put(typeKey to key, value)
 
-        if (clearTime != null && unit != null) clearLater(key, sender, clearTime, unit)
+        if (clearTime != null && unit != null) invalidateWithTimeout(key, sender, clearTime, unit)
     }
 
-    fun <T : V> getOrSet(
+    fun <T : V> get(
         key: K,
         sender: CommandSender? = null,
         provider: () -> T,
@@ -67,7 +67,7 @@ class RoosterCache<K, V>(cacheBuilder: CacheBuilder<Any, Any>) {
     ): T {
         val typeKey = sender?.uniqueKey() ?: generalKey
 
-        if (clearTime != null && unit != null) clearLater(key, sender, clearTime, unit)
+        if (clearTime != null && unit != null) invalidateWithTimeout(key, sender, clearTime, unit)
         return cache.get(typeKey to key, provider) as T
     }
 }

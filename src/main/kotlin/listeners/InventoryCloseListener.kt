@@ -12,8 +12,8 @@ import org.bukkit.event.inventory.InventoryCloseEvent
 object InventoryCloseListener : Listener {
     @EventHandler
     fun listener(event: InventoryCloseEvent) {
-        if (cache.get(InterfaceManager.CHANGES_INTERFACE_KEY, event.player) as Boolean? == true) {
-            cache.clear(InterfaceManager.CHANGES_INTERFACE_KEY, event.player)
+        if (cache.getIfPresent(InterfaceManager.CHANGES_INTERFACE_KEY, event.player) as Boolean? == true) {
+            cache.invalidate(InterfaceManager.CHANGES_INTERFACE_KEY, event.player)
             return
         }
         InterfaceManager.setPlayerEmpty(event.player as Player)

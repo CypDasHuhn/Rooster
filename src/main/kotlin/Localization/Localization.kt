@@ -24,7 +24,7 @@ object Localization {
         requireNotNull(localeProvider) { "LocaleProvider not set" }
         val language = language ?: localeProvider!!.getGlobalLanguage()
 
-        var message = cache.getOrSet("$language-$messageKey", null, {
+        var message = cache.get("$language-$messageKey", null, {
             val resourcePath = "/locales/${language.lowercase()}.json"
             val inputStream = javaClass.getResourceAsStream(resourcePath)
                 ?: throw FileNotFoundException("Resource not found: $resourcePath")
