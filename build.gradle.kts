@@ -70,3 +70,17 @@ tasks.withType<JavaCompile>() {
 tasks.withType<Javadoc>() {
     options.encoding = "UTF-8"
 }
+
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            from(components["java"])
+            groupId = "de.cypdashuhn"
+            artifactId = "Rooster"
+            version = "1.0-SNAPSHOT"
+        }
+    }
+    repositories {
+        mavenLocal()
+    }
+}
