@@ -35,10 +35,11 @@ object Rooster {
         CacheBuilder.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES)
     )
 
+    var dynamicTables = mutableListOf<Table>()
+
     var localeProvider: LocaleProvider? = null
     var interfaceContextProvider = DatabaseInterfaceContextProvider()
 
-    val dynamicTables = mutableListOf<Table>()
 
     internal var usePlayerDatabase = false
 

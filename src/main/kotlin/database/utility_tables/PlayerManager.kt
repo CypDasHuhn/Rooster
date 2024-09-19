@@ -69,4 +69,9 @@ object PlayerManager {
         require(isUsed) { "PlayerManager not initialized" }
         return transaction { Player.find { Players.name eq name }.firstOrNull() }
     }
+
+    fun players(): List<Player> {
+        require(isUsed) { "PlayerManager not initialized" }
+        return transaction { Player.all().toList() }
+    }
 }
