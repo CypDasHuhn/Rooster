@@ -11,6 +11,7 @@ java {
 plugins {
     kotlin("jvm") version "2.0.0"
     kotlin("plugin.serialization") version "1.9.23"
+    id("org.gradle.toolchains.foojay-resolver-convention") version "0.4.0"
     `maven-publish`
 }
 
