@@ -43,7 +43,7 @@ dependencies {
     implementation("org.xerial:sqlite-jdbc:3.45.2.0")
 
     implementation("net.kyori:adventure-api:4.17.0")
-    testImplementation("com.github.seeseemelk:MockBukkit-v1.21:3.127.1")
+    implementation("com.github.seeseemelk:MockBukkit-v1.21:3.127.1")
 
     // Uncomment when ready to use AnvilGUI
     // implementation("net.wesjd:anvilgui:1.9.4-SNAPSHOT")

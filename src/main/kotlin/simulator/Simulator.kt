@@ -1,8 +1,7 @@
 package de.cypdashuhn.rooster.simulator
 
+import de.cypdashuhn.rooster.Rooster
 import be.seeseemelk.mockbukkit.MockBukkit
-import de.cypdashuhn.rooster.commands.ArgumentParser
-import org.bukkit.Bukkit
 
 object Simulator {
 
