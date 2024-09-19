@@ -10,7 +10,7 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
-import uuid
+import de.cypdashuhn.rooster.uuid
 
 class DatabaseLocaleProvider(override var locales: List<Language>, override var defaultLocale: String) :
     LocaleProvider(locales, defaultLocale) {

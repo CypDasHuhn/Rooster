@@ -9,7 +9,7 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
-import uuid
+import de.cypdashuhn.rooster.uuid
 
 /**
  * Not Completely Necessary. Use BukkitAPI instead. This manager is if your

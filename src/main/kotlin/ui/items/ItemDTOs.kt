@@ -1,7 +1,7 @@
 package de.cypdashuhn.rooster.ui.items
 
-import and
-import createItem
+import de.cypdashuhn.rooster.and
+import de.cypdashuhn.rooster.createItem
 import de.cypdashuhn.rooster.ui.Context
 import de.cypdashuhn.rooster.ui.InterfaceInfo
 import de.cypdashuhn.rooster.ui.Slot

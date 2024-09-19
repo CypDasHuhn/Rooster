@@ -1,3 +1,5 @@
+package de.cypdashuhn.rooster
+
 import net.kyori.adventure.text.TextComponent
 import org.bukkit.Axis
 import org.bukkit.Location

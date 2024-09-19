@@ -102,11 +102,17 @@ object Rooster {
     private fun <T> getAnnotatedInstances(annotation: Annotation): List<T> {
         val instances = mutableListOf<T>()
 
+        val annotationName = annotation::class.java.name
+        if (annotationName == null) {
+            throw IllegalArgumentException("The annotation does not have a qualified name.")
+        }
+
+
         ClassGraph()
             .enableClassInfo()
             .enableAnnotationInfo() // Enable annotation scanning
             .scan().use { scanResult ->
-                val info = scanResult.getClassesWithAnnotation(annotation::class.qualifiedName)
+                val info = scanResult.getClassesWithAnnotation(annotation::class.java.name)
 
                 for (classInfo in info) {
                     try {

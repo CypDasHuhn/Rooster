@@ -1,6 +1,6 @@
 package de.cypdashuhn.rooster.ui.items
 
-import and
+import de.cypdashuhn.rooster.and
 import de.cypdashuhn.rooster.ui.ClickInfo
 import de.cypdashuhn.rooster.ui.Context
 import de.cypdashuhn.rooster.ui.InterfaceInfo

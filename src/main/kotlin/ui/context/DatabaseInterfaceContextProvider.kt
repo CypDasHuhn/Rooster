@@ -17,7 +17,7 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
-import uuid
+import de.cypdashuhn.rooster.uuid
 
 class DatabaseInterfaceContextProvider : InterfaceContextProvider() {
     init {
