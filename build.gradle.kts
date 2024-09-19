@@ -1,4 +1,5 @@
 group = "de.cypdashuhn"
+description = "Rooster Framework"
 version = "1.0-SNAPSHOT"
 
 plugins {
@@ -49,4 +50,12 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+tasks.withType<JavaCompile>() {
+    options.encoding = "UTF-8"
+}
+
+tasks.withType<Javadoc>() {
+    options.encoding = "UTF-8"
 }
