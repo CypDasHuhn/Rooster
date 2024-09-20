@@ -16,13 +16,11 @@ import de.cypdashuhn.rooster.uuid
  * call frequency exceeds API Limitations, or whatever else you'd like to
  * do.
  */
-object PlayerManager {
-    var isUsed = false
-    fun init() {
+open class PlayerManager {
+    init {
         Rooster.dynamicTables += Players
 
-        isUsed = true
-        Rooster.usePlayerDatabase = true
+        Rooster.playerManagerLogin = { playerLogin(it) }
     }
 
     object Players : IntIdTable() {
@@ -47,8 +45,6 @@ object PlayerManager {
 
 
     fun playerLogin(player: org.bukkit.entity.Player) {
-        require(isUsed) { "PlayerManager not initialized" }
-
         return transaction {
             Player.find { uuid eq player.uuid() }.firstOrNull()?.delete()
 
@@ -61,17 +57,14 @@ object PlayerManager {
     }
 
     fun playerByUUID(uuid: String): Player? {
-        require(isUsed) { "PlayerManager not initialized" }
         return transaction { Player.find { Players.uuid eq uuid }.firstOrNull() }
     }
 
     fun playerByName(name: String): Player? {
-        require(isUsed) { "PlayerManager not initialized" }
         return transaction { Player.find { Players.name eq name }.firstOrNull() }
     }
 
     fun players(): List<Player> {
-        require(isUsed) { "PlayerManager not initialized" }
         return transaction { Player.all().toList() }
     }
 }

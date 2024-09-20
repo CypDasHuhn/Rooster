@@ -1,8 +1,10 @@
 package de.cypdashuhn.rooster.database.utility_tables
 
-object OwnerManager {
-    fun init() {
+import de.cypdashuhn.rooster.Rooster
 
+open class OwnerManager {
+    init {
+        //Rooster.dynamicTables +=
     }
 
     

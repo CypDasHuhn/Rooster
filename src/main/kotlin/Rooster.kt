@@ -14,6 +14,7 @@ import de.cypdashuhn.rooster.ui.context.DatabaseInterfaceContextProvider
 import de.cypdashuhn.rooster.ui.interfaces.Interface
 import io.github.classgraph.ClassGraph
 import org.bukkit.Bukkit
+import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.plugin.java.JavaPlugin
@@ -41,7 +42,7 @@ object Rooster {
     var interfaceContextProvider = DatabaseInterfaceContextProvider()
 
 
-    internal var usePlayerDatabase = false
+    internal var playerManagerLogin: ((Player) -> Unit)? = null
 
     @Suppress("unused")
     fun initialize(plugin: JavaPlugin) {
@@ -101,12 +102,6 @@ object Rooster {
 
     private fun <T> getAnnotatedInstances(annotation: Annotation): List<T> {
         val instances = mutableListOf<T>()
-
-        val annotationName = annotation::class.java.name
-        if (annotationName == null) {
-            throw IllegalArgumentException("The annotation does not have a qualified name.")
-        }
-
 
         ClassGraph()
             .enableClassInfo()

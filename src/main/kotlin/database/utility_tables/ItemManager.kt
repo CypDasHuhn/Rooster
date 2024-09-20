@@ -11,12 +11,9 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 
-object ItemManager {
-    private var isUsed = false
-    fun init() {
+open class ItemManager {
+    init {
         Rooster.dynamicTables += Items
-
-        isUsed = true
     }
 
     object Items : IntIdTable() {
@@ -36,8 +33,6 @@ object ItemManager {
     }
 
     fun insertOrGetItem(itemStack: ItemStack, key: String? = null, ignoreKeyItems: Boolean = false): ItemStack {
-        require(isUsed) { "ItemManager not initialized" }
-
         return transaction {
             val itemStackJson = Gson().toJson(itemStack.serialize())
 
@@ -57,8 +52,6 @@ object ItemManager {
     }
 
     fun itemByKey(key: String): ItemStack? {
-        require(isUsed) { "ItemManager not initialized" }
-        
         return transaction {
             Item.find { Items.key eq key }.firstOrNull()?.itemStack
         }

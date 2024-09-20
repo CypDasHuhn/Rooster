@@ -13,12 +13,9 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.castTo
 import org.jetbrains.exposed.sql.transactions.transaction
 
-object LocationManager {
-    private var isUsed = false
-    fun init() {
+open class LocationManager {
+    init {
         Rooster.dynamicTables += Locations
-
-        isUsed = true
     }
 
     object Locations : IntIdTable() {
@@ -63,8 +60,6 @@ object LocationManager {
         roundCoordinates: Boolean = false,
         ignoreAngle: Boolean = false
     ): org.bukkit.Location {
-        require(isUsed) { "LocationManager not initialized" }
-
         return transaction {
             var query: Op<Boolean>
             if (roundCoordinates) {
@@ -103,8 +98,6 @@ object LocationManager {
     }
 
     fun locationByKey(key: String): org.bukkit.Location? {
-        require(isUsed) { "LocationManager not initialized" }
-
         return transaction {
             Location.find { Locations.key eq key }.firstOrNull()?.location()
         }
