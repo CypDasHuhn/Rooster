@@ -1,4 +1,6 @@
-![Banner](Rooster_Banner.png)
+![Banner](docs/Rooster_Banner.png)
+
+# Documentation [here]("https://cypdashuhn.github.io/Rooster/)
 
 # Yet in Development
 
@@ -38,7 +40,3 @@ class YourPlugin : JavaPlugin() {
     }
 }
 ```
-
----
-
-# [Roadmap](RoadMap.md)
