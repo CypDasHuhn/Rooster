@@ -3,6 +3,8 @@ package de.cypdashuhn.rooster.ui
 import de.cypdashuhn.rooster.Rooster.cache
 import de.cypdashuhn.rooster.Rooster.interfaceContextProvider
 import de.cypdashuhn.rooster.Rooster.registeredInterfaces
+import de.cypdashuhn.rooster.simulator.InterfaceSimulator
+import de.cypdashuhn.rooster.simulator.Simulator
 import de.cypdashuhn.rooster.ui.interfaces.Interface
 import de.cypdashuhn.rooster.ui.items.InterfaceItem
 import org.bukkit.entity.Player
@@ -34,7 +36,7 @@ object InterfaceManager {
      * of the interface ([context]).
      */
     fun <T : Context> openTargetInterface(player: Player, targetInterface: Interface<T>, context: T) {
-        cache.set(CHANGES_INTERFACE_KEY, player, true)
+        cache.put(CHANGES_INTERFACE_KEY, player, true)
 
         playerInterfaceMap[player] = targetInterface.interfaceName
 
@@ -44,39 +46,48 @@ object InterfaceManager {
 
         interfaceContextProvider.updateContext(player, targetInterface, context)
 
-        player.openInventory(inventory)
+        Simulator.onlyTest {
+            InterfaceSimulator.printInterface(inventory)
+        }
+        Simulator.nonTest {
+            player.openInventory(inventory)
+        }
     }
 
     /**
      * This function fills the [Inventory] with [ItemStack]'s using the
-     * registered [clickableItems]'s and the current Interface State
+     * registered [interfaceItems]'s and the current Interface State
      * ([context]).
      */
     private fun <T : Context> Inventory.fillInventory(
-        clickableItems: List<InterfaceItem<T>>,
+        interfaceItems: List<InterfaceItem<T>>,
         context: T,
         player: Player
     ): Inventory {
         for (slot in 0 until this.size) {
-            clickableItems
+            interfaceItems
                 .filter { it.condition(InterfaceInfo(slot, context, player)) }
+                .sortedBy { it.priority(InterfaceInfo(slot, context, player)) }
                 .forEach { this@fillInventory.setItem(slot, it.itemStackCreator(InterfaceInfo(slot, context, player))) }
         }
         return this
     }
 
-    fun <T : Context> getItems(
-        slotAmount: Int,
-        items: List<InterfaceItem<T>>,
+    fun <T : Context> getInventory(
+        targetInventory: Interface<T>,
         context: T,
         player: Player
-    ): Map<Slot, InterfaceItem<T>> {
-        val map = mutableMapOf<Slot, InterfaceItem<T>>()
-        for (slot in 0 until slotAmount) {
+    ): Inventory {
+        val inventory = targetInventory.getInventory(player, context)
+        val items = targetInventory.getInterfaceItems()
+        for (slot in 0 until inventory.size) {
             items.filter { it.condition(InterfaceInfo(slot, context, player)) }
-                .forEach { map[slot] = it }
+                .sortedBy { it.priority(InterfaceInfo(slot, context, player)) }
+                .forEach {
+                    inventory.setItem(slot, it.itemStackCreator(InterfaceInfo(slot, context, player)))
+                }
         }
-        return map
+        return inventory
     }
 
     fun handleInventoryClick(event: InventoryClickEvent) {
@@ -94,20 +105,27 @@ object InterfaceManager {
 
         val click = Click(event, player, event.currentItem, event.currentItem?.type, event.slot)
 
+        click(click, event, correspondingInterface, player)
+    }
+
+    fun <T : Context> click(
+        click: Click,
+        inventoryClickEvent: InventoryClickEvent,
+        targetInterface: Interface<T>,
+        player: Player
+    ) {
         @Suppress("UNCHECKED_CAST")
-        val typedInterface = correspondingInterface as Interface<Context>
+        val typedInterface = targetInterface as Interface<Context>
 
         val context = typedInterface.getContext(player)
 
         val typedContext = typedInterface.contextClass.safeCast(context)
 
         if (typedContext != null) {
-            event.isCancelled =
-                typedInterface.cancelEvent(ClickInfo(click, typedContext, event, correspondingInterface))
-
             typedInterface.items
-                .filter { it.condition(InterfaceInfo(click.slot, typedContext, event.whoClicked as Player)) }
-                .forEach { it.action(ClickInfo(click, typedContext, event, correspondingInterface)) }
+                .filter { it.condition(InterfaceInfo(click.slot, typedContext, click.player)) }
+                .sortedBy { it.priority(InterfaceInfo(click.slot, context, player)) }
+                .forEach { it.action(ClickInfo(click, typedContext, inventoryClickEvent, targetInterface)) }
         } else {
             println("Failed to cast context to the expected type ${typedInterface.contextClass}")
         }

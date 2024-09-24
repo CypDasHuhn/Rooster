@@ -3,6 +3,7 @@ package de.cypdashuhn.rooster.localization
 import de.cypdashuhn.rooster.Rooster
 import de.cypdashuhn.rooster.Rooster.plugin
 import de.cypdashuhn.rooster.database.findEntry
+import de.cypdashuhn.rooster.util.uuid
 import org.bukkit.entity.Player
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
@@ -10,7 +11,6 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
-import de.cypdashuhn.rooster.uuid
 
 class DatabaseLocaleProvider(override var locales: List<Language>, override var defaultLocale: String) :
     LocaleProvider(locales, defaultLocale) {
@@ -18,8 +18,8 @@ class DatabaseLocaleProvider(override var locales: List<Language>, override var 
         Rooster.dynamicTables += PlayerLanguages
     }
 
-    object PlayerLanguages : IntIdTable() {
-        val playerUUID = varchar("player_uuid", 50)
+    object PlayerLanguages : IntIdTable("RoosterLocalization") {
+        val playerUUID = varchar("player_uuid", 50).nullable()
         val language = varchar("language", 50)
     }
 
@@ -50,15 +50,22 @@ class DatabaseLocaleProvider(override var locales: List<Language>, override var 
 
     private val globalLanguageKey = "global_language"
     override fun getGlobalLanguage(): Language {
-        return plugin.config.getString(globalLanguageKey)?.let {
-            it
-        } ?: defaultLocale.also { changeGlobalLanguage(defaultLocale) }
+        return transaction { PlayerLanguage.findEntry(PlayerLanguages.playerUUID eq null)?.language ?: defaultLocale.also {
+            changeGlobalLanguage(defaultLocale)
+        } }
     }
 
     override fun changeGlobalLanguage(language: Language) {
-        val fileConfiguration = plugin.config
-        fileConfiguration.set(globalLanguageKey, language)
-        plugin.saveConfig()
+        transaction {
+            val existingEntry = PlayerLanguage.find { PlayerLanguages.playerUUID eq null }.firstOrNull()
+            if (existingEntry != null) {
+                existingEntry.language = language
+            } else {
+                PlayerLanguage.new {
+                    playerUUID = null
+                    this.language = language
+                }
+            }
+        }
     }
-
 }

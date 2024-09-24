@@ -7,6 +7,7 @@ import de.cypdashuhn.rooster.commands.RoosterCommand
 import de.cypdashuhn.rooster.commands.argument_constructors.RootArgument
 import de.cypdashuhn.rooster.database.RoosterTable
 import de.cypdashuhn.rooster.database.initDatabase
+import de.cypdashuhn.rooster.database.utility_tables.PlayerManager
 import de.cypdashuhn.rooster.listeners.RoosterListener
 import de.cypdashuhn.rooster.localization.LocaleProvider
 import de.cypdashuhn.rooster.ui.RoosterInterface
@@ -14,12 +15,12 @@ import de.cypdashuhn.rooster.ui.context.DatabaseInterfaceContextProvider
 import de.cypdashuhn.rooster.ui.interfaces.Interface
 import io.github.classgraph.ClassGraph
 import org.bukkit.Bukkit
-import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.plugin.java.JavaPlugin
 import org.jetbrains.exposed.sql.Table
 import java.util.concurrent.TimeUnit
+import kotlin.reflect.KClass
 import kotlin.reflect.full.companionObjectInstance
 
 object Rooster {
@@ -42,7 +43,7 @@ object Rooster {
     var interfaceContextProvider = DatabaseInterfaceContextProvider()
 
 
-    internal var playerManagerLogin: ((Player) -> Unit)? = null
+    internal var playerManager: PlayerManager? = null
 
     @Suppress("unused")
     fun initialize(plugin: JavaPlugin) {
@@ -96,22 +97,22 @@ object Rooster {
         return commands
     }
 
-    private fun getInterfaces() = getAnnotatedInstances<Interface<*>>(RoosterInterface())
-    private fun getListeners() = getAnnotatedInstances<Listener>(RoosterListener())
-    private fun getTables() = getAnnotatedInstances<Table>(RoosterTable())
+    private fun getInterfaces() = getAnnotatedInstances(RoosterInterface::class, Interface::class)
+    private fun getListeners() = getAnnotatedInstances(RoosterListener::class, Listener::class)
+    private fun getTables() = getAnnotatedInstances(RoosterTable::class, Table::class)
 
-    private fun <T> getAnnotatedInstances(annotation: Annotation): List<T> {
+    private fun <T: Any> getAnnotatedInstances(kClass: KClass<*>, targetClass: KClass<T>): List<T> {
         val instances = mutableListOf<T>()
 
         ClassGraph()
             .enableClassInfo()
             .enableAnnotationInfo() // Enable annotation scanning
             .scan().use { scanResult ->
-                val info = scanResult.getClassesWithAnnotation(annotation::class.java.name)
+                val info = scanResult.getClassesWithAnnotation(kClass.qualifiedName)
 
                 for (classInfo in info) {
                     try {
-                        val clazz = classInfo.loadClass(annotation::class.java)
+                        val clazz = classInfo.loadClass(targetClass.java)
 
                         val instance = when {
                             clazz.kotlin.objectInstance != null -> {
@@ -128,7 +129,8 @@ object Rooster {
                         }
                         instances.add(instance)
                     } catch (ex: Throwable) {
-                        println("Could not load class: ${classInfo.name}, exception: ${ex.message}")
+                        println("Could not load class: ${classInfo.name}, exception: ")
+                        ex.printStackTrace()
                     }
                 }
             }

@@ -66,41 +66,54 @@ like `/customCommand customArgument` could be also used with `/customCommand -fl
 the tree isn't changed, but you can access the values later on (
 Invocation/Completion).
 
-## Core-Fields
+## Core Fields
 
-### Key
+### `Key`
 
-The Key of a command. Every single Argument needs a Key. <br>
-You can access values of an Argument by using the Key.
+The unique identifier for each command argument. This key allows access to specific values associated with the argument during command execution. Every argument must have a `key`.
 
-### Tab Completions
+### `Tab Completions`
 
-The Key of a command. Every single Argument needs a Key.
+A lambda function that provides suggestions for tab completions based on the current argument context. This allows users to see possible completions as they type, enhancing user experience.
 
-### Following Arguments
+### `Following Arguments`
 
-### Invoke
+A list of arguments that can follow the current argument in the command structure. This field enables the creation of a hierarchical command structure where each argument can lead to more specific sub-arguments. See [Is Argument](#is-argument) for information on how the system differentiates between valid arguments.
 
-### Is Valid
+### `Invoke`
+
+A lambda function that defines the action to be executed when the command is invoked with valid arguments. This allows for customizable behavior when a command is successfully parsed. See [Is Valid](#is-valid) for how to ensure the command reaches the invoke step.
+
+### `Is Valid`
+
+A validation function that checks whether the current argument is valid in the given context. This can be used to enforce rules about what arguments can be used together or under certain conditions.
 
 ## Other Fields
 
-### Is Valid Completer
+### `Is Valid Completer`
 
-### Is Argument
+A validation function specifically for tab completion contexts. This checks if the argument is valid when the user is requesting completions, allowing for dynamic suggestions based on the argument state.
 
-### Error Missing
+### `Is Argument`
 
-### Error Missing Child Arg
+A boolean flag indicating whether the current instance is a valid argument in the command structure. This can be useful for differentiating between argument types during parsing. Arguments that follow must be listed in [Following Arguments](#following-arguments).
 
-### Argument Handler
+### `Error Missing`
 
-### Is Modifier
+A lambda function that defines the action to be taken when a required argument is missing. This allows for custom error handling to inform the user about the specific arguments that were not provided.
 
-### Starting Unit
+### `Error Missing Child Arg`
 
-Root Only
+A lambda function that handles the situation where a required child argument of the current argument is missing. This can provide more granular error messages for nested arguments.
 
-### Label
+### `Argument Handler`
 
-Root Only
+A lambda function that processes the argument value when it is validated and invoked. This function defines how to handle the data associated with the argument, enabling custom processing logic. Often used together with [Is Valid](#is-valid) to handle the processed result.
+
+### `Starting Unit` (Root Only)
+
+A lambda function that is called at the beginning of command parsing to determine whether the command should proceed. This is typically used to enforce preconditions based on the command sender or other contextual factors.
+
+### `Label` (Root Only)
+
+The name of the command as it appears in user input. For example, in the command `/tp @s 200 70 200`, the label is `tp`. This field is essential for matching user input to the correct command handler.

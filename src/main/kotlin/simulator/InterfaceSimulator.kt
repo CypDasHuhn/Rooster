@@ -1,11 +1,20 @@
 package de.cypdashuhn.rooster.simulator
 
+import be.seeseemelk.mockbukkit.inventory.ChestInventoryMock
 import de.cypdashuhn.rooster.Rooster
+import de.cypdashuhn.rooster.ui.Click
 import de.cypdashuhn.rooster.ui.Context
+import de.cypdashuhn.rooster.ui.InterfaceManager
 import de.cypdashuhn.rooster.ui.interfaces.Interface
+import de.cypdashuhn.rooster.util.createItem
 import org.bukkit.Material
 import org.bukkit.entity.Player
+import org.bukkit.event.inventory.ClickType
+import org.bukkit.event.inventory.InventoryAction
+import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryType
+import org.bukkit.inventory.Inventory
+import org.bukkit.inventory.InventoryView
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.full.memberProperties
@@ -16,7 +25,7 @@ object InterfaceSimulator {
     private fun Material.short(): String {
         val nameTokenized = this.name.split("_").toMutableList()
         var result = ""
-        (0..2).forEach { _ ->
+        repeat(3) {
             result += nameTokenized.first().firstOrNull()
             if (nameTokenized.size == 1) {
                 nameTokenized[0] = nameTokenized.first().substring(1)
@@ -34,19 +43,22 @@ object InterfaceSimulator {
         CONTEXT_NOT_FITTING
     }
 
-    fun parseOpening(command: String, player: Player): String {
+    fun parseOpening(command: String, player: Player) {
         val interfaceName = command.split(" ").first()
 
         val targetInterface =
             Rooster.registeredInterfaces
                 .firstOrNull { it.interfaceName.equals(interfaceName, ignoreCase = true) } as Interface<Context>?
-                ?: return "Interface $interfaceName not found"
 
-        val contextCommand = command.drop(interfaceName.length + 1).trim()
+        if (targetInterface == null) {
+            println("Unknown interface: $interfaceName")
+            return
+        }
+
+        var contextCommand: String? = command.drop(interfaceName.length + 1).trim()
+        if (contextCommand?.isEmpty() != false) contextCommand = null
 
         openInterface(targetInterface, contextCommand, player)
-
-        return "Invalid command format or missing context data"
     }
 
     fun openInterface(
@@ -54,7 +66,7 @@ object InterfaceSimulator {
         contextString: String?,
         player: Player
     ): OpenInterfaceResults {
-        var context: Context? = null
+        var context: Context
 
         if (contextString == null) {
             context = targetInterface.defaultContext(player)
@@ -64,22 +76,139 @@ object InterfaceSimulator {
             if (resultContext == null) println(messageString)
         }
 
-        val inventory = targetInterface.getInventory(player, context)
+        val inventory = InterfaceManager.getInventory(targetInterface, context, player)
 
+        Simulator.currentInventory = inventory
+        Simulator.currentContext = context
+        Simulator.currentInterface = targetInterface
+
+        printInterface(inventory)
+
+        return OpenInterfaceResults.OK
+    }
+
+    fun parseShow(command: String, player: Player) {
+        var slot = parseSlot(command) ?: return
+
+        if (Simulator.currentInventory == null) {
+            println("No current inventory!")
+            return
+        }
+
+        if (slot < 0 || slot >= Simulator.currentInventory!!.size) {
+            println("Slot is out of bounds!")
+            return
+        }
+
+        val item = Simulator.currentInventory?.getItem(slot) ?: createItem(Material.AIR)
+        // print every detaill of item
+        item.serialize().forEach { println(it) }
+    }
+
+    fun parseClick(command: String, player: Player) {
+        var slot = parseSlot(command) ?: return
+
+        if (Simulator.currentInventory == null) {
+            println("No current inventory!")
+            return
+        }
+
+        if (slot < 0 || slot >= Simulator.currentInventory!!.size) {
+            println("Slot is out of bounds!")
+            return
+        }
+
+        val clickState = parseClickState(command) ?: return
+
+        player.openInventory(Simulator.currentInventory!!)
+        val event = InventoryClickEvent(
+            player.openInventory,
+            InventoryType.SlotType.CONTAINER,
+            slot,
+            clickState,
+            InventoryAction.NOTHING
+        )
+        val item = Simulator.currentInventory!!.getItem(slot)
+        val click = Click(event, player, item, item?.type, event.slot)
+        InterfaceManager.click(click, event, Simulator.currentInterface!!, player)
+    }
+
+
+    fun colorFromShort(short: String): String {
+        if (short == "AIR") return ""  // No color for "AIR"
+        val hash = short.hashCode()
+        val colorCode = (hash % 6) + 31 // ANSI color codes from 31 to 36 for red, green, yellow, blue, magenta, cyan
+        return "\u001B[${colorCode}m"  // ANSI escape code
+    }
+
+    fun resetColor(): String {
+        return "\u001B[0m"
+    }
+
+    fun printInterface(inventory: Inventory) {
         if (inventory.type == InventoryType.CHEST) {
             val rows = inventory.contents.size / 9
 
+            val inventoryName = Simulator.interfaceName
+            var missingChars = 55 - inventoryName.length
+            repeat(missingChars/2) { print("#") }
+            print("# $inventoryName #")
+            repeat(missingChars/2) { print("#") }
+            println("")
             for (row in 0 until rows) {
+                print("# ")
                 for (slot in 0 until 9) {
-                    val item = inventory.getItem(slot + row * 9) ?: continue
+                    val item = inventory.getItem(slot + row * 9) ?: createItem(Material.AIR)
                     val short = item.type.short()
-                    print("[$short] ")
+                    val color = colorFromShort(short)
+                    val reset = resetColor()
+                    print("${color}[$short]${reset} ")  // print the colored brackets and reset after each item
                 }
+                print(" #")
                 println("")
             }
+            println("#".repeat(58))
         }
+    }
 
-        return OpenInterfaceResults.OK
+    fun parseSlot(command: String): Int? {
+        var slot = command.split(" ").first().toIntOrNull()
+        if (slot == null) {
+            // alternative x-y parsing
+            val xy = command.split(" ").first().split("-")
+
+            if (xy.size != 2) {
+                println("Invalid slot format!")
+                return null
+            }
+
+            var x = xy[0].toIntOrNull()
+            var y = xy[1].toIntOrNull()
+
+            if (x == null || y == null) {
+                println("Invalid slot format!")
+                return null
+            }
+
+            x -= 1
+            y -= 1
+            slot = x + (y * 9)
+        }
+        return slot
+    }
+
+    fun parseClickState(command: String): ClickType? {
+        val commandSplit = command.split(" ")
+        if (commandSplit.size > 1) {
+            val clickState = commandSplit[1]
+            try {
+                return ClickType.valueOf(clickState)
+            } catch (e: Exception) {
+                println("Invalid click state! Valid States: ")
+                ClickType.entries.forEach { println("# $it") }
+                return null
+            }
+        } else return ClickType.LEFT
     }
 
     fun contextFromText(contextCommand: String, targetInterface: Interface<Context>): Pair<String, Context?> {

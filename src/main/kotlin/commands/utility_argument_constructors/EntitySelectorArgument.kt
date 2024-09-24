@@ -3,8 +3,8 @@ package de.cypdashuhn.rooster.commands.utility_argument_constructors
 import de.cypdashuhn.rooster.commands.argument_constructors.ArgumentDetails
 import de.cypdashuhn.rooster.commands.argument_constructors.CentralArgument
 import de.cypdashuhn.rooster.commands.argument_constructors.ErrorLambda
-import de.cypdashuhn.rooster.location
-import de.cypdashuhn.rooster.nearest
+import de.cypdashuhn.rooster.util.location
+import de.cypdashuhn.rooster.util.nearest
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 

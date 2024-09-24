@@ -1,6 +1,6 @@
 package de.cypdashuhn.rooster.ui.items.constructors
 
-import de.cypdashuhn.rooster.and
+import de.cypdashuhn.rooster.util.and
 import de.cypdashuhn.rooster.ui.Context
 import de.cypdashuhn.rooster.ui.InterfaceInfo
 import de.cypdashuhn.rooster.ui.items.Condition

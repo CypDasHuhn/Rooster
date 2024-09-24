@@ -2,35 +2,36 @@ package de.cypdashuhn.rooster.database.utility_tables
 
 import de.cypdashuhn.rooster.Rooster
 import de.cypdashuhn.rooster.database.utility_tables.PlayerManager.Players.uuid
+import de.cypdashuhn.rooster.util.uuid
 import org.bukkit.Bukkit
+import org.bukkit.entity.Player
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
-import de.cypdashuhn.rooster.uuid
 
 /**
  * Not Completely Necessary. Use BukkitAPI instead. This manager is if your
  * call frequency exceeds API Limitations, or whatever else you'd like to
  * do.
  */
-open class PlayerManager {
-    init {
-        Rooster.dynamicTables += Players
+class PlayerManager : UtilityDatabase() {
+    override fun mainDatabase() = Players
 
-        Rooster.playerManagerLogin = { playerLogin(it) }
+    init {
+        this.also { Rooster.playerManager = it }
     }
 
-    object Players : IntIdTable() {
+    object Players : IntIdTable("rooster_players") {
         val uuid = varchar("uuid", 36)
         val name = varchar("name", 16)
         val lastLogin = long("last_login")
     }
 
-    class Player(id: EntityID<Int>) : IntEntity(id) {
-        companion object : IntEntityClass<Player>(Players)
+    class DbPlayer(id: EntityID<Int>) : IntEntity(id) {
+        companion object : IntEntityClass<DbPlayer>(Players)
 
         var uuid by Players.uuid
         var name by Players.name
@@ -39,14 +40,14 @@ open class PlayerManager {
         val online
             get() = bukkitPlayer != null
 
-        val bukkitPlayer: org.bukkit.entity.Player?
+        val bukkitPlayer: Player?
             get() = Bukkit.getWorlds().flatMap { it.players }.first { it.uuid() == uuid }
     }
 
 
-    fun playerLogin(player: org.bukkit.entity.Player) {
+    fun playerLogin(player: Player) {
         return transaction {
-            Player.find { uuid eq player.uuid() }.firstOrNull()?.delete()
+            DbPlayer.find { uuid eq player.uuid() }.firstOrNull()?.delete()
 
             Players.insert {
                 it[uuid] = player.uuid()
@@ -56,15 +57,22 @@ open class PlayerManager {
         }
     }
 
-    fun playerByUUID(uuid: String): Player? {
-        return transaction { Player.find { Players.uuid eq uuid }.firstOrNull() }
+    fun playerByUUID(uuid: String): DbPlayer? {
+        return transaction { DbPlayer.find { Players.uuid eq uuid }.firstOrNull() }
     }
 
-    fun playerByName(name: String): Player? {
-        return transaction { Player.find { Players.name eq name }.firstOrNull() }
+    fun playerByName(name: String): DbPlayer? {
+        return transaction { DbPlayer.find { Players.name eq name }.firstOrNull() }
     }
 
-    fun players(): List<Player> {
-        return transaction { Player.all().toList() }
+    fun players(): List<DbPlayer> {
+        return transaction { DbPlayer.all().toList() }
+    }
+
+    companion object {
+        fun Player.dbPlayer(): DbPlayer {
+            requireNotNull(Rooster.playerManager) { "Player Manager must be registered" }
+            return Rooster.playerManager!!.playerByUUID(this.uuid())!!
+        }
     }
 }

@@ -1,7 +1,7 @@
 package de.cypdashuhn.rooster.region
 
 import de.cypdashuhn.rooster.unfinished.Face
-import de.cypdashuhn.rooster.value
+import de.cypdashuhn.rooster.util.value
 import org.bukkit.Axis
 import org.bukkit.Chunk
 import org.bukkit.Location

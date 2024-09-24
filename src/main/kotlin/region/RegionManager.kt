@@ -1,6 +1,6 @@
 package de.cypdashuhn.rooster.region
 
-import de.cypdashuhn.rooster.value
+import de.cypdashuhn.rooster.util.value
 import org.bukkit.Axis
 import org.bukkit.World
 import org.bukkit.event.Event

@@ -12,7 +12,7 @@ object PlayerJoinListener : Listener {
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
         Rooster.beforePlayerJoin?.let { it(event) }
-        Rooster.playerManagerLogin?.let { it(event.player) }
+        Rooster.playerManager?.playerLogin(event.player)
         Rooster.playerJoin?.let { it(event) }
     }
 }

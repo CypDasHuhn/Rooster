@@ -1,6 +1,6 @@
 package de.cypdashuhn.rooster.ui.interfaces.constructors
 
-import de.cypdashuhn.rooster.and
+import de.cypdashuhn.rooster.util.and
 import de.cypdashuhn.rooster.listeners.ClickState
 import de.cypdashuhn.rooster.listeners.hasClicks
 import de.cypdashuhn.rooster.ui.Context
