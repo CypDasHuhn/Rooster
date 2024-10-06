@@ -18,9 +18,9 @@ import de.cypdashuhn.rooster.ui.context.InterfaceContextProvider
 import de.cypdashuhn.rooster.ui.context.SqlInterfaceContextProvider
 import de.cypdashuhn.rooster.ui.interfaces.Interface
 import de.cypdashuhn.rooster.ui.interfaces.RoosterInterface
-import de.cypdashuhn.rooster_demo.interfaces.DemoManager
-import de.cypdashuhn.rooster_demo.interfaces.RoosterDemoManager
-import de.cypdashuhn.rooster_demo.interfaces.RoosterDemoTable
+import de.cypdashuhn.rooster.demo.DemoManager
+import de.cypdashuhn.rooster.demo.RoosterDemoManager
+import de.cypdashuhn.rooster.demo.RoosterDemoTable
 import io.github.classgraph.ClassGraph
 import org.bukkit.Bukkit
 import org.bukkit.event.Listener
