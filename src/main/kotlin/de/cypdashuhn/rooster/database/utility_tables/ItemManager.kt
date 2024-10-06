@@ -1,7 +1,7 @@
 package de.cypdashuhn.rooster.database.utility_tables
 
 import com.google.gson.Gson
-import de.cypdashuhn.extendedInventoryPlugin.database.RegisteredPositionManager.RegisteredPosition.Companion.transform
+import database.utility_tables.attributes.AttributeKeyManager.DbAttributeKey.Companion.transform
 import org.bukkit.inventory.ItemStack
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
