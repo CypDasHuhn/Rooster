@@ -112,51 +112,51 @@ object ListArgument {
             argumentHandler = argumentHandler,
             errorArgumentOverflow = errorArgumentOverflow,
             isValid = { (sender, args, arg, index, values) ->
-                val matchingEntries = transaction {
-                    val condition = if (ignoreCase) displayField.lowerCase() eq arg.lowercase()
-                    else displayField eq arg
+                // Ensure this is executed within a transaction context
+                transaction {
+                    val condition = if (ignoreCase) displayField.lowerCase() eq arg.lowercase() else displayField eq arg
 
                     val cacheInfo = cache.getIfPresent(LIST_FILTERED_CACHE_KEY, sender) as DBCacheInfo?
-                    val query = if (cacheInfo != null) {
-                        if (arg.startsWith(cacheInfo.arg)) {
-                            cacheInfo.query
-                        } else entity.table.selectAll()
+                    val query = if (cacheInfo != null && arg.startsWith(cacheInfo.arg)) {
+                        cacheInfo.query
                     } else entity.table.selectAll()
 
                     val entries = query.where { condition }
 
+                    // Cache the entries
                     cache.put(LIST_FILTERED_CACHE_KEY, sender, DBCacheInfo(entries, arg), 5 * 1000)
 
-                    entity.wrapRows(entries)
-                }
+                    val matchingEntries = entity.wrapRows(entries)
 
-                val entries = if (filter != null) matchingEntries.filter {
-                    filter(
-                        ArgumentInfo(sender, args, arg, index, values),
-                        it
-                    )
-                }
-                else matchingEntries
-                when {
-                    entries.firstOrNull() == null -> errorMessagePair(errorInvalidMessageKey, argKey)
-                    else -> Pair(true) {}
+                    val filteredEntries = if (filter != null) matchingEntries.filter {
+                        filter(ArgumentInfo(sender, args, arg, index, values), it)
+                    } else matchingEntries
+
+                    when {
+                        filteredEntries.firstOrNull() == null -> errorMessagePair(errorInvalidMessageKey, argKey)
+                        else -> Pair(true) {}
+                    }
                 }
             },
             tabCompletions = { argInfo ->
-                val entries = cache.get(
-                    LIST_CACHE_KEY,
-                    argInfo.sender,
-                    { transaction { entity.wrapRows(entity.table.selectAll()) } },
-                    5 * 1000
-                )
-                val matchingEntries = if (filter != null) entries.filter { filter(argInfo, it) } else entries
-                matchingEntries.map { it.readValues[displayField] }
+                transaction {
+                    val entries = cache.get(
+                        LIST_CACHE_KEY,
+                        argInfo.sender,
+                        { entity.wrapRows(entity.table.selectAll()) },
+                        5 * 1000
+                    )
+
+                    val matchingEntries = if (filter != null) entries.filter { filter(argInfo, it) } else entries
+                    matchingEntries.map { it.readValues[displayField] }
+                }
             },
             key = key,
             errorMissing = errorMessage(errorMissingMessageKey),
             argumentDetails = argumentDetails
         )
     }
+
 
     fun <E : Enum<E>> enum(
         enumClass: KClass<E>,
