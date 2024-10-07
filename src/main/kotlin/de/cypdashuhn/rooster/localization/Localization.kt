@@ -53,19 +53,6 @@ fun t(messageKey: String, player: Player, vararg replacements: Pair<String, Stri
     return Localization.getLocalizedMessage(localeProvider.getLanguage(player), messageKey, *replacements)
 }
 
-fun tComponent(messageKey: String, language: Language?, vararg replacements: Pair<String, String?>): Component {
-    return Localization.getLocalizedMessage(language, messageKey, *replacements)
-}
-
-fun tComponent(messageKey: String, player: Player, vararg replacements: Pair<String, String?>): Component {
-    return Localization.getLocalizedMessage(
-            localeProvider.getLanguage(player),
-            messageKey,
-            *replacements
-        )
-
-}
-
 fun CommandSender.tSendWLanguage(messageKey: String, language: Language?, vararg replacements: Pair<String, String>) {
     this.sendMessage(t(messageKey, language, *replacements))
 }
