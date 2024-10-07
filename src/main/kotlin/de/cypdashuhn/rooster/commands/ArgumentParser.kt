@@ -225,7 +225,7 @@ object ArgumentParser {
                         false -> comparativeArgument.followingArguments!!.arguments(argumentInfo)
                     }
 
-                    val firstArgumentWithError = inferiorArguments.firstOrNull { it.errorMissingChildArg != null }
+                    val firstArgumentWithError = inferiorArguments.firstOrNull { it.errorMissing != null }
                     requireNotNull(firstArgumentWithError) {
                         "At least one Argument should have an error Message, else the Parent would need to have one registered"
                     }
