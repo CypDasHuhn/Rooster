@@ -214,7 +214,7 @@ object ArgumentParser {
                         "Current argument needs to have following arguments if invoke doesn't exist"
                     }
 
-                    headArgument.errorMissingChildArg?.let {
+                    comparativeArgument.errorMissingChildArg?.let {
                         return ReturnResult(success = false) {
                             it(argumentInfo)
                         }
