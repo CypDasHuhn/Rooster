@@ -56,11 +56,11 @@ abstract class IndexedContentInterface<ContextType : Context, IdType : Any, Data
         },
         itemStackCreator = {
             val data = dataFromPosition(it.slot, it.context, it.player)!!
-            return@InterfaceItem contentCreator(data).first
+            return@InterfaceItem contentCreator(data, it.context).first
         },
         action = {
             val data = dataFromPosition(it.click.slot, it.context, it.click.player)!!
-            contentCreator(data).second(it)
+            contentCreator(data, it.context).second(it)
         }
     )
 
@@ -78,7 +78,7 @@ abstract class IndexedContentInterface<ContextType : Context, IdType : Any, Data
     open fun modifiedContentItem(item: InterfaceItem<ContextType>): InterfaceItem<ContextType> = item
     open fun modifiedClickInArea(item: InterfaceItem<ContextType>): InterfaceItem<ContextType> = item
 
-    abstract fun contentCreator(data: DataType): Pair<ItemStack, (ClickInfo<ContextType>) -> Unit>
+    abstract fun contentCreator(data: DataType, context: ContextType): Pair<ItemStack, (ClickInfo<ContextType>) -> Unit>
 
     abstract override fun getInventory(player: Player, context: ContextType): Inventory
     final override fun getInterfaceItems(): List<InterfaceItem<ContextType>> {
@@ -98,9 +98,9 @@ abstract class IndexedContentInterface<ContextType : Context, IdType : Any, Data
     abstract override fun defaultContext(player: Player): ContextType
 
     abstract fun slotToId(slot: Slot, context: ContextType, player: Player): IdType?
-    abstract fun contentProvider(id: IdType): DataType?
+    abstract fun contentProvider(id: IdType, context: ContextType): DataType?
     protected fun dataFromPosition(slot: Int, context: ContextType, player: Player): DataType? {
         val absoluteSlot = slotToId(slot, context, player) ?: return null
-        return contentProvider(absoluteSlot)
+        return contentProvider(absoluteSlot, context)
     }
 }
