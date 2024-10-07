@@ -2,12 +2,11 @@ package de.cypdashuhn.rooster.localization
 
 import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
-import de.cypdashuhn.rooster.core.Rooster
 import de.cypdashuhn.rooster.core.Rooster.cache
 import de.cypdashuhn.rooster.core.Rooster.localeProvider
 import de.cypdashuhn.rooster.core.config.RoosterOptions
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import java.io.FileNotFoundException
@@ -20,7 +19,7 @@ object Localization {
         language: Language?,
         messageKey: String,
         vararg replacements: Pair<String, String?>
-    ): String {
+    ): Component {
         val language = language ?: localeProvider.getGlobalLanguage()
 
         var message = cache.get("$language-$messageKey", null, {
@@ -42,30 +41,29 @@ object Localization {
             message = message.replace("\${$key}", value ?: "")
         }
 
-        return message
+        return MiniMessage.miniMessage().deserialize(message)
     }
 }
 
-fun t(messageKey: String, language: Language?, vararg replacements: Pair<String, String?>): String {
+fun t(messageKey: String, language: Language?, vararg replacements: Pair<String, String?>): Component {
     return Localization.getLocalizedMessage(language, messageKey, *replacements)
 }
 
-fun t(messageKey: String, player: Player, vararg replacements: Pair<String, String?>): String {
+fun t(messageKey: String, player: Player, vararg replacements: Pair<String, String?>): Component {
     return Localization.getLocalizedMessage(localeProvider.getLanguage(player), messageKey, *replacements)
 }
 
-fun tComponent(messageKey: String, language: Language?, vararg replacements: Pair<String, String?>): TextComponent {
-    return Component.text(Localization.getLocalizedMessage(language, messageKey, *replacements))
+fun tComponent(messageKey: String, language: Language?, vararg replacements: Pair<String, String?>): Component {
+    return Localization.getLocalizedMessage(language, messageKey, *replacements)
 }
 
-fun tComponent(messageKey: String, player: Player, vararg replacements: Pair<String, String?>): TextComponent {
-    return Component.text(
-        Localization.getLocalizedMessage(
-            localeProvider!!.getLanguage(player),
+fun tComponent(messageKey: String, player: Player, vararg replacements: Pair<String, String?>): Component {
+    return Localization.getLocalizedMessage(
+            localeProvider.getLanguage(player),
             messageKey,
             *replacements
         )
-    )
+
 }
 
 fun CommandSender.tSendWLanguage(messageKey: String, language: Language?, vararg replacements: Pair<String, String>) {
@@ -83,7 +81,7 @@ fun CommandSender.language(): Language {
 
 class Locale(var language: Language?) {
     private val actualLocale: Language by lazy { language ?: localeProvider.getGlobalLanguage() }
-    fun t(messageKey: String, vararg replacements: Pair<String, String?>): String {
+    fun t(messageKey: String, vararg replacements: Pair<String, String?>): Component {
         return Localization.getLocalizedMessage(actualLocale, messageKey, *replacements)
     }
 
