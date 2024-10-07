@@ -3,7 +3,7 @@ package de.cypdashuhn.rooster.commands.argument_constructors
 import org.bukkit.command.CommandSender
 
 class RootArgument : BaseArgument {
-    var label: String
+    var labels: List<String>
     var startingUnit: ((CommandSender) -> Boolean)? = null
 
     constructor( // invoke [12]
@@ -28,7 +28,7 @@ class RootArgument : BaseArgument {
         errorMissingChildArg = null,
         key = key
     ) {
-        this.label = label
+        this.labels = listOf(label)
         this.startingUnit = startingUnit
     }
 
@@ -55,7 +55,7 @@ class RootArgument : BaseArgument {
         errorMissingChildArg = errorMissingChildArg,
         key = key
     ) {
-        this.label = label
+        this.labels = listOf(label)
         this.startingUnit = startingUnit
     }
 
@@ -81,7 +81,7 @@ class RootArgument : BaseArgument {
         errorMissingChildArg = null,
         key = key
     ) {
-        this.label = label
+        this.labels = listOf(label)
         this.startingUnit = startingUnit
     }
 
@@ -109,7 +109,7 @@ class RootArgument : BaseArgument {
         errorMissingChildArg = errorMissingChildArg,
         key = key
     ) {
-        this.label = label
+        this.labels = listOf(label)
         this.startingUnit = startingUnit
     }
 
@@ -136,7 +136,7 @@ class RootArgument : BaseArgument {
         errorMissingChildArg = null,
         key = key
     ) {
-        this.label = label
+        this.labels = listOf(label)
         this.startingUnit = startingUnit
     }
 
@@ -163,7 +163,170 @@ class RootArgument : BaseArgument {
         errorMissingChildArg = argumentDetails.errorMissingChildArg,
         key = key
     ) {
-        this.label = label
+        this.labels = listOf(label)
+        this.startingUnit = startingUnit
+    }
+
+    /** --- */
+
+    constructor( // invoke [12]
+        isValid: ((ArgumentInfo) -> Pair<Boolean, ((ArgumentInfo) -> Unit)?>)? = null,
+        invoke: InvokeLambda,
+        errorArgumentOverflow: ((ArgumentInfo) -> Unit)? = null,
+        argumentHandler: ArgumentHandler = returnString(),
+        key: String = "label",
+        labels: List<String>,
+        startingUnit: ((CommandSender) -> Boolean)? = null
+    ) : super(
+        isArgument = defaultTrue,
+        tabCompletions = null,
+        isValidCompleter = null,
+        invoke = invoke,
+        argumentHandler = argumentHandler,
+        isValid = isValid,
+        isModifier = false,
+        errorMissing = null,
+        followingArguments = null,
+        errorArgumentOverflow = errorArgumentOverflow,
+        errorMissingChildArg = null,
+        key = key
+    ) {
+        this.labels = labels
+        this.startingUnit = startingUnit
+    }
+
+    constructor( // following decentralized [13]
+        isValid: ((ArgumentInfo) -> Pair<Boolean, ((ArgumentInfo) -> Unit)?>)? = null,
+        errorArgumentOverflow: ((ArgumentInfo) -> Unit)? = null,
+        followingArguments: ArgumentList,
+        errorMissingChildArg: ((ArgumentInfo) -> Unit),
+        argumentHandler: ArgumentHandler = returnString(),
+        key: String = "label",
+        labels: List<String>,
+        startingUnit: ((CommandSender) -> Boolean)? = null
+    ) : super(
+        isArgument = defaultTrue,
+        tabCompletions = null,
+        isValidCompleter = null,
+        invoke = null,
+        argumentHandler = argumentHandler,
+        isValid = isValid,
+        isModifier = false,
+        errorMissing = null,
+        followingArguments = followingArguments,
+        errorArgumentOverflow = errorArgumentOverflow,
+        errorMissingChildArg = errorMissingChildArg,
+        key = key
+    ) {
+        this.labels = labels
+        this.startingUnit = startingUnit
+    }
+
+    constructor( // following centralized [14]
+        isValid: ((ArgumentInfo) -> Pair<Boolean, ((ArgumentInfo) -> Unit)?>)? = null,
+        errorArgumentOverflow: ((ArgumentInfo) -> Unit)? = null,
+        followingArguments: CentralizedArgumentList,
+        argumentHandler: ArgumentHandler = returnString(),
+        key: String = "label",
+        labels: List<String>,
+        startingUnit: ((CommandSender) -> Boolean)? = null
+    ) : super(
+        isArgument = defaultTrue,
+        tabCompletions = null,
+        isValidCompleter = null,
+        invoke = null,
+        argumentHandler = argumentHandler,
+        isValid = isValid,
+        isModifier = false,
+        errorMissing = null,
+        followingArguments = followingArguments,
+        errorArgumentOverflow = errorArgumentOverflow,
+        errorMissingChildArg = null,
+        key = key
+    ) {
+        this.labels = labels
+        this.startingUnit = startingUnit
+    }
+
+    constructor( // combined decentralized [15]
+        isValid: ((ArgumentInfo) -> Pair<Boolean, ((ArgumentInfo) -> Unit)?>)? = null,
+        invoke: InvokeLambda,
+        errorArgumentOverflow: ((ArgumentInfo) -> Unit)? = null,
+        followingArguments: ArgumentList,
+        errorMissingChildArg: ((ArgumentInfo) -> Unit),
+        argumentHandler: ArgumentHandler = returnString(),
+        key: String = "label",
+        labels: List<String>,
+        startingUnit: ((CommandSender) -> Boolean)? = null
+    ) : super(
+        isArgument = defaultTrue,
+        tabCompletions = null,
+        isValidCompleter = null,
+        invoke = invoke,
+        argumentHandler = argumentHandler,
+        isValid = isValid,
+        isModifier = false,
+        errorMissing = null,
+        followingArguments = followingArguments,
+        errorArgumentOverflow = errorArgumentOverflow,
+        errorMissingChildArg = errorMissingChildArg,
+        key = key
+    ) {
+        this.labels = labels
+        this.startingUnit = startingUnit
+    }
+
+    constructor( // combined centralized [16]
+        isValid: ((ArgumentInfo) -> Pair<Boolean, ((ArgumentInfo) -> Unit)?>)? = null,
+        invoke: InvokeLambda? = null,
+        errorArgumentOverflow: ((ArgumentInfo) -> Unit)? = null,
+        followingArguments: CentralizedArgumentList,
+        argumentHandler: ArgumentHandler = returnString(),
+        key: String = "label",
+        labels: List<String>,
+        startingUnit: ((CommandSender) -> Boolean)? = null
+    ) : super(
+        isArgument = defaultTrue,
+        tabCompletions = null,
+        isValidCompleter = null,
+        invoke = invoke,
+        argumentHandler = argumentHandler,
+        isValid = isValid,
+        isModifier = false,
+        errorMissing = null,
+        followingArguments = followingArguments,
+        errorArgumentOverflow = errorArgumentOverflow,
+        errorMissingChildArg = null,
+        key = key
+    ) {
+        this.labels = labels
+        this.startingUnit = startingUnit
+    }
+
+    constructor(
+        // argument details [19]
+        isValid: ((ArgumentInfo) -> Pair<Boolean, ((ArgumentInfo) -> Unit)?>)? = null,
+        errorArgumentOverflow: ((ArgumentInfo) -> Unit)? = null,
+        argumentHandler: ArgumentHandler = returnString(),
+        argumentDetails: ArgumentDetails,
+        key: String = "label",
+        labels: List<String>,
+        startingUnit: ((CommandSender) -> Boolean)? = null
+    ) : super(
+        isArgument = defaultTrue,
+        tabCompletions = null,
+        isValidCompleter = null,
+        invoke = argumentDetails.invoke,
+        argumentHandler = argumentHandler,
+        isValid = isValid,
+        isModifier = false,
+        errorMissing = null,
+        followingArguments = argumentDetails.followingArguments,
+        errorArgumentOverflow = errorArgumentOverflow,
+        errorMissingChildArg = argumentDetails.errorMissingChildArg,
+        key = key
+    ) {
+        this.labels = labels
         this.startingUnit = startingUnit
     }
 

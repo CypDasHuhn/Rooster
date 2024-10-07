@@ -112,8 +112,8 @@ object Rooster {
         }
 
         // commands
-        registeredRootArguments.forEach { arg ->
-            plugin.getCommand(arg.label)?.let {
+        registeredRootArguments.flatMap { it.labels }.forEach { label ->
+            plugin.getCommand(label)?.let {
                 it.setExecutor(Command)
                 it.tabCompleter = Completer
             }

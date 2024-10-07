@@ -70,7 +70,7 @@ object ArgumentParser {
         val errorWithoutInfo = ReturnResult()
 
         val topArgument = requireNotNull(
-            registeredRootArguments.firstOrNull { it.label.lowercase() == label.lowercase() }
+            registeredRootArguments.firstOrNull { it.labels.any { it.lowercase() == label.lowercase() }}
         ) { "Root must be found, else command invocation wouldn't be possible" }
 
         topArgument.startingUnit?.let {
