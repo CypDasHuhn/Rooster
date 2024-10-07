@@ -231,7 +231,7 @@ object ArgumentParser {
                     }
 
                     return ReturnResult(success = false) {
-                        firstArgumentWithError.errorMissingChildArg!!(argumentInfo)
+                        firstArgumentWithError.errorMissing!!(argumentInfo)
                     }
 
                 }
