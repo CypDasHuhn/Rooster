@@ -27,7 +27,7 @@ abstract class DatabaseScrollerInterface<T : DatabaseScrollerInterface.DatabaseS
 ) : ScrollInterface<T, ResultRow>(interfaceName, contextClass, scrollDirection) {
     open class DatabaseScrollerContext : ScrollContext()
 
-    override fun contentCreator(data: ResultRow): Pair<ItemStack, (ClickInfo<T>) -> Unit> {
+    override fun contentCreator(data: ResultRow, context: T): Pair<ItemStack, (ClickInfo<T>) -> Unit> {
         if (itemColumn != null) {
             //val item = ItemStack.deserialize(Gson().fromJson(data[itemColumn], Map::class.java) as Map<String, Any>)
         }
@@ -53,7 +53,7 @@ abstract class DatabaseScrollerInterface<T : DatabaseScrollerInterface.DatabaseS
         return targetTable.selectAll().orderBy(targetTable.id)
     }
 
-    override fun contentProvider(id: Int): ResultRow? {
+    override fun contentProvider(id: Int, context: T): ResultRow? {
         return sortedQuery().limit(1, offset = id.toLong()).firstOrNull()
     }
 }
