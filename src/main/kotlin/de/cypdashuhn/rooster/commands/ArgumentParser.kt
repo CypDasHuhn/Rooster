@@ -58,7 +58,8 @@ object ArgumentParser {
         val stringArguments: Array<String>,
         val arguments: MutableList<BaseArgument>,
         val headArgument: BaseArgument,
-        val errorArgumentOverflow: ((ArgumentInfo) -> Unit)?
+        val errorArgumentOverflow: ((ArgumentInfo) -> Unit)?,
+        val values: HashMap<String, Any?>
     )
 
     fun parse(
@@ -83,6 +84,7 @@ object ArgumentParser {
         var arguments = mutableListOf(topArgument) as MutableList<BaseArgument>
         var headArgument = topArgument as BaseArgument
         var errorArgumentOverflow = topArgument.errorArgumentOverflow
+        var values: HashMap<String, Any?> = HashMap()
 
         var cachePosition: Int? = null
         val cacheInfo = cache.getIfPresent(CACHE_KEY, sender) as CacheInfo?
@@ -98,6 +100,7 @@ object ArgumentParser {
                 arguments = cacheInfo.arguments
                 headArgument = cacheInfo.headArgument
                 errorArgumentOverflow = cacheInfo.errorArgumentOverflow
+                values = cacheInfo.values
 
                 cachePosition = when {
                     stringArguments.last().isBlank() -> cacheInfo.stringArguments.size - 1
@@ -106,7 +109,6 @@ object ArgumentParser {
             }
         }
 
-        val values: HashMap<String, Any?> = HashMap()
 
         for ((index, stringArgument) in stringArguments.withIndex()) {
             if (cachePosition != null && cachePosition > index) {
@@ -114,7 +116,7 @@ object ArgumentParser {
             }
 
             val argumentInfo = ArgumentInfo(sender, stringArguments, stringArgument, index, values)
-            val cacheInfo = CacheInfo(stringArguments, arguments, headArgument, errorArgumentOverflow)
+            val cacheInfo = CacheInfo(stringArguments, arguments, headArgument, errorArgumentOverflow, values)
 
             val currentTabCompletions: () -> List<String> = {
                 arguments
