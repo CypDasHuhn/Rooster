@@ -49,7 +49,7 @@ open class InterfaceItem<T : Context> {
         get() {
             return conditionMap.values.reduce { acc, condition -> acc and condition }
         }
-    val itemStackCreator: (InterfaceInfo<T>) -> ItemStack
+    var itemStackCreator: (InterfaceInfo<T>) -> ItemStack
     var priority: (InterfaceInfo<T>) -> Int
     var action: (ClickInfo<T>) -> Unit
 

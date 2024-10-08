@@ -1,9 +1,6 @@
 package de.cypdashuhn.rooster.ui.interfaces.constructors.indexed_content
 
-import de.cypdashuhn.rooster.ui.interfaces.ClickInfo
-import de.cypdashuhn.rooster.ui.interfaces.Context
-import de.cypdashuhn.rooster.ui.interfaces.Interface
-import de.cypdashuhn.rooster.ui.interfaces.Slot
+import de.cypdashuhn.rooster.ui.interfaces.*
 import de.cypdashuhn.rooster.ui.items.InterfaceItem
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -58,7 +55,7 @@ abstract class IndexedContentInterface<ContextType : Context, IdType : Any, Data
         },
         itemStackCreator = {
             val data = dataFromPosition(it.slot, it.context, it.player)!!
-            return@InterfaceItem contentCreator(data, it.context).first
+            return@InterfaceItem contentCreator(data, it.context).first(it)
         },
         action = {
             val data = dataFromPosition(it.click.slot, it.context, it.click.player)!!
@@ -80,7 +77,7 @@ abstract class IndexedContentInterface<ContextType : Context, IdType : Any, Data
     open fun modifiedContentItem(item: InterfaceItem<ContextType>): InterfaceItem<ContextType> = item
     open fun modifiedClickInArea(item: InterfaceItem<ContextType>): InterfaceItem<ContextType> = item
 
-    abstract fun contentCreator(data: DataType, context: ContextType): Pair<ItemStack, (ClickInfo<ContextType>) -> Unit>
+    abstract fun contentCreator(data: DataType, context: ContextType): Pair<(InterfaceInfo<ContextType>) -> ItemStack, (ClickInfo<ContextType>) -> Unit>
 
     abstract override fun getInventory(player: Player, context: ContextType): Inventory
     final override fun getInterfaceItems(): List<InterfaceItem<ContextType>> {
