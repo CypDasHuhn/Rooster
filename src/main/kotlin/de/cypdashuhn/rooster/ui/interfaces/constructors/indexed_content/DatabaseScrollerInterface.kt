@@ -1,6 +1,7 @@
 package de.cypdashuhn.rooster.ui.interfaces.constructors.indexed_content
 
 import de.cypdashuhn.rooster.ui.interfaces.ClickInfo
+import de.cypdashuhn.rooster.ui.interfaces.InterfaceInfo
 import de.cypdashuhn.rooster.ui.items.InterfaceItem
 import de.cypdashuhn.rooster.util.createItem
 import org.bukkit.Bukkit
@@ -27,11 +28,11 @@ abstract class DatabaseScrollerInterface<T : DatabaseScrollerInterface.DatabaseS
 ) : ScrollInterface<T, ResultRow>(interfaceName, contextClass, scrollDirection) {
     open class DatabaseScrollerContext : ScrollContext()
 
-    override fun contentCreator(data: ResultRow, context: T): Pair<ItemStack, (ClickInfo<T>) -> Unit> {
+    override fun contentCreator(data: ResultRow, context: T): Pair<(InterfaceInfo<T>) -> ItemStack, (ClickInfo<T>) -> Unit> {
         if (itemColumn != null) {
             //val item = ItemStack.deserialize(Gson().fromJson(data[itemColumn], Map::class.java) as Map<String, Any>)
         }
-        return createItem(Material.AIR) to {}
+        return { _: InterfaceInfo<T> -> createItem(Material.AIR) } to {}
     }
 
     open fun modifyItemStack(itemStack: ItemStack): ItemStack = itemStack
