@@ -22,7 +22,7 @@ abstract class GraphInterface<ContextType : GraphInterface.GraphContext, DataTyp
     ) : Context()
 
     private fun verticalPager() = ContextModifierItem<ContextType>(
-        slot = 5 * 9 + 7,
+        slot = bottomRow + 7,
         itemStack = createItem(Material.COMPASS),
         contextModifier = { clickInfo ->
             clickInfo.context.also { context ->
@@ -33,10 +33,10 @@ abstract class GraphInterface<ContextType : GraphInterface.GraphContext, DataTyp
             }
         }
     )
-
     open fun verticalPagerModifier(item: InterfaceItem<ContextType>) = item
+
     private fun horizontalPager() = ContextModifierItem<ContextType>(
-        slot = 5 * 9 + 8,
+        slot = bottomRow + 8,
         itemStack = createItem(Material.COMPASS),
         contextModifier = { clickInfo ->
             clickInfo.context.also { context ->
@@ -47,7 +47,6 @@ abstract class GraphInterface<ContextType : GraphInterface.GraphContext, DataTyp
             }
         }
     )
-
     open fun horizontalPagerModifier(item: InterfaceItem<ContextType>) = item
 
     final override fun getFrameItems(): List<InterfaceItem<ContextType>> = listOf(

@@ -31,7 +31,7 @@ abstract class ScrollInterface<ContextType : ScrollInterface.ScrollContext, Data
 
 
     private fun scroller() = ContextModifierItem<ContextType>(
-        slot = 5 * 9 + 8,
+        slot = bottomRow + 8,
         itemStack = createItem(Material.COMPASS),
         contextModifier = { clickInfo ->
             clickInfo.context.also { context ->
@@ -43,15 +43,18 @@ abstract class ScrollInterface<ContextType : ScrollInterface.ScrollContext, Data
             }
         }
     )
+    open fun modifiedScroller(item: ContextModifierItem<ContextType>): ContextModifierItem<ContextType> = item
 
     final override fun getFrameItems(): List<InterfaceItem<ContextType>> = listOf(
-        scroller()
+        modifiedScroller(scroller())
     )
 
     final override fun slotToId(slot: Slot, context: ContextType, player: Player): Int? {
         val (x, y) = offset(slot) ?: return null
-        return if (scrollDirection == ScrollDirection.LEFT_RIGHT)
-            x + (y + context.position) * contentYWidth
-        else y + (x + context.position) * contentXWidth
+        val result = if (scrollDirection == ScrollDirection.LEFT_RIGHT)
+            x + (y + context.position) * contentXWidth
+        else y + (x + context.position) * contentYWidth
+
+        return result
     }
 }
