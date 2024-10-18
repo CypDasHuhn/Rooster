@@ -3,6 +3,10 @@ package de.cypdashuhn.rooster.core.config
 import de.cypdashuhn.rooster.core.Rooster
 
 object RoosterOptions {
+    object Localization {
+        const val DEFAULT_STRING = "Message not found"
+    }
+
     enum class Warnings {
         ALL,
         INTERFACE(ALL),
@@ -21,7 +25,10 @@ object RoosterOptions {
         LOCALIZATION(ALL),
         LOCALIZATION_MISSING_LOCALE({
             "Missing Locale: ${(it as Pair<*, *>).first} for Language: ${(it).second}"
-        }, LOCALIZATION)
+        }, LOCALIZATION),
+        LOCALIZATION_MISSING_LOCALE_FILE({
+            "Missing Locale-File: $it"
+        }, LOCALIZATION),
 
         ;
 

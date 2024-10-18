@@ -8,7 +8,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 
-class RoosterCache<K, V>(cacheBuilder: CacheBuilder<Any, Any>) {
+class RoosterCache<K, V>(cacheBuilder: CacheBuilder<Any, Any>, corePoolSize: Int = 1) {
     private var cache: Cache<Pair<String, K>, V> = cacheBuilder.build()
 
     private val generalKey = "general"
@@ -24,7 +24,7 @@ class RoosterCache<K, V>(cacheBuilder: CacheBuilder<Any, Any>) {
         cache.invalidate(typeKey to key)
     }
 
-    private val scheduler: ScheduledExecutorService = Executors.newScheduledThreadPool(1)
+    private val scheduler: ScheduledExecutorService = Executors.newScheduledThreadPool(corePoolSize)
     fun invalidateWithTimeout(key: K, sender: CommandSender? = null, clearTime: Long, unit: TimeUnit) {
         val typeKey = sender?.uniqueKey() ?: generalKey
 
@@ -39,13 +39,13 @@ class RoosterCache<K, V>(cacheBuilder: CacheBuilder<Any, Any>) {
         sender: CommandSender? = null,
         value: V,
         clearTime: Long? = null,
-        unit: TimeUnit? = null
+        unit: TimeUnit = TimeUnit.SECONDS
     ) {
         val typeKey = sender?.uniqueKey() ?: generalKey
 
         cache.put(typeKey to key, value)
 
-        if (clearTime != null && unit != null) invalidateWithTimeout(key, sender, clearTime, unit)
+        if (clearTime != null) invalidateWithTimeout(key, sender, clearTime, unit)
     }
 
     fun <T : V> get(
@@ -53,11 +53,11 @@ class RoosterCache<K, V>(cacheBuilder: CacheBuilder<Any, Any>) {
         sender: CommandSender? = null,
         provider: () -> T,
         clearTime: Long? = null,
-        unit: TimeUnit? = null
+        unit: TimeUnit = TimeUnit.SECONDS
     ): T {
         val typeKey = sender?.uniqueKey() ?: generalKey
 
-        if (clearTime != null && unit != null) invalidateWithTimeout(key, sender, clearTime, unit)
+        if (clearTime != null) invalidateWithTimeout(key, sender, clearTime, unit)
         return cache.get(typeKey to key, provider) as T
     }
 
@@ -67,7 +67,7 @@ class RoosterCache<K, V>(cacheBuilder: CacheBuilder<Any, Any>) {
         map: Map<K, V>,
         sender: CommandSender? = null,
         clearTime: Long? = null,
-        unit: TimeUnit? = null
+        unit: TimeUnit = TimeUnit.SECONDS
     ) {
         map.forEach { (key, value) -> put(key, sender, value, clearTime, unit) }
     }

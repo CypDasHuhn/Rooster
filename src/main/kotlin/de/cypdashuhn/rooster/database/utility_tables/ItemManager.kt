@@ -52,6 +52,4 @@ class ItemManager : UtilityDatabase(Items) {
             Item.find { Items.key eq key }.firstOrNull()?.itemStack
         }
     }
-
-
 }
