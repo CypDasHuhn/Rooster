@@ -77,7 +77,10 @@ abstract class IndexedContentInterface<ContextType : Context, IdType : Any, Data
     open fun modifiedContentItem(item: InterfaceItem<ContextType>): InterfaceItem<ContextType> = item
     open fun modifiedClickInArea(item: InterfaceItem<ContextType>): InterfaceItem<ContextType> = item
 
-    abstract fun contentCreator(data: DataType, context: ContextType): Pair<(InterfaceInfo<ContextType>) -> ItemStack, (ClickInfo<ContextType>) -> Unit>
+    abstract fun contentCreator(
+        data: DataType,
+        context: ContextType
+    ): Pair<(InterfaceInfo<ContextType>) -> ItemStack, (ClickInfo<ContextType>) -> Unit>
 
     abstract override fun getInventory(player: Player, context: ContextType): Inventory
     final override fun getInterfaceItems(): List<InterfaceItem<ContextType>> {

@@ -9,7 +9,6 @@ import org.bukkit.inventory.ItemStack
 
 open class InterfaceItem<T : Context> {
     val anonymousKey = "anonymous"
-    val slotKey = "slot"
     val conditionMap: MutableMap<String, (InterfaceInfo<T>) -> Boolean>
 
     fun addCondition(condition: (InterfaceInfo<T>) -> Boolean, name: String = anonymousKey) {
@@ -52,6 +51,7 @@ open class InterfaceItem<T : Context> {
     var itemStackCreator: (InterfaceInfo<T>) -> ItemStack
     var priority: (InterfaceInfo<T>) -> Int
     var action: (ClickInfo<T>) -> Unit
+    var slots: Slots
 
     constructor(
         conditionMap: Map<String, (InterfaceInfo<T>) -> Boolean>,
@@ -63,6 +63,7 @@ open class InterfaceItem<T : Context> {
         this.itemStackCreator = itemStackCreator
         this.priority = priority
         this.action = action
+        this.slots = Slots.all()
     }
 
     constructor(
@@ -75,6 +76,7 @@ open class InterfaceItem<T : Context> {
         this.itemStackCreator = itemStackCreator
         this.priority = priority
         this.action = action
+        this.slots = Slots.all()
     }
 
     constructor(
@@ -87,84 +89,48 @@ open class InterfaceItem<T : Context> {
         this.itemStackCreator = { itemStack }
         this.priority = priority
         this.action = action
+        this.slots = Slots.all()
     }
 
     constructor(
-        slot: Int,
+        slots: Slots,
         condition: (InterfaceInfo<T>) -> Boolean = { true },
         itemStackCreator: (InterfaceInfo<T>) -> ItemStack,
         action: (ClickInfo<T>) -> Unit = {},
         priority: (InterfaceInfo<T>) -> Int = { 0 }
     ) {
-        conditionMap = mutableMapOf(anonymousKey to condition, slotKey to { it.slot == slot })
+        conditionMap = mutableMapOf(anonymousKey to condition)
         this.itemStackCreator = itemStackCreator
         this.priority = priority
         this.action = action
+        this.slots = slots
     }
 
     constructor(
-        slot: Int,
+        slots: Slots,
         condition: (InterfaceInfo<T>) -> Boolean = { true },
         itemStack: ItemStack,
         action: (ClickInfo<T>) -> Unit = {},
         priority: (InterfaceInfo<T>) -> Int = { 0 }
     ) {
-        conditionMap = mutableMapOf(anonymousKey to condition, slotKey to { it.slot == slot })
+        conditionMap = mutableMapOf(anonymousKey to condition)
         this.itemStackCreator = { itemStack }
         this.priority = priority
         this.action = action
+        this.slots = slots
     }
 
     constructor(
-        slots: IntRange,
-        condition: (InterfaceInfo<T>) -> Boolean = { true },
+        slots: Slots,
+        conditionMap: Map<String, (InterfaceInfo<T>) -> Boolean> = mapOf(),
         itemStackCreator: (InterfaceInfo<T>) -> ItemStack,
         action: (ClickInfo<T>) -> Unit = {},
         priority: (InterfaceInfo<T>) -> Int = { 0 }
     ) {
-        conditionMap = mutableMapOf(anonymousKey to condition, slotKey to { it.slot in slots })
+        this.conditionMap = conditionMap.toMutableMap()
         this.itemStackCreator = itemStackCreator
         this.priority = priority
         this.action = action
+        this.slots = slots
     }
-
-    constructor(
-        slots: IntRange,
-        condition: (InterfaceInfo<T>) -> Boolean = { true },
-        itemStack: ItemStack,
-        action: (ClickInfo<T>) -> Unit = {},
-        priority: (InterfaceInfo<T>) -> Int = { 0 }
-    ) {
-        conditionMap = mutableMapOf(anonymousKey to condition, slotKey to { it.slot in slots })
-        this.itemStackCreator = { itemStack }
-        this.priority = priority
-        this.action = action
-    }
-
-    constructor(
-        slots: List<Int>,
-        condition: (InterfaceInfo<T>) -> Boolean = { true },
-        itemStackCreator: (InterfaceInfo<T>) -> ItemStack,
-        action: (ClickInfo<T>) -> Unit = {},
-        priority: (InterfaceInfo<T>) -> Int = { 0 }
-    ) {
-        conditionMap = mutableMapOf(anonymousKey to condition, slotKey to { it.slot in slots })
-        this.itemStackCreator = itemStackCreator
-        this.priority = priority
-        this.action = action
-    }
-
-    constructor(
-        slots: List<Int>,
-        condition: (InterfaceInfo<T>) -> Boolean = { true },
-        itemStack: ItemStack,
-        action: (ClickInfo<T>) -> Unit = {},
-        priority: (InterfaceInfo<T>) -> Int = { 0 }
-    ) {
-        conditionMap = mutableMapOf(anonymousKey to condition, slotKey to { it.slot in slots })
-        this.itemStackCreator = { itemStack }
-        this.priority = priority
-        this.action = action
-    }
-
 }
