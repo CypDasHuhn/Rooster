@@ -1,14 +1,15 @@
 package de.cypdashuhn.rooster.commands_new.utility_constructors
 
 import de.cypdashuhn.rooster.commands.argument_constructors.ArgumentInfo
+import de.cypdashuhn.rooster.commands.argument_constructors.ArgumentPredicate
 import de.cypdashuhn.rooster.commands_new.constructors.Argument
-import de.cypdashuhn.rooster.commands_new.constructors.ArgumentPredicate
 import de.cypdashuhn.rooster.commands_new.constructors.IsValidResult
 import de.cypdashuhn.rooster.commands_new.constructors.UnfinishedArgument
 
-object LiteralArgument {
+object MultiLiteralArgument {
     fun middle(
-        name: String,
+        names: List<String>,
+        key: String,
         isEnabled: ArgumentPredicate? = null,
         isTarget: ArgumentPredicate? = null,
         isValid: ((ArgumentInfo) -> IsValidResult)? = null,
@@ -18,8 +19,8 @@ object LiteralArgument {
         onArgumentOverflow: ((ArgumentInfo) -> Unit)? = null,
     ): UnfinishedArgument {
         return UnfinishedArgument(
-            key = name,
-            suggestions = { listOf(name) },
+            key = key,
+            suggestions = { names },
             isEnabled = isEnabled,
             isTarget = isTarget,
             isValid = isValid,
@@ -32,7 +33,8 @@ object LiteralArgument {
     }
 
     fun multiple(
-        name: String,
+        names: List<String>,
+        key: String,
         isEnabled: ArgumentPredicate? = null,
         isTarget: ArgumentPredicate? = null,
         isValid: ((ArgumentInfo) -> IsValidResult)? = null,
@@ -44,8 +46,8 @@ object LiteralArgument {
         followedBy: List<Argument>? = null
     ): Argument {
         return Argument(
-            key = name,
-            suggestions = { listOf(name) },
+            key = key,
+            suggestions = { names },
             isEnabled = isEnabled,
             isTarget = isTarget,
             isValid = isValid,
@@ -59,7 +61,8 @@ object LiteralArgument {
     }
 
     fun multiple(
-        name: String,
+        names: List<String>,
+        key: String,
         isEnabled: ArgumentPredicate? = null,
         isTarget: ArgumentPredicate? = null,
         isValid: ((ArgumentInfo) -> IsValidResult)? = null,
@@ -70,8 +73,8 @@ object LiteralArgument {
         followedBy: List<Argument>
     ): Argument {
         return Argument(
-            key = name,
-            suggestions = { listOf(name) },
+            key = key,
+            suggestions = { names },
             isEnabled = isEnabled,
             isTarget = isTarget,
             isValid = isValid,
@@ -84,7 +87,8 @@ object LiteralArgument {
     }
 
     fun single(
-        name: String,
+        names: List<String>,
+        key: String,
         isEnabled: ArgumentPredicate? = null,
         isTarget: ArgumentPredicate? = null,
         isValid: ((ArgumentInfo) -> IsValidResult)? = null,
@@ -96,8 +100,8 @@ object LiteralArgument {
         followedBy: Argument? = null
     ): Argument {
         return Argument(
-            key = name,
-            suggestions = { listOf(name) },
+            key = key,
+            suggestions = { names },
             isEnabled = isEnabled,
             isTarget = isTarget,
             isValid = isValid,
@@ -111,7 +115,8 @@ object LiteralArgument {
     }
 
     fun single(
-        name: String,
+        names: List<String>,
+        key: String,
         isEnabled: ArgumentPredicate? = null,
         isTarget: ArgumentPredicate? = null,
         isValid: ((ArgumentInfo) -> IsValidResult)? = null,
@@ -122,8 +127,8 @@ object LiteralArgument {
         followedBy: Argument
     ): Argument {
         return Argument(
-            key = name,
-            suggestions = { listOf(name) },
+            key = key,
+            suggestions = { names },
             isEnabled = isEnabled,
             isTarget = isTarget,
             isValid = isValid,
