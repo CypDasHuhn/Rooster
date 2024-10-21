@@ -6,6 +6,7 @@ import de.cypdashuhn.rooster.listeners.hasClicks
 import de.cypdashuhn.rooster.ui.interfaces.Context
 import de.cypdashuhn.rooster.ui.interfaces.Interface
 import de.cypdashuhn.rooster.ui.items.InterfaceItem
+import de.cypdashuhn.rooster.ui.items.Slots
 import de.cypdashuhn.rooster.ui.items.constructors.ContextModifierItem
 import de.cypdashuhn.rooster.util.createItem
 import net.kyori.adventure.text.Component
@@ -36,7 +37,7 @@ abstract class PageInterface<T : PageInterface.PageContext>(
     abstract fun initializePages(): List<Page<T>>
 
     val pageTurner = ContextModifierItem<T>(
-        slot = bottomBar + 8,
+        slots = Slots(bottomBar + 8),
         itemStack = createItem(Material.COMPASS, name = Component.empty()),
         contextModifier = { clickInfo ->
             clickInfo.context.also {
@@ -48,7 +49,7 @@ abstract class PageInterface<T : PageInterface.PageContext>(
 
     val forwardPageTurner = pageTurner.changeContextModifierAction(contextModifier = { clickInfo ->
         clickInfo.context.also { it.page += 1 }
-    }).also { it.setCondition({ it.slot == bottomBar + 7 }, it.slotKey) }
+    }).also { it.slots = Slots(bottomBar + 7) }
 
     val backwardsPageTurned = pageTurner.changeContextModifierAction(contextModifier = { clickInfo ->
         clickInfo.context.also { it.page -= 1 }

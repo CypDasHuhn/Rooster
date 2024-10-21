@@ -31,7 +31,7 @@ abstract class BaseArgument(
     open var onArgumentOverflow: ((ArgumentInfo) -> Unit)? = null,
     internal var internalLastChange: BaseArgument? = null
 ) {
-    internal fun toArgument(): Argument {
+    private fun toArgument(): Argument {
         if (this is Argument) return this
         return if (isOptional) Argument.optional(
             key = key,
@@ -40,8 +40,7 @@ abstract class BaseArgument(
             suggestions = suggestions,
             isValid = isValid,
             transformValue = transformValue,
-            internalLastChange = internalLastChange,
-        )
+        ).also { it.internalLastChange = internalLastChange }
         else if (followedBy == null) {
             Argument(
                 key = key,
@@ -55,8 +54,7 @@ abstract class BaseArgument(
                 onMissingChild = onMissingChild,
                 transformValue = transformValue,
                 onArgumentOverflow = onArgumentOverflow,
-                internalLastChange = internalLastChange
-            )
+            ).also { it.internalLastChange = internalLastChange }
         } else {
             Argument(
                 key = key,
@@ -70,8 +68,7 @@ abstract class BaseArgument(
                 onMissingChild = onMissingChild,
                 transformValue = transformValue,
                 onArgumentOverflow = onArgumentOverflow,
-                internalLastChange = internalLastChange
-            )
+            ).also { it.internalLastChange = internalLastChange }
         }
     }
 
@@ -90,11 +87,10 @@ abstract class BaseArgument(
             transformValue = transformValue,
             isOptional = isOptional,
             onArgumentOverflow = onArgumentOverflow,
-            internalLastChange = internalLastChange
-        )
+        ).also { it.internalLastChange = internalLastChange }
     }
 
-    protected fun appendChange(changeArgument: (BaseArgument) -> Unit): BaseArgument {
+    private fun appendChange(changeArgument: (BaseArgument) -> Unit): BaseArgument {
         var currentArgument: BaseArgument = this
         var count = 0
         while (true) {
@@ -161,24 +157,10 @@ sealed class IsValidResult(
 
 
 fun main() {
-    var builder = Arguments.literal("root")
-        .followedBy(Arguments.literal("player"))
-        .followedBy(Arguments.literal("branch1").followedBy(Arguments.literal("deeper")).onExecute { })
-        .or(Arguments.literal("branchTwo")).onExecute { }
-
-    var tree = Arguments.literal(
-        "root", followedBy = Arguments.literalMultiple(
-            "player", followedBy = listOf(
-                Arguments.literal(
-                    "branch1", followedBy =
-                    Arguments.literal("deeper", onExecute = {
-
-                    })
-                ),
-                Arguments.literal("branchTwo", onExecute = {})
-            )
-        )
-    )
+    var builder = Arguments.literal.single("root")
+        .followedBy(Arguments.literal.single("player"))
+        .followedBy(Arguments.literal.single("branch1").followedBy(Arguments.literal.single("deeper")).onExecute { })
+        .or(Arguments.literal.single("branchTwo")).onExecute { }
 
     val s = ""
 }

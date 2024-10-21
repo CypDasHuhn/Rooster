@@ -4,6 +4,7 @@ import de.cypdashuhn.rooster.ui.interfaces.ClickInfo
 import de.cypdashuhn.rooster.ui.interfaces.Context
 import de.cypdashuhn.rooster.ui.interfaces.Interface
 import de.cypdashuhn.rooster.ui.items.InterfaceItem
+import de.cypdashuhn.rooster.ui.items.Slots
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryCloseEvent
@@ -17,20 +18,20 @@ abstract class BaseConfirmationInterface<T : Context>(
     open val onConfirm: (ClickInfo<T>) -> Unit,
     open val onCancel: (CancelInfo<T>) -> Unit
 ) : Interface<T>(interfaceName, contextClass) {
-    fun confirmationItem() = InterfaceItem<T>(
-        slot = 8,
+    private fun confirmationItem() = InterfaceItem(
+        slots = Slots(8),
         itemStackCreator = { ItemStack(Material.GREEN_STAINED_GLASS_PANE) },
         action = onConfirm
     )
 
-    fun modifyConfirmationItem(item: InterfaceItem<T>) = item
-    fun cancelItem() = InterfaceItem<T>(
-        slot = 0,
+    protected fun modifyConfirmationItem(item: InterfaceItem<T>) = item
+    private fun cancelItem() = InterfaceItem(
+        slots = Slots(0),
         itemStackCreator = { ItemStack(Material.RED_STAINED_GLASS_PANE) },
         action = onConfirm
     )
 
-    fun modifyCancelItem(item: InterfaceItem<T>) = item
+    protected fun modifyCancelItem(item: InterfaceItem<T>) = item
 
     abstract fun getOtherItems(): List<InterfaceItem<T>>
     override fun getInterfaceItems(): List<InterfaceItem<T>> {

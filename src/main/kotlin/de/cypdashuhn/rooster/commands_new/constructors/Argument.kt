@@ -15,7 +15,6 @@ class Argument : BaseArgument {
         onMissingChild: ((ArgumentInfo) -> Unit)? = null,
         transformValue: ((ArgumentInfo) -> Any)? = { it.arg },
         onArgumentOverflow: ((ArgumentInfo) -> Unit)? = null,
-        internalLastChange: BaseArgument? = null,
         toDoRemove: Boolean = false
     ) : super(
         key = key,
@@ -30,7 +29,6 @@ class Argument : BaseArgument {
         transformValue = transformValue,
         isOptional = false,
         onArgumentOverflow = onArgumentOverflow,
-        internalLastChange = internalLastChange
     )
 
     constructor(
@@ -45,7 +43,6 @@ class Argument : BaseArgument {
         onMissingChild: ((ArgumentInfo) -> Unit)? = null,
         transformValue: ((ArgumentInfo) -> Any)? = { it.arg },
         onArgumentOverflow: ((ArgumentInfo) -> Unit)? = null,
-        internalLastChange: BaseArgument? = null
     ) : super(
         key = key,
         isEnabled = isEnabled,
@@ -59,7 +56,6 @@ class Argument : BaseArgument {
         transformValue = transformValue,
         isOptional = false,
         onArgumentOverflow = onArgumentOverflow,
-        internalLastChange = internalLastChange
     )
 
     private constructor(
@@ -69,7 +65,6 @@ class Argument : BaseArgument {
         suggestions: ((ArgumentInfo) -> List<String>)? = null,
         isValid: ((ArgumentInfo) -> IsValidResult)? = null,
         transformValue: ((ArgumentInfo) -> Any)? = { it.arg },
-        internalLastChange: BaseArgument? = null
     ) : super(
         key = key,
         isEnabled = isEnabled,
@@ -83,7 +78,6 @@ class Argument : BaseArgument {
         transformValue = transformValue,
         isOptional = true,
         onArgumentOverflow = null,
-        internalLastChange = internalLastChange
     )
 
     internal companion object {
@@ -94,7 +88,6 @@ class Argument : BaseArgument {
             suggestions: ((ArgumentInfo) -> List<String>)? = null,
             isValid: ((ArgumentInfo) -> IsValidResult)? = null,
             transformValue: ((ArgumentInfo) -> Any)? = { it.arg },
-            internalLastChange: BaseArgument? = null
         ) = Argument(
             key = key,
             isEnabled = isEnabled,
@@ -102,7 +95,6 @@ class Argument : BaseArgument {
             suggestions = suggestions,
             isValid = isValid,
             transformValue = transformValue,
-            internalLastChange = internalLastChange
         )
     }
 

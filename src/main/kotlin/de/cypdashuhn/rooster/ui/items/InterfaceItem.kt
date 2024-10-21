@@ -122,7 +122,7 @@ open class InterfaceItem<T : Context> {
 
     constructor(
         slots: Slots,
-        conditionMap: Map<String, (InterfaceInfo<T>) -> Boolean> = mapOf(),
+        conditionMap: Map<String, (InterfaceInfo<T>) -> Boolean>,
         itemStackCreator: (InterfaceInfo<T>) -> ItemStack,
         action: (ClickInfo<T>) -> Unit = {},
         priority: (InterfaceInfo<T>) -> Int = { 0 }

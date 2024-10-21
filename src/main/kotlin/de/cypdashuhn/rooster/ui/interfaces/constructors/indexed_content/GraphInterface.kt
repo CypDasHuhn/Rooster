@@ -5,6 +5,7 @@ import de.cypdashuhn.rooster.listeners.hasClicks
 import de.cypdashuhn.rooster.ui.interfaces.Context
 import de.cypdashuhn.rooster.ui.interfaces.Slot
 import de.cypdashuhn.rooster.ui.items.InterfaceItem
+import de.cypdashuhn.rooster.ui.items.Slots
 import de.cypdashuhn.rooster.ui.items.constructors.ContextModifierItem
 import de.cypdashuhn.rooster.util.createItem
 import org.bukkit.Material
@@ -22,7 +23,7 @@ abstract class GraphInterface<ContextType : GraphInterface.GraphContext, DataTyp
     ) : Context()
 
     private fun verticalPager() = ContextModifierItem<ContextType>(
-        slot = bottomRow + 7,
+        slots = Slots(bottomRow + 7),
         itemStack = createItem(Material.COMPASS),
         contextModifier = { clickInfo ->
             clickInfo.context.also { context ->
@@ -33,10 +34,11 @@ abstract class GraphInterface<ContextType : GraphInterface.GraphContext, DataTyp
             }
         }
     )
+
     open fun verticalPagerModifier(item: InterfaceItem<ContextType>) = item
 
     private fun horizontalPager() = ContextModifierItem<ContextType>(
-        slot = bottomRow + 8,
+        slots = Slots(bottomRow + 8),
         itemStack = createItem(Material.COMPASS),
         contextModifier = { clickInfo ->
             clickInfo.context.also { context ->
@@ -47,6 +49,7 @@ abstract class GraphInterface<ContextType : GraphInterface.GraphContext, DataTyp
             }
         }
     )
+
     open fun horizontalPagerModifier(item: InterfaceItem<ContextType>) = item
 
     final override fun getFrameItems(): List<InterfaceItem<ContextType>> = listOf(

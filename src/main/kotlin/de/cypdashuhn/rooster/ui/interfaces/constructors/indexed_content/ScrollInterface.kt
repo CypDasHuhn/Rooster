@@ -5,6 +5,7 @@ import de.cypdashuhn.rooster.listeners.hasClicks
 import de.cypdashuhn.rooster.ui.interfaces.Context
 import de.cypdashuhn.rooster.ui.interfaces.Slot
 import de.cypdashuhn.rooster.ui.items.InterfaceItem
+import de.cypdashuhn.rooster.ui.items.Slots
 import de.cypdashuhn.rooster.ui.items.constructors.ContextModifierItem
 import de.cypdashuhn.rooster.util.createItem
 import org.bukkit.Material
@@ -31,7 +32,7 @@ abstract class ScrollInterface<ContextType : ScrollInterface.ScrollContext, Data
 
 
     private fun scroller() = ContextModifierItem<ContextType>(
-        slot = bottomRow + 8,
+        slots = Slots(bottomRow + 8),
         itemStack = createItem(Material.COMPASS),
         contextModifier = { clickInfo ->
             clickInfo.context.also { context ->
@@ -43,6 +44,7 @@ abstract class ScrollInterface<ContextType : ScrollInterface.ScrollContext, Data
             }
         }
     )
+
     open fun modifiedScroller(item: ContextModifierItem<ContextType>): ContextModifierItem<ContextType> = item
 
     final override fun getFrameItems(): List<InterfaceItem<ContextType>> = listOf(

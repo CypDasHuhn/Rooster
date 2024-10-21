@@ -4,8 +4,4 @@ object NumberArgument {
     fun middle() {
 
     }
-
-    fun ending() {
-
-    }
 }
