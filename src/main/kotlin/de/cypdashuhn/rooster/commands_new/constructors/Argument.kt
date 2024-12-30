@@ -15,7 +15,6 @@ class Argument : BaseArgument {
         onMissingChild: ((ArgumentInfo) -> Unit)? = null,
         transformValue: ((ArgumentInfo) -> Any)? = { it.arg },
         onArgumentOverflow: ((ArgumentInfo) -> Unit)? = null,
-        toDoRemove: Boolean = false
     ) : super(
         key = key,
         isEnabled = isEnabled,
@@ -137,5 +136,4 @@ class Argument : BaseArgument {
             }
         }.toUnfinishedArgument()
     }
-
 }

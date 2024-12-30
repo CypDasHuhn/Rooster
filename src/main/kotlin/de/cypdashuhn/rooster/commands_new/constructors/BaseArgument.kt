@@ -1,6 +1,7 @@
 package de.cypdashuhn.rooster.commands_new.constructors
 
 import de.cypdashuhn.rooster.commands.argument_constructors.ArgumentInfo
+import de.cypdashuhn.rooster.localization.tSend
 import org.bukkit.command.CommandSender
 
 data class InvokeInfo(
@@ -155,12 +156,14 @@ sealed class IsValidResult(
     class Invalid(error: ((ArgumentInfo) -> Unit)) : IsValidResult(false, error)
 }
 
+object TestCommand : RoosterCommand("Test") {
+    override fun content(arg: UnfinishedArgument): Argument {
+        return arg
+            .onExecute { it.sender.tSend("test") }
+            .followedBy(Arguments.literal.single("player"))
+            .followedBy(
+                Arguments.literal.single("branch1").followedBy(Arguments.literal.single("deeper")).onExecute { })
+            .or(Arguments.literal.single("branchTwo")).onExecute { }
+    }
 
-fun main() {
-    var builder = Arguments.literal.single("root")
-        .followedBy(Arguments.literal.single("player"))
-        .followedBy(Arguments.literal.single("branch1").followedBy(Arguments.literal.single("deeper")).onExecute { })
-        .or(Arguments.literal.single("branchTwo")).onExecute { }
-
-    val s = ""
 }
