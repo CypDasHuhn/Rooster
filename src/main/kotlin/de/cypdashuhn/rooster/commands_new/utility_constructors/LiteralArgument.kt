@@ -13,7 +13,7 @@ object LiteralArgument {
         isValid: ((ArgumentInfo) -> IsValidResult)? = null,
         onMissing: ((ArgumentInfo) -> Unit)? = null,
         onMissingChild: ((ArgumentInfo) -> Unit)? = null,
-        transformValue: ((ArgumentInfo) -> Any)? = null,
+        transformValue: ((ArgumentInfo) -> Any) = null,
         onArgumentOverflow: ((ArgumentInfo) -> Unit)? = null,
     ): UnfinishedArgument {
         return UnfinishedArgument(
@@ -38,7 +38,7 @@ object LiteralArgument {
         isValid: ((ArgumentInfo) -> IsValidResult)? = null,
         onMissing: ((ArgumentInfo) -> Unit)? = null,
         onMissingChild: ((ArgumentInfo) -> Unit)? = null,
-        transformValue: ((ArgumentInfo) -> Any)? = null,
+        transformValue: ((ArgumentInfo) -> Any) = null,
         onArgumentOverflow: ((ArgumentInfo) -> Unit)? = null,
     ): UnfinishedArgument {
         return UnfinishedArgument(

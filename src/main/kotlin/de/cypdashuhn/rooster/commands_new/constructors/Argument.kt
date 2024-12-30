@@ -1,19 +1,17 @@
 package de.cypdashuhn.rooster.commands_new.constructors
 
-import de.cypdashuhn.rooster.commands.argument_constructors.ArgumentInfo
-
 class Argument : BaseArgument {
     constructor(
         key: String,
         isEnabled: (ArgumentPredicate)? = { true },
-        isTarget: (ArgumentPredicate)? = { true },
+        isTarget: (ArgumentPredicate) = { true },
         suggestions: ((ArgumentInfo) -> List<String>)? = null,
-        onExecute: (ArgumentInfo) -> Unit,
+        onExecute: (InvokeInfo) -> Unit,
         followedBy: List<Argument>? = null,
         isValid: ((ArgumentInfo) -> IsValidResult)? = null,
         onMissing: ((ArgumentInfo) -> Unit)? = null,
         onMissingChild: ((ArgumentInfo) -> Unit)? = null,
-        transformValue: ((ArgumentInfo) -> Any)? = { it.arg },
+        transformValue: ((ArgumentInfo) -> Any) = { it.arg },
         onArgumentOverflow: ((ArgumentInfo) -> Unit)? = null,
     ) : super(
         key = key,
@@ -33,14 +31,14 @@ class Argument : BaseArgument {
     constructor(
         key: String,
         isEnabled: (ArgumentPredicate)? = { true },
-        isTarget: (ArgumentPredicate)? = { true },
+        isTarget: (ArgumentPredicate) = { true },
         suggestions: ((ArgumentInfo) -> List<String>)? = null,
-        onExecute: ((ArgumentInfo) -> Unit)? = null,
+        onExecute: ((InvokeInfo) -> Unit)? = null,
         followedBy: List<Argument>,
         isValid: ((ArgumentInfo) -> IsValidResult)? = null,
         onMissing: ((ArgumentInfo) -> Unit)? = null,
         onMissingChild: ((ArgumentInfo) -> Unit)? = null,
-        transformValue: ((ArgumentInfo) -> Any)? = { it.arg },
+        transformValue: ((ArgumentInfo) -> Any) = { it.arg },
         onArgumentOverflow: ((ArgumentInfo) -> Unit)? = null,
     ) : super(
         key = key,
@@ -60,10 +58,10 @@ class Argument : BaseArgument {
     private constructor(
         key: String,
         isEnabled: (ArgumentPredicate)? = { true },
-        isTarget: (ArgumentPredicate)? = { true },
+        isTarget: (ArgumentPredicate) = { true },
         suggestions: ((ArgumentInfo) -> List<String>)? = null,
         isValid: ((ArgumentInfo) -> IsValidResult)? = null,
-        transformValue: ((ArgumentInfo) -> Any)? = { it.arg },
+        transformValue: ((ArgumentInfo) -> Any) = { it.arg },
     ) : super(
         key = key,
         isEnabled = isEnabled,
@@ -83,10 +81,10 @@ class Argument : BaseArgument {
         fun optional(
             key: String,
             isEnabled: (ArgumentPredicate)? = { true },
-            isTarget: (ArgumentPredicate)? = { true },
+            isTarget: (ArgumentPredicate) = { true },
             suggestions: ((ArgumentInfo) -> List<String>)? = null,
             isValid: ((ArgumentInfo) -> IsValidResult)? = null,
-            transformValue: ((ArgumentInfo) -> Any)? = { it.arg },
+            transformValue: ((ArgumentInfo) -> Any) = { it.arg },
         ) = Argument(
             key = key,
             isEnabled = isEnabled,

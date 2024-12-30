@@ -82,7 +82,7 @@ object ArgumentParser {
 
         @Suppress("UNCHECKED_CAST")
         var arguments = mutableListOf(topArgument) as MutableList<BaseArgument>
-        var headArgument = topArgument.command()
+        var headArgument = topArgument.command
         var errorArgumentOverflow = topArgument
         var values: HashMap<String, Any?> = HashMap()
 

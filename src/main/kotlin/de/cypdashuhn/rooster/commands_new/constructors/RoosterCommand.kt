@@ -3,9 +3,9 @@ package de.cypdashuhn.rooster.commands_new.constructors
 import org.bukkit.command.CommandSender
 
 abstract class RoosterCommand {
-    val labels: List<String>
-    val onStart: (CommandSender) -> Boolean
-    val key: String
+    internal val labels: List<String>
+    internal val onStart: (CommandSender) -> Boolean
+    private lateinit var key: String
 
     constructor(
         labels: List<String>,
@@ -29,6 +29,6 @@ abstract class RoosterCommand {
         this.key = key
     }
 
-    internal fun command() by lazy { content(Arguments.literal.single(key)) }
+    internal val command: Argument by lazy { content(Arguments.literal.single(key)) }
     abstract fun content(arg: UnfinishedArgument): Argument
 }
