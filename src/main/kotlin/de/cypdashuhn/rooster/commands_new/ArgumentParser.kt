@@ -5,6 +5,8 @@ import de.cypdashuhn.rooster.commands_new.constructors.BaseArgument
 import de.cypdashuhn.rooster.commands_new.constructors.InvokeInfo
 import de.cypdashuhn.rooster.core.Rooster.cache
 import de.cypdashuhn.rooster.core.Rooster.registeredRootArguments
+import de.cypdashuhn.rooster.localization.language
+import de.cypdashuhn.rooster.localization.transformMessage
 import org.bukkit.command.CommandSender
 
 object ArgumentParser {
@@ -130,10 +132,11 @@ object ArgumentParser {
                 values
             )
 
-            val currentTabCompletions: () -> List<String> = {
-                arguments
+            fun currentTabCompletions(): List<String> {
+                return arguments
                     .filter { (it.isEnabled == null || it.isEnabled!!(argumentInfo)) && it.suggestions != null }
                     .flatMap { it.suggestions!!(argumentInfo) }
+                    .map { transformMessage(it, sender.language()) }
             }
 
             val currentArgument = arguments.firstOrNull { arg -> arg.isTarget(argumentInfo) }
@@ -144,7 +147,7 @@ object ArgumentParser {
                         return ReturnResult(currentTabCompletions())
                     }
 
-                    ArgumentParser.CommandParseType.Invocation -> {
+                    CommandParseType.Invocation -> {
                         arguments.forEach { arg ->
                             arg.onMissing?.let {
                                 return ReturnResult(success = false) {
