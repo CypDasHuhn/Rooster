@@ -38,7 +38,7 @@ object InterfaceManager {
      * [targetInterface] for the given [player] applied with the current state
      * of the interface ([context]).
      */
-    fun <T : Context> openTargetInterface(player: Player, targetInterface: Interface<T>, context: T): Inventory {
+    fun <T : Context> openTargetInterface(,player: Player, targetInterface: Interface<T>, context: T): Inventory {
         Rooster.cache.put(CHANGES_INTERFACE_KEY, player, true)
 
         playerInterfaceMap[player] = targetInterface.interfaceName

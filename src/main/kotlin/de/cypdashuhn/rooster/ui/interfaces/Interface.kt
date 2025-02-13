@@ -41,4 +41,26 @@ abstract class Interface<T : Context>(
     fun getCurrentContext(player: Player): T? {
         return interfaceContextProvider.getContext(player, this)
     }
+
+    internal val currentInventorySize: MutableMap<Player, Int?> = mutableMapOf()
+    private var groupedMapBySize: MutableMap<Int, Map<Slot, List<InterfaceItem<T>>>?> = mutableMapOf()
+
+    internal fun groupedItems(player: Player, context: T): Map<Slot, List<InterfaceItem<T>>> {
+        val inventorySize = currentInventorySize[player] ?: getInventory(player, context).size
+        val grouping = groupedMapBySize[inventorySize]
+
+        return if (grouping != null) grouping else {
+            val map: MutableMap<Slot, MutableList<InterfaceItem<T>>> = mutableMapOf()
+            val allSlots = (0..<inventorySize).toList().toTypedArray()
+            items.forEach { item ->
+                val slots = if (item.slots.all) allSlots else item.slots.slots
+                slots.forEach { slot ->
+                    map.getOrPut(slot) { mutableListOf() }.add(item)
+                }
+            }
+
+            groupedMapBySize[inventorySize] = map
+            map
+        }
+    }
 }

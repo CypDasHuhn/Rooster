@@ -1,6 +1,5 @@
 package de.cypdashuhn.rooster.commands_new.constructors
 
-import de.cypdashuhn.rooster.commands.argument_constructors.ArgumentInfo
 import org.bukkit.command.CommandSender
 
 data class InvokeInfo(

@@ -1,8 +1,11 @@
 package de.cypdashuhn.rooster.commands_new.utility_constructors
 
+import de.cypdashuhn.rooster.commands_new.constructors.ArgumentInfo
 import de.cypdashuhn.rooster.commands_new.constructors.ArgumentPredicate
 import de.cypdashuhn.rooster.commands_new.constructors.IsValidResult
 import de.cypdashuhn.rooster.commands_new.constructors.UnfinishedArgument
+import org.jetbrains.exposed.sql.Column
+import org.jetbrains.exposed.sql.Table
 
 object ListArgument {
     fun single(
@@ -10,12 +13,12 @@ object ListArgument {
         list: List<String>,
         ignoreCase: Boolean = false,
         prefix: String = "",
-        notMatchingError: (de.cypdashuhn.rooster.commands.argument_constructors.ArgumentInfo, String) -> Unit,
+        notMatchingError: (ArgumentInfo, String) -> Unit,
         isEnabled: (ArgumentPredicate)? = { true },
         isTarget: (ArgumentPredicate)? = { true },
-        onMissing: (de.cypdashuhn.rooster.commands.argument_constructors.ArgumentInfo) -> Unit,
-        isValid: ((de.cypdashuhn.rooster.commands.argument_constructors.ArgumentInfo, String) -> IsValidResult)? = null,
-        transformValue: ((de.cypdashuhn.rooster.commands.argument_constructors.ArgumentInfo, String) -> Any)? = null
+        onMissing: (ArgumentInfo) -> Unit,
+        isValid: ((ArgumentInfo, String) -> IsValidResult)? = null,
+        transformValue: ((ArgumentInfo, String) -> Any)? = null
     ): UnfinishedArgument {
         return UnfinishedArgument(
             key = key,
@@ -51,24 +54,24 @@ object ListArgument {
         splitter: String = ",",
         allowDuplications: Boolean = false,
         ignoreCase: Boolean = true,
-        duplicationError: (de.cypdashuhn.rooster.commands.argument_constructors.ArgumentInfo, String) -> Unit = { _, _ ->
+        duplicationError: (ArgumentInfo, String) -> Unit = { _, _ ->
             throw IllegalArgumentException(
                 "Missing Duplication Error"
             )
         },
-        notMatchingError: (de.cypdashuhn.rooster.commands.argument_constructors.ArgumentInfo, String) -> Unit,
+        notMatchingError: (ArgumentInfo, String) -> Unit,
         isEnabled: (ArgumentPredicate)? = { true },
         isTarget: (ArgumentPredicate)? = { true },
-        onMissing: (de.cypdashuhn.rooster.commands.argument_constructors.ArgumentInfo) -> Unit,
-        isValid: ((de.cypdashuhn.rooster.commands.argument_constructors.ArgumentInfo, String) -> IsValidResult)? = null,
-        transformValue: ((de.cypdashuhn.rooster.commands.argument_constructors.ArgumentInfo, String) -> Any)? = null
+        onMissing: (ArgumentInfo) -> Unit,
+        isValid: ((ArgumentInfo, String) -> IsValidResult)? = null,
+        transformValue: ((ArgumentInfo, String) -> Any)? = null
     ): UnfinishedArgument {
         return UnfinishedArgument(
             key = key,
             isEnabled = isEnabled,
             isTarget = isTarget,
             onMissing = onMissing,
-            suggestions = { info: de.cypdashuhn.rooster.commands.argument_constructors.ArgumentInfo ->
+            suggestions = { info: ArgumentInfo ->
                 val arg = info.arg
                 val base = arg.substringBeforeLast(splitter)
                 val lastAfterSplit = arg.substringAfterLast(splitter)
@@ -85,10 +88,10 @@ object ListArgument {
                     filtered.map { "$base$splitter$it" }
                 }
             },
-            transformValue = { info: de.cypdashuhn.rooster.commands.argument_constructors.ArgumentInfo ->
+            transformValue = { info: ArgumentInfo ->
                 info.arg.split(splitter).map { if (transformValue != null) transformValue(info, it) else it }
             },
-            isValid = { info: de.cypdashuhn.rooster.commands.argument_constructors.ArgumentInfo ->
+            isValid = { info: ArgumentInfo ->
                 val values = info.arg.split(splitter)
 
                 values.groupBy { it }.forEach { group ->
@@ -112,5 +115,13 @@ object ListArgument {
                 IsValidResult.Valid()
             }
         )
+    }
+
+    fun db(
+        key: String,
+        table: Table,
+        column: Column<*>
+    ): UnfinishedArgument {
+        return UnfinishedArgument(key)
     }
 }
