@@ -2,14 +2,16 @@ package de.cypdashuhn.rooster.core
 
 import com.google.common.cache.CacheBuilder
 import de.cypdashuhn.rooster.RoosterCache
-import de.cypdashuhn.rooster.commands.Command
-import de.cypdashuhn.rooster.commands.Completer
-import de.cypdashuhn.rooster.commands.RoosterCommand
-import de.cypdashuhn.rooster.commands.argument_constructors.RootArgument
+import de.cypdashuhn.rooster.commands_new.Command
+import de.cypdashuhn.rooster.commands_new.Completer
+import de.cypdashuhn.rooster.commands_new.constructors.RoosterCommand
 import de.cypdashuhn.rooster.database.RoosterTable
 import de.cypdashuhn.rooster.database.initDatabase
 import de.cypdashuhn.rooster.database.utility_tables.PlayerManager
 import de.cypdashuhn.rooster.database.utility_tables.RoosterLambda
+import de.cypdashuhn.rooster.demo.DemoManager
+import de.cypdashuhn.rooster.demo.RoosterDemoManager
+import de.cypdashuhn.rooster.demo.RoosterDemoTable
 import de.cypdashuhn.rooster.listeners.RoosterListener
 import de.cypdashuhn.rooster.localization.LocaleProvider
 import de.cypdashuhn.rooster.localization.SqlLocaleProvider
@@ -17,9 +19,6 @@ import de.cypdashuhn.rooster.ui.context.InterfaceContextProvider
 import de.cypdashuhn.rooster.ui.context.SqlInterfaceContextProvider
 import de.cypdashuhn.rooster.ui.interfaces.Interface
 import de.cypdashuhn.rooster.ui.interfaces.RoosterInterface
-import de.cypdashuhn.rooster.demo.DemoManager
-import de.cypdashuhn.rooster.demo.RoosterDemoManager
-import de.cypdashuhn.rooster.demo.RoosterDemoTable
 import io.github.classgraph.ClassGraph
 import org.bukkit.Bukkit
 import org.bukkit.event.Listener
@@ -57,7 +56,7 @@ object Rooster {
     val pluginFolder: String by lazy { plugin.dataFolder.absolutePath }
     val roosterFolder: String by lazy { plugin.dataFolder.parentFile.resolve("Rooster").absolutePath }
 
-    val registeredRootArguments: MutableList<RootArgument> = mutableListOf()
+    val registeredRootArguments: MutableList<RoosterCommand> = mutableListOf()
     val registeredInterfaces: MutableList<Interface<*>> = mutableListOf()
     val registeredTables: MutableList<Table> = mutableListOf()
     val registeredDemoTables: MutableList<Table> = mutableListOf()
@@ -160,15 +159,15 @@ object Rooster {
                     }
                 }
 
+                /* Classes that Extend RoosterCommand */
                 scanResult
-                    .getClassesWithFieldAnnotation(RoosterCommand::class.qualifiedName)
+                    .getSubclasses(RoosterCommand::class.qualifiedName)
                     .forEach { classInfo ->
-                        classInfo.fieldInfo.forEach { fieldInfo ->
-                            val field = Class.forName(classInfo.name).getDeclaredField(fieldInfo.name)
-                            field.isAccessible = true
-                            val fieldValue = field.get(null)
-                            if (fieldValue is RootArgument) {
-                                registeredRootArguments.add(fieldValue)
+                        val clazz = Class.forName(classInfo.name)
+                        if (RoosterCommand::class.java.isAssignableFrom(clazz)) {
+                            val instance = clazz.getDeclaredConstructor().newInstance()
+                            if (instance is RoosterCommand) {
+                                registeredRootArguments.add(instance)
                             }
                         }
                     }

@@ -1,16 +1,19 @@
 package de.cypdashuhn.rooster.commands_new.constructors
 
+import de.cypdashuhn.rooster.localization.tSend
 import org.bukkit.command.CommandSender
 
 data class InvokeInfo(
     val sender: CommandSender,
-    val context: Map<String, Any>
+    val context: Map<String, Any?>
 )
 
 data class ArgumentInfo(
     val sender: CommandSender,
+    val args: Array<String>,
     val arg: String,
-    val context: Map<String, Any>
+    val index: Int,
+    val context: Map<String, Any?>
 )
 
 typealias ArgumentPredicate = (ArgumentInfo) -> Boolean
@@ -18,14 +21,14 @@ typealias ArgumentPredicate = (ArgumentInfo) -> Boolean
 abstract class BaseArgument(
     open var key: String,
     open var isEnabled: (ArgumentPredicate)? = { true },
-    open var isTarget: (ArgumentPredicate)? = { true },
+    open var isTarget: (ArgumentPredicate) = { true },
     open var suggestions: ((ArgumentInfo) -> List<String>)? = null,
-    open var onExecute: ((ArgumentInfo) -> Unit)? = null,
+    open var onExecute: ((InvokeInfo) -> Unit)? = null,
     open var followedBy: MutableList<BaseArgument>? = null,
     open var isValid: ((ArgumentInfo) -> IsValidResult)? = null,
     open var onMissing: ((ArgumentInfo) -> Unit)? = null,
     open var onMissingChild: ((ArgumentInfo) -> Unit)? = null,
-    open var transformValue: ((ArgumentInfo) -> Any)? = { it.arg },
+    open var transformValue: ((ArgumentInfo) -> Any) = { it.arg },
     open var isOptional: Boolean = false,
     open var onArgumentOverflow: ((ArgumentInfo) -> Unit)? = null,
     internal var internalLastChange: BaseArgument? = null
@@ -154,12 +157,14 @@ sealed class IsValidResult(
     class Invalid(error: ((ArgumentInfo) -> Unit)) : IsValidResult(false, error)
 }
 
+object TestCommand : RoosterCommand("Test") {
+    override fun content(arg: UnfinishedArgument): Argument {
+        return arg
+            .onExecute { it.sender.tSend("test") }
+            .followedBy(Arguments.literal.single("player"))
+            .followedBy(
+                Arguments.literal.single("branch1").followedBy(Arguments.literal.single("deeper")).onExecute { })
+            .or(Arguments.literal.single("branchTwo")).onExecute { }
+    }
 
-fun main() {
-    var builder = Arguments.literal.single("root")
-        .followedBy(Arguments.literal.single("player"))
-        .followedBy(Arguments.literal.single("branch1").followedBy(Arguments.literal.single("deeper")).onExecute { })
-        .or(Arguments.literal.single("branchTwo")).onExecute { }
-
-    val s = ""
 }

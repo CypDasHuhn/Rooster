@@ -4,8 +4,6 @@ import de.cypdashuhn.rooster.commands_new.constructors.ArgumentInfo
 import de.cypdashuhn.rooster.commands_new.constructors.ArgumentPredicate
 import de.cypdashuhn.rooster.commands_new.constructors.IsValidResult
 import de.cypdashuhn.rooster.commands_new.constructors.UnfinishedArgument
-import org.jetbrains.exposed.sql.Column
-import org.jetbrains.exposed.sql.Table
 
 object ListArgument {
     fun single(
@@ -15,10 +13,10 @@ object ListArgument {
         prefix: String = "",
         notMatchingError: (ArgumentInfo, String) -> Unit,
         isEnabled: (ArgumentPredicate)? = { true },
-        isTarget: (ArgumentPredicate)? = { true },
+        isTarget: (ArgumentPredicate) = { true },
         onMissing: (ArgumentInfo) -> Unit,
         isValid: ((ArgumentInfo, String) -> IsValidResult)? = null,
-        transformValue: ((ArgumentInfo, String) -> Any)? = null
+        transformValue: ((ArgumentInfo, String) -> Any)? = null,
     ): UnfinishedArgument {
         return UnfinishedArgument(
             key = key,
@@ -61,7 +59,7 @@ object ListArgument {
         },
         notMatchingError: (ArgumentInfo, String) -> Unit,
         isEnabled: (ArgumentPredicate)? = { true },
-        isTarget: (ArgumentPredicate)? = { true },
+        isTarget: (ArgumentPredicate) = { true },
         onMissing: (ArgumentInfo) -> Unit,
         isValid: ((ArgumentInfo, String) -> IsValidResult)? = null,
         transformValue: ((ArgumentInfo, String) -> Any)? = null
@@ -115,13 +113,5 @@ object ListArgument {
                 IsValidResult.Valid()
             }
         )
-    }
-
-    fun db(
-        key: String,
-        table: Table,
-        column: Column<*>
-    ): UnfinishedArgument {
-        return UnfinishedArgument(key)
     }
 }
