@@ -14,6 +14,10 @@ import org.bukkit.plugin.java.JavaPlugin
  * TODO: Add Doc Link
  */
 abstract class RoosterPlugin(private val pluginName: String) : JavaPlugin(), RoosterShell {
+    init {
+        Rooster.initServices()
+    }
+
     final override fun onEnable() {
         initializeRooster(this, pluginName)
     }

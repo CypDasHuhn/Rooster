@@ -7,7 +7,6 @@ import de.cypdashuhn.rooster.commands_new.Completer
 import de.cypdashuhn.rooster.commands_new.constructors.RoosterCommand
 import de.cypdashuhn.rooster.database.RoosterTable
 import de.cypdashuhn.rooster.database.initDatabase
-import de.cypdashuhn.rooster.database.utility_tables.PlayerManager
 import de.cypdashuhn.rooster.database.utility_tables.RoosterLambda
 import de.cypdashuhn.rooster.demo.DemoManager
 import de.cypdashuhn.rooster.demo.RoosterDemoManager
@@ -22,7 +21,6 @@ import de.cypdashuhn.rooster.ui.interfaces.RoosterInterface
 import io.github.classgraph.ClassGraph
 import org.bukkit.Bukkit
 import org.bukkit.event.Listener
-import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.plugin.java.JavaPlugin
 import org.jetbrains.exposed.sql.Table
 import java.lang.reflect.Method
@@ -45,7 +43,7 @@ object Rooster {
 
     fun runTask(task: () -> Unit) {
         if (!::plugin.isInitialized) {
-            throw IllegalStateException("Plugin is not initialized. Do not use the Logger before Rooster is initialized.")
+            throw IllegalStateException("Plugin is not initialized. Do not run tasks here before Rooster is initialized.")
         }
         Bukkit.getScheduler().runTask(plugin, Runnable { task() })
     }
@@ -64,32 +62,24 @@ object Rooster {
     val registeredListeners: MutableList<Listener> = mutableListOf()
     val registeredFunctions: MutableMap<String, Method> = mutableMapOf()
 
-    var beforePlayerJoin: ((PlayerJoinEvent) -> Unit)? = null
-    var onPlayerJoin: ((PlayerJoinEvent) -> Unit)? = null
-
     val cache = RoosterCache<String, Any>(
         CacheBuilder.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES)
     )
 
     var dynamicTables = mutableListOf<Table>()
 
-    internal lateinit var localeProvider: LocaleProvider
-    internal lateinit var interfaceContextProvider: InterfaceContextProvider
-    internal var playerManager: PlayerManager? = null
+    internal val localeProvider = RoosterServices.get<LocaleProvider>()
+    internal val interfaceContextProvider = RoosterServices.get<InterfaceContextProvider>()
+
+    fun initServices() {
+        RoosterServices.set(SqlLocaleProvider(mapOf("en_US" to Locale.ENGLISH), "en_US"))
+        RoosterServices.set(SqlInterfaceContextProvider())
+    }
 
     fun initialize(
         plugin: JavaPlugin,
         pluginName: String,
-        localeProvider: LocaleProvider = SqlLocaleProvider(mapOf("en_US" to Locale.ENGLISH), "en_US"),
-        interfaceContextProvider: InterfaceContextProvider = SqlInterfaceContextProvider(),
-        beforePlayerJoin: ((PlayerJoinEvent) -> Unit) = {},
-        onPlayerJoin: ((PlayerJoinEvent) -> Unit) = {},
     ) {
-        Rooster.beforePlayerJoin = beforePlayerJoin
-        Rooster.onPlayerJoin = onPlayerJoin
-        Rooster.localeProvider = localeProvider
-        Rooster.interfaceContextProvider = interfaceContextProvider
-
         Rooster.plugin = plugin
         this.pluginName = pluginName
         if (databasePath == null) databasePath = plugin.dataFolder.resolve("database.db").absolutePath

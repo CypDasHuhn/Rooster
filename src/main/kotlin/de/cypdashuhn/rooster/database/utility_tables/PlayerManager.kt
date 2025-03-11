@@ -1,6 +1,7 @@
 package de.cypdashuhn.rooster.database.utility_tables
 
-import de.cypdashuhn.rooster.core.Rooster
+import de.cypdashuhn.rooster.core.RoosterService
+import de.cypdashuhn.rooster.core.RoosterServices
 import de.cypdashuhn.rooster.database.utility_tables.PlayerManager.Players.uuid
 import de.cypdashuhn.rooster.util.uuid
 import org.bukkit.Bukkit
@@ -17,11 +18,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
  * call frequency exceeds API Limitations, or whatever else you'd like to
  * do.
  */
-class PlayerManager : UtilityDatabase(Players) {
-    init {
-        this.also { Rooster.playerManager = it }
-    }
-
+class PlayerManager : UtilityDatabase(Players), RoosterService {
     object Players : IntIdTable("RoosterPlayers") {
         val uuid = varchar("uuid", 36)
         val name = varchar("name", 16)
@@ -69,8 +66,9 @@ class PlayerManager : UtilityDatabase(Players) {
 
     companion object {
         fun Player.dbPlayer(): DbPlayer {
-            requireNotNull(Rooster.playerManager) { "Player Manager must be registered" }
-            return Rooster.playerManager!!.playerByUUID(this.uuid())!!
+            val playerManager = RoosterServices.getIfPresent<PlayerManager>()
+            requireNotNull(playerManager) { "Player Manager must be registered" }
+            return playerManager.playerByUUID(this.uuid())!!
         }
     }
 }

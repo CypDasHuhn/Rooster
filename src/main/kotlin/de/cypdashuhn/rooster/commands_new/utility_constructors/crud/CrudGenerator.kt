@@ -66,12 +66,3 @@ fun <E : IntEntity> generate(
 
     return arguments
 }
-
-fun test() {
-    val e = generate(
-        PlayerManager.Players.name,
-        PlayerManager.DbPlayer,
-        null,
-        CreateInfo({ argumentInfo, s, value -> })
-    )
-}

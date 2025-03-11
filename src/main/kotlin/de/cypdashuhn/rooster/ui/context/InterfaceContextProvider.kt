@@ -1,10 +1,11 @@
 package de.cypdashuhn.rooster.ui.context
 
+import de.cypdashuhn.rooster.core.RoosterService
 import de.cypdashuhn.rooster.ui.interfaces.Context
 import de.cypdashuhn.rooster.ui.interfaces.Interface
 import org.bukkit.entity.Player
 
-abstract class InterfaceContextProvider {
+abstract class InterfaceContextProvider : RoosterService() {
     /**
      * (Upsert) Saves a Context-Instance, with the keys player and interface
      * (recommended: PlayerUUID, InterfaceName)

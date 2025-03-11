@@ -65,10 +65,6 @@ interface RoosterShell {
         Rooster.initialize(
             plugin = plugin,
             pluginName = pluginName,
-            localeProvider = getLocaleProvider(),
-            interfaceContextProvider = getInterfaceContextProvider(),
-            beforePlayerJoin = ::beforePlayerJoin,
-            onPlayerJoin = ::onPlayerJoin
         )
         onInitialize()
     }
