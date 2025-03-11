@@ -1,4 +1,4 @@
-package de.cypdashuhn.rooster.localization
+package de.cypdashuhn.rooster.localization.provider
 
 import de.cypdashuhn.rooster.core.RoosterService
 import net.kyori.adventure.key.Key
@@ -6,10 +6,11 @@ import net.kyori.adventure.translation.GlobalTranslator
 import net.kyori.adventure.translation.TranslationRegistry
 import org.bukkit.entity.Player
 import java.util.*
-import java.util.Locale
+
+typealias Language = String
 
 abstract class LocaleProvider(open var locales: Map<Language, Locale>, open var defaultLocale: Language) :
-    RoosterService() {
+    RoosterService {
 
     protected abstract fun playerLanguage(player: Player): Language?
 
@@ -34,5 +35,3 @@ abstract class LocaleProvider(open var locales: Map<Language, Locale>, open var 
         GlobalTranslator.translator().addSource(registry)
     }
 }
-
-typealias Language = String

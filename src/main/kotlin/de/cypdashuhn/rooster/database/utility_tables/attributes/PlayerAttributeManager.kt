@@ -1,6 +1,6 @@
-package database.utility_tables.attributes
+package de.cypdashuhn.rooster.database.utility_tables.attributes
 
-import de.cypdashuhn.rooster.core.Rooster
+import de.cypdashuhn.rooster.core.RoosterServices
 import de.cypdashuhn.rooster.database.utility_tables.PlayerManager
 import de.cypdashuhn.rooster.database.utility_tables.PlayerManager.Companion.dbPlayer
 import org.bukkit.entity.Player
@@ -10,7 +10,8 @@ import org.jetbrains.exposed.sql.ReferenceOption
 
 class PlayerAttributeManager : AttributeManager<Player, EntityID<Int>>(PlayerAttributes) {
     init {
-        requireNotNull(Rooster.playerManager) { "Player Manager must be registered. Order matters, initialize the Player Manager before this one!" }
+        val playerManager = RoosterServices.getIfPresent<PlayerManager>()
+        requireNotNull(playerManager) { "Player Manager must be registered. Order matters, initialize the Player Manager before this one!" }
     }
 
     object PlayerAttributes : Attributes("RoosterPlayerAttributes") {

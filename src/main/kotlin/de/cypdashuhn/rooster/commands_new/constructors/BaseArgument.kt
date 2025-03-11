@@ -127,7 +127,7 @@ abstract class BaseArgument(
     }
 
 
-    fun onExecute(onExecute: ((ArgumentInfo) -> Unit)): Argument {
+    fun onExecute(onExecute: ((InvokeInfo) -> Unit)): Argument {
         return appendChange { it.onExecute = onExecute }.toArgument()
     }
 

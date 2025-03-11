@@ -1,16 +1,12 @@
 package de.cypdashuhn.rooster.localization
 
-import com.google.common.reflect.TypeToken
-import com.google.gson.Gson
 import de.cypdashuhn.rooster.core.Rooster.cache
 import de.cypdashuhn.rooster.core.Rooster.localeProvider
 import de.cypdashuhn.rooster.core.config.RoosterOptions
+import de.cypdashuhn.rooster.localization.provider.Language
 import net.kyori.adventure.text.TextComponent
-import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import java.io.InputStreamReader
-import java.nio.charset.StandardCharsets
 import java.util.concurrent.TimeUnit
 
 object Localization {
@@ -28,21 +24,29 @@ object Localization {
                     RoosterOptions.Warnings.LOCALIZATION_MISSING_LOCALE.warn(resourcePath)
                 }
 
-            val gson = Gson()
-            val type = object : TypeToken<Map<String, String>>() {}.type
-            val localization: Map<String, String> =
-                gson.fromJson(InputStreamReader(inputStream, StandardCharsets.UTF_8), type)
+            val localization = LocaleFileParser.parseLocalization(inputStream)
 
-            localization[messageKey] ?: RoosterOptions.Localization.DEFAULT_STRING.also {
-                RoosterOptions.Warnings.LOCALIZATION_MISSING_LOCALE.warn(messageKey to language)
-            }
+            val message = LocaleFileParser.getValueFromNestedMap(localization, messageKey)
+            if (message != null) return@get message
+
+            val roosterResourcePath = "/roosterLocales/${language.lowercase()}.json"
+            val roosterInputStream = javaClass.getResourceAsStream(roosterResourcePath)
+                ?: throw IllegalStateException("Rooster should've crashed")
+
+            val roosterLocalization = LocaleFileParser.parseLocalization(roosterInputStream)
+            val roosterMessage = LocaleFileParser.getValueFromNestedMap(roosterLocalization, messageKey)
+
+            if (roosterMessage != null) return@get roosterMessage
+
+            RoosterOptions.Warnings.LOCALIZATION_MISSING_LOCALE.warn(messageKey to language)
+            return@get RoosterOptions.Localization.DEFAULT_STRING
         }, 60, TimeUnit.MINUTES)
 
         for ((key, value) in replacements) {
             message = message.replace("\${$key}", value ?: "")
         }
 
-        return MiniMessage.miniMessage().deserialize(message) as TextComponent
+        return minimessage(message)
     }
 }
 
@@ -54,12 +58,12 @@ fun t(messageKey: String, player: Player, vararg replacements: Pair<String, Stri
     return Localization.getLocalizedMessage(localeProvider.getLanguage(player), messageKey, *replacements)
 }
 
-fun CommandSender.tSendWLanguage(messageKey: String, language: Language?, vararg replacements: Pair<String, String>) {
-    this.sendMessage(t(messageKey, language, *replacements))
-}
-
 fun CommandSender.tSend(messageKey: String, vararg replacements: Pair<String, String?>) {
     this.sendMessage(t(messageKey, this.language(), *replacements))
+}
+
+fun CommandSender.tString(messageKey: String, vararg replacements: Pair<String, String?>): String {
+    return t(messageKey, this.language(), *replacements).content()
 }
 
 fun CommandSender.language(): Language {
@@ -76,10 +80,6 @@ class Locale(var language: Language?) {
     fun tSend(sender: CommandSender, messageKey: String, vararg replacements: Pair<String, String?>) {
         sender.sendMessage(t(messageKey, *replacements))
     }
-}
-
-fun CommandSender.locale(): Locale {
-    return Locale(this.language())
 }
 
 fun t(messageKey: String, vararg replacements: Pair<String, String>): String {
@@ -104,7 +104,7 @@ fun decryptTranslatableMessage(message: String): Pair<String, Array<Pair<String,
         val (replacementKey, replacementValue) = it.split("<value>")
         replacementKey.drop("<key>".length) to replacementValue
     } else listOf()
-    return key to replacements.toTypedArray()
+    return key.drop(3) to replacements.toTypedArray()
 }
 
 fun translateLanguage(message: String, language: Language?, vararg replacements: Pair<String, String>): String {
@@ -112,17 +112,9 @@ fun translateLanguage(message: String, language: Language?, vararg replacements:
 }
 
 fun main() {
-    val language = "en"
+    val language = "en_us"
 
-    val r1 = t("test")
-    val r2 = t("test", "a" to "b")
-    val r5 = t("test", "a" to "b", "c" to "d")
+    val message = t("rooster.language.changed", language, "language" to "en_us")
 
-    val t1 = transformMessage(r1, language)
-    val t2 = transformMessage(r2, language)
-    val t3 = transformMessage("test", language)
-    val t4 = transformMessage("!<t>test", language)
-    val t5 = transformMessage(r5, language)
-
-    val s = ""
+    println(message.content())
 }

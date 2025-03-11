@@ -31,7 +31,8 @@ class Dependency<T : Context> private constructor(
         contextValue: UpdateValue<T>,
         fallback: () -> ItemStack
     ): ItemStack {
-
+        if (shouldUpdate(playerValue, slotValue, contextValue)) return fallback()
+        else return fallback() // todo: actually implement
     }
 
     internal fun dependencyKey(

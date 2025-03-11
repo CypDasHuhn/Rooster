@@ -18,7 +18,7 @@ import kotlin.reflect.KClass
 abstract class PageInterface<T : PageInterface.PageContext>(
     override val interfaceName: String,
     override val contextClass: KClass<T>,
-    /* Value between 1-5 (last row is bottom bar) */
+    /** Value between 1-5 (last row is bottom bar) */
     private val contentRowAmount: Int = 5
 ) : Interface<T>(interfaceName, contextClass) {
     companion object {

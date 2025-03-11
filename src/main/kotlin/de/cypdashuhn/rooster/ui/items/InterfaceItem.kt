@@ -63,7 +63,7 @@ open class InterfaceItem<T : Context> {
             return conditionMap.values.reduce { acc, condition -> acc and condition }
         }
     var itemStackCreator: (InterfaceInfo<T>) -> ItemStack
-    var priority: (InterfaceInfo<T>) -> Int
+    var priority: ((InterfaceInfo<T>) -> Int)?
     var action: (ClickInfo<T>) -> Unit
     var slots: Slots
 
@@ -71,7 +71,7 @@ open class InterfaceItem<T : Context> {
         conditionMap: Map<String, (InterfaceInfo<T>) -> Boolean>,
         itemStackCreator: (InterfaceInfo<T>) -> ItemStack,
         action: (ClickInfo<T>) -> Unit = {},
-        priority: (InterfaceInfo<T>) -> Int = { 0 }
+        priority: ((InterfaceInfo<T>) -> Int)? = null
     ) {
         this.conditionMap = conditionMap.toMutableMap()
         this.itemStackCreator = itemStackCreator
@@ -85,7 +85,7 @@ open class InterfaceItem<T : Context> {
         conditionKey: String = anonymousKey,
         itemStackCreator: (InterfaceInfo<T>) -> ItemStack,
         action: (ClickInfo<T>) -> Unit = {},
-        priority: (InterfaceInfo<T>) -> Int = { 0 }
+        priority: ((InterfaceInfo<T>) -> Int)? = null
     ) {
         conditionMap = mutableMapOf(conditionKey to condition)
         this.itemStackCreator = itemStackCreator
@@ -99,7 +99,7 @@ open class InterfaceItem<T : Context> {
         conditionKey: String = anonymousKey,
         itemStack: ItemStack,
         action: (ClickInfo<T>) -> Unit = {},
-        priority: (InterfaceInfo<T>) -> Int = { 0 }
+        priority: ((InterfaceInfo<T>) -> Int)? = null
     ) {
         conditionMap = mutableMapOf(conditionKey to condition)
         this.itemStackCreator = { itemStack }
@@ -114,7 +114,7 @@ open class InterfaceItem<T : Context> {
         conditionKey: String = anonymousKey,
         itemStackCreator: (InterfaceInfo<T>) -> ItemStack,
         action: (ClickInfo<T>) -> Unit = {},
-        priority: (InterfaceInfo<T>) -> Int = { 0 }
+        priority: ((InterfaceInfo<T>) -> Int)? = null
     ) {
         conditionMap = mutableMapOf(conditionKey to condition)
         this.itemStackCreator = itemStackCreator
@@ -129,7 +129,7 @@ open class InterfaceItem<T : Context> {
         conditionKey: String = anonymousKey,
         itemStack: ItemStack,
         action: (ClickInfo<T>) -> Unit = {},
-        priority: (InterfaceInfo<T>) -> Int = { 0 }
+        priority: ((InterfaceInfo<T>) -> Int)? = null
     ) {
         conditionMap = mutableMapOf(conditionKey to condition)
         this.itemStackCreator = { itemStack }
@@ -143,7 +143,7 @@ open class InterfaceItem<T : Context> {
         conditionMap: Map<String, (InterfaceInfo<T>) -> Boolean>,
         itemStackCreator: (InterfaceInfo<T>) -> ItemStack,
         action: (ClickInfo<T>) -> Unit = {},
-        priority: (InterfaceInfo<T>) -> Int = { 0 }
+        priority: ((InterfaceInfo<T>) -> Int)? = null
     ) {
         this.conditionMap = conditionMap.toMutableMap()
         this.itemStackCreator = itemStackCreator

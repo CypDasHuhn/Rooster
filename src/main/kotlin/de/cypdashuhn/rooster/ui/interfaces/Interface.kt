@@ -42,7 +42,7 @@ abstract class Interface<T : Context>(
         return interfaceContextProvider.getContext(player, this)
     }
 
-    internal val currentInventorySize: MutableMap<Player, Int?> = mutableMapOf()
+    private val currentInventorySize: MutableMap<Player, Int?> = mutableMapOf()
     private var groupedMapBySize: MutableMap<Int, Map<Slot, List<InterfaceItem<T>>>?> = mutableMapOf()
 
     internal fun groupedItems(player: Player, context: T): Map<Slot, List<InterfaceItem<T>>> {
