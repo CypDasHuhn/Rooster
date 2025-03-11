@@ -2,6 +2,8 @@ package de.cypdashuhn.rooster.simulator
 
 import be.seeseemelk.mockbukkit.MockBukkit
 import de.cypdashuhn.rooster.core.Rooster
+import de.cypdashuhn.rooster.core.RoosterServices
+import de.cypdashuhn.rooster.database.utility_tables.PlayerManager
 import de.cypdashuhn.rooster.simulator.commands.CommandSimulatorHandler
 import de.cypdashuhn.rooster.simulator.interfaces.InterfaceSimulatorHandler
 import de.cypdashuhn.rooster.ui.interfaces.Context
@@ -36,9 +38,12 @@ object Simulator {
         val player = server.addPlayer()
 
         val event = PlayerJoinEvent(player, Component.empty())
-        roosterSimulator.beforePlayerJoin(event)
-        Rooster.playerManager?.playerLogin(player)
-        roosterSimulator.onPlayerJoin(event)
+
+        RoosterServices.getIfPresent<PlayerManager>()?.let {
+            it.beforePlayerJoin(event)
+            it.playerLogin(event.player)
+            it.onPlayerJoin(event)
+        }
 
         this.player = player
         return player

@@ -32,7 +32,11 @@ open class RouterItem<T : Context, K : Context> : InterfaceItem<T> {
         targetInterface: Interface<K>,
         context: ((ClickInfo<T>) -> K?)? = null,
         furtherAction: (ClickInfo<T>) -> Unit = {},
-    ) : super(condition, itemStackCreator, routerAction(furtherAction, context, targetInterface))
+    ) : super(
+        condition = condition,
+        itemStackCreator = itemStackCreator,
+        action = routerAction(furtherAction, context, targetInterface)
+    )
 
     constructor(
         condition: (InterfaceInfo<T>) -> Boolean,
@@ -40,7 +44,11 @@ open class RouterItem<T : Context, K : Context> : InterfaceItem<T> {
         targetInterface: Interface<K>,
         context: ((ClickInfo<T>) -> K?)? = null,
         furtherAction: (ClickInfo<T>) -> Unit = {},
-    ) : super(condition, itemStack, routerAction(furtherAction, context, targetInterface))
+    ) : super(
+        condition = condition,
+        itemStack = itemStack,
+        action = routerAction(furtherAction, context, targetInterface)
+    )
 
     constructor(
         condition: Condition<T>,
@@ -48,6 +56,10 @@ open class RouterItem<T : Context, K : Context> : InterfaceItem<T> {
         targetInterface: Interface<K>,
         context: ((ClickInfo<T>) -> K?)? = null,
         furtherAction: (ClickInfo<T>) -> Unit = {},
-    ) : super(condition(), itemStack(), routerAction(furtherAction, context, targetInterface))
+    ) : super(
+        condition = condition(),
+        itemStackCreator = itemStack(),
+        action = routerAction(furtherAction, context, targetInterface)
+    )
 }
 

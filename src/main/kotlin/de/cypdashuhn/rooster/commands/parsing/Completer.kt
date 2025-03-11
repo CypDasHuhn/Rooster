@@ -1,4 +1,4 @@
-package de.cypdashuhn.rooster.commands_new
+package de.cypdashuhn.rooster.commands.parsing
 
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender

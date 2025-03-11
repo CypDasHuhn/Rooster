@@ -1,20 +1,65 @@
-package de.cypdashuhn.rooster.commands_new.constructors
+package de.cypdashuhn.rooster.commands
 
-import de.cypdashuhn.rooster.localization.tSend
 import org.bukkit.command.CommandSender
 
-data class InvokeInfo(
-    val sender: CommandSender,
-    val context: Map<String, Any?>
-)
+open class InvokeInfo(
+    open val sender: CommandSender,
+    open val context: CommandContext,
+    open val args: List<String>,
+) {
+    fun <T> arg(argType: TypedArgument<T>): T {
+        return when (val result = argType.value(sender, context)) {
+            is TypeResult.Success -> result.value
+            is TypeResult.Failure -> {
+                result.action()
+                throw result.exception
+            }
+        }
+    }
+
+    fun <T> arg(argTypes: List<TypedArgument<T>>): T {
+        for (argType in argTypes) {
+            val isLast = argTypes.last() == argType
+
+            if (!isLast) {
+                when (val result = argNullable(argType)) {
+                    is TypeResult.Success<*> -> return result
+                    is TypeResult.Failure<*> -> continue
+                }
+            }
+
+            return arg(argType)
+        }
+
+        throw IllegalStateException("Should not hit")
+    }
+
+    fun <T> argNullable(argType: TypedArgument<T>): T? {
+        return when (val result = argType.value(sender, context)) {
+            is TypeResult.Success -> result.value
+            is TypeResult.Failure -> return null
+        }
+    }
+
+    fun <T> argNullable(argTypes: List<TypedArgument<T>>): T? {
+        for (argType in argTypes) {
+            when (val result = argNullable(argType)) {
+                is TypeResult.Success<*> -> return result
+                is TypeResult.Failure<*> -> continue
+            }
+        }
+
+        return null
+    }
+}
 
 data class ArgumentInfo(
-    val sender: CommandSender,
-    val args: Array<String>,
+    override val sender: CommandSender,
+    override val args: List<String>,
     val arg: String,
     val index: Int,
-    val context: Map<String, Any?>
-)
+    override val context: CommandContext
+) : InvokeInfo(sender, context, args)
 
 typealias ArgumentPredicate = (ArgumentInfo) -> Boolean
 
@@ -33,7 +78,7 @@ abstract class BaseArgument(
     open var onArgumentOverflow: ((ArgumentInfo) -> Unit)? = null,
     internal var internalLastChange: BaseArgument? = null
 ) {
-    private fun toArgument(): Argument {
+    protected fun toArgument(): Argument {
         if (this is Argument) return this
         return if (isOptional) Argument.optional(
             key = key,
@@ -92,19 +137,24 @@ abstract class BaseArgument(
         ).also { it.internalLastChange = internalLastChange }
     }
 
-    private fun appendChange(changeArgument: (BaseArgument) -> Unit): BaseArgument {
-        var currentArgument: BaseArgument = this
-        var count = 0
-        while (true) {
-            if (currentArgument.followedBy == null) {
-                changeArgument(currentArgument)
-                this.internalLastChange = currentArgument
-                return this
-            } else {
-                currentArgument = currentArgument.followedBy!!.last()
+    fun displayPaths(): List<String> {
+        val paths = mutableListOf<String>()
+
+        fun traverse(node: BaseArgument, currentPath: String) {
+            val newPath = if (currentPath.isEmpty()) node.key else "$currentPath ${node.key}"
+
+            if (node.onExecute != null || node.followedBy == null) {
+                paths.add(newPath)
             }
-            if (count < 1000) count++ else throw IllegalStateException("Infinite Loop")
+
+            // Recursively traverse children if not null
+            node.followedBy?.forEach { child ->
+                traverse(child, newPath)
+            }
         }
+
+        traverse(this, "")
+        return paths
     }
 
     protected fun appendAtLastChange(changeArgument: (BaseArgument) -> Unit): BaseArgument {
@@ -146,25 +196,77 @@ abstract class BaseArgument(
     fun followedBy(vararg followedBy: Argument): Argument {
         return appendChange { it.followedBy = followedBy.toMutableList() }.toArgument()
     }
-}
 
-
-sealed class IsValidResult(
-    val isValid: Boolean,
-    val error: ((ArgumentInfo) -> Unit)? = null
-) {
-    class Valid : IsValidResult(true, null)
-    class Invalid(error: ((ArgumentInfo) -> Unit)) : IsValidResult(false, error)
-}
-
-object TestCommand : RoosterCommand("Test") {
-    override fun content(arg: UnfinishedArgument): Argument {
-        return arg
-            .onExecute { it.sender.tSend("test") }
-            .followedBy(Arguments.literal.single("player"))
-            .followedBy(
-                Arguments.literal.single("branch1").followedBy(Arguments.literal.single("deeper")).onExecute { })
-            .or(Arguments.literal.single("branchTwo")).onExecute { }
+    fun onMissing(onMissing: ((ArgumentInfo) -> Unit)?): Argument {
+        return appendChange { it.onMissing = onMissing }.toArgument()
     }
 
+    fun onMissingChild(onMissingChild: ((ArgumentInfo) -> Unit)?): Argument {
+        return appendChange { it.onMissingChild = onMissingChild }.toArgument()
+    }
+
+    fun onArgumentOverflow(onArgumentOverflow: ((ArgumentInfo) -> Unit)?): Argument {
+        return appendChange { it.onArgumentOverflow = onArgumentOverflow }.toArgument()
+    }
+
+    fun isValid(isValid: ((ArgumentInfo) -> IsValidResult)?): Argument {
+        return appendChange { it.isValid = isValid }.toArgument()
+    }
+
+    fun isEnabled(isEnabled: (ArgumentPredicate)?): Argument {
+        return appendChange { it.isEnabled = isEnabled }.toArgument()
+    }
+}
+
+internal fun <T : BaseArgument> T.appendChange(changeArgument: (BaseArgument) -> Unit): T {
+    var currentArgument: BaseArgument = this
+    var count = 0
+
+    while (currentArgument.followedBy != null) {
+        currentArgument = currentArgument.followedBy!!.last()
+        if (count++ >= 1000) {
+            throw IllegalStateException("Infinite Loop")
+        }
+    }
+    changeArgument(currentArgument)
+    this.internalLastChange = currentArgument
+    return this
+}
+
+fun List<BaseArgument>.eachOnExecute(onExecute: (InvokeInfo) -> Unit): List<Argument> {
+    return this.map {
+        it.onExecute(onExecute)
+    }
+}
+
+fun List<BaseArgument>.eachFollowedBy(followedBy: List<Argument>): List<Argument> {
+    return this.map { arg ->
+        arg.followedBy(followedBy)
+    }
+}
+
+fun List<BaseArgument>.eachFollowedBy(vararg followedBy: Argument): List<Argument> {
+    return eachFollowedBy(followedBy.toList())
+}
+
+fun List<BaseArgument>.eachFollowedBy(followedBy: UnfinishedArgument): List<UnfinishedArgument> {
+    return this.map {
+        it.followedBy(followedBy)
+    }
+}
+
+infix fun List<Argument>.or(followedBy: List<Argument>): List<Argument> {
+    return this + followedBy
+}
+
+infix fun List<Argument>.or(followedBy: UnfinishedArgument): List<UnfinishedArgument> {
+    return (this as List<BaseArgument> + followedBy as BaseArgument).map { it.toUnfinishedArgument() }
+}
+
+infix fun List<Argument>.or(followedBy: Argument): List<Argument> {
+    return this + followedBy
+}
+
+infix fun List<UnfinishedArgument>.or(followedBy: BaseArgument): List<UnfinishedArgument> {
+    return this + followedBy.toUnfinishedArgument()
 }

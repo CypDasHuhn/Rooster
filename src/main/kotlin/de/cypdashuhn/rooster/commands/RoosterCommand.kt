@@ -1,4 +1,4 @@
-package de.cypdashuhn.rooster.commands_new.constructors
+package de.cypdashuhn.rooster.commands
 
 import org.bukkit.command.CommandSender
 
@@ -29,6 +29,6 @@ abstract class RoosterCommand {
         this.key = key
     }
 
-    internal val command: Argument by lazy { content(Arguments.literal.single(key)) }
+    internal val command: Argument by lazy { content(Arguments.literal.single(key, isTarget = { true })) }
     abstract fun content(arg: UnfinishedArgument): Argument
 }

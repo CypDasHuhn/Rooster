@@ -1,17 +1,18 @@
-package de.cypdashuhn.rooster.commands_new.utility_constructors.bukkit
+package de.cypdashuhn.rooster.commands.constructors.bukkit
 
-import de.cypdashuhn.rooster.commands_new.constructors.UnfinishedArgument
-import de.cypdashuhn.rooster.commands_new.utility_constructors.ListArgument
+import de.cypdashuhn.rooster.commands.SimpleArgumentType
+import de.cypdashuhn.rooster.commands.UnfinishedArgument
+import de.cypdashuhn.rooster.commands.constructors.ListArgument
 import de.cypdashuhn.rooster.localization.tSend
 import org.bukkit.Bukkit
+import org.bukkit.entity.Player
 
 object PlayerArgument {
-
     fun single(
         key: String = "player",
-        notMatchingKey: String = "player_not_matching",
+        notMatchingKey: String = "rooster.player.not_matching_error",
         notMatchingArg: String = "player",
-        onMissingKey: String = "player_missing",
+        onMissingKey: String = "rooster.player.missing_error",
     ): UnfinishedArgument {
         return ListArgument.single(
             key = key,
@@ -21,11 +22,14 @@ object PlayerArgument {
         )
     }
 
+    class PlayerArgumentType(argument: UnfinishedArgument, argKey: String) :
+        SimpleArgumentType<Player>("Player", argument, argKey)
+
     fun multiple(
         key: String = "player",
-        notMatchingKey: String = "player_not_matching",
+        notMatchingKey: String = "rooster.player.not_matching_error",
         notMatchingArg: String = "player",
-        onMissingKey: String = "player_missing",
+        onMissingKey: String = "rooster.player.missing_error",
     ): UnfinishedArgument {
         return ListArgument.chainable(
             key = key,
@@ -34,4 +38,7 @@ object PlayerArgument {
             onMissing = { it.sender.tSend(onMissingKey) },
         )
     }
+
+    class PlayerListArgumentType(argument: UnfinishedArgument, argKey: String) :
+        SimpleArgumentType<List<Player>>("PlayerList", argument, argKey)
 }

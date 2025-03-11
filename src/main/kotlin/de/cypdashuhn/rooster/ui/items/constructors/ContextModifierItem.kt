@@ -79,7 +79,7 @@ open class ContextModifierItem<T : Context> : InterfaceItem<T> {
         slots = slots,
         condition = condition,
         itemStackCreator = itemStackCreator,
-        contextModifier = contextModifierAction(contextModifier, furtherAction),
+        action = contextModifierAction(contextModifier, furtherAction),
         priority = priority
     )
 

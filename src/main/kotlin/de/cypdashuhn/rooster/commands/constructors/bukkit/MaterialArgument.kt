@@ -1,16 +1,16 @@
-package de.cypdashuhn.rooster.commands_new.utility_constructors.bukkit
+package de.cypdashuhn.rooster.commands.constructors.bukkit
 
-import de.cypdashuhn.rooster.commands_new.constructors.UnfinishedArgument
-import de.cypdashuhn.rooster.commands_new.utility_constructors.ListArgument
+import de.cypdashuhn.rooster.commands.UnfinishedArgument
+import de.cypdashuhn.rooster.commands.constructors.ListArgument
 import de.cypdashuhn.rooster.localization.tSend
 import org.bukkit.Material
 
 object MaterialArgument {
     fun single(
         key: String = "material",
-        notMatchingKey: String = "material_not_matching",
+        notMatchingKey: String = "rooster.material.not_matching_error",
         notMatchingArg: String = "material",
-        onMissingKey: String = "material_missing",
+        onMissingKey: String = "rooster.material.missing_error",
         materialFilter: (Material) -> Boolean = { true }
     ): UnfinishedArgument {
         val materials = Material.entries.filter(materialFilter).map { it.name.lowercase() }
@@ -26,9 +26,9 @@ object MaterialArgument {
 
     fun multiple(
         key: String = "material",
-        notMatchingKey: String = "material_not_matching",
+        notMatchingKey: String = "rooster.material.not_matching_error",
         notMatchingArg: String = "material",
-        onMissingKey: String = "material_missing",
+        onMissingKey: String = "rooster.material.missing_error",
         materialFilter: (Material) -> Boolean = { true }
     ): UnfinishedArgument {
         val materials = Material.entries.filter(materialFilter).map { it.name.lowercase() }

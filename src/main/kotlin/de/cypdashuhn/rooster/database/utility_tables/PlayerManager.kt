@@ -6,19 +6,40 @@ import de.cypdashuhn.rooster.database.utility_tables.PlayerManager.Players.uuid
 import de.cypdashuhn.rooster.util.uuid
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerJoinEvent
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
+import kotlin.reflect.KClass
 
 /**
  * Not Completely Necessary. Use BukkitAPI instead. This manager is if your
  * call frequency exceeds API Limitations, or whatever else you'd like to
  * do.
  */
-class PlayerManager : UtilityDatabase(Players), RoosterService {
+class PlayerManager private constructor() : UtilityDatabase(Players), RoosterService {
+    internal var beforePlayerJoin: (PlayerJoinEvent) -> Unit = {}
+    internal var onPlayerJoin: (PlayerJoinEvent) -> Unit = {}
+
+    constructor(
+        beforePlayerJoin: (PlayerJoinEvent) -> Unit = {},
+        onPlayerJoin: (PlayerJoinEvent) -> Unit = {}
+    ) : this() {
+        this.beforePlayerJoin = beforePlayerJoin
+        this.onPlayerJoin = onPlayerJoin
+    }
+
+    fun beforePlayerJoin(event: (PlayerJoinEvent) -> Unit) {
+        beforePlayerJoin = event
+    }
+
+    fun onPlayerJoin(event: (PlayerJoinEvent) -> Unit) {
+        onPlayerJoin = event
+    }
+
     object Players : IntIdTable("RoosterPlayers") {
         val uuid = varchar("uuid", 36)
         val name = varchar("name", 16)
@@ -70,5 +91,9 @@ class PlayerManager : UtilityDatabase(Players), RoosterService {
             requireNotNull(playerManager) { "Player Manager must be registered" }
             return playerManager.playerByUUID(this.uuid())!!
         }
+    }
+
+    override fun targetClass(): KClass<out RoosterService> {
+        return PlayerManager::class
     }
 }

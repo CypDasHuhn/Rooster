@@ -1,4 +1,4 @@
-package de.cypdashuhn.rooster.commands_new.constructors
+package de.cypdashuhn.rooster.commands
 
 class Argument : BaseArgument {
     constructor(
@@ -13,6 +13,7 @@ class Argument : BaseArgument {
         onMissingChild: ((ArgumentInfo) -> Unit)? = null,
         transformValue: ((ArgumentInfo) -> Any) = { it.arg },
         onArgumentOverflow: ((ArgumentInfo) -> Unit)? = null,
+        toBeDeleted: Boolean = false
     ) : super(
         key = key,
         isEnabled = isEnabled,
@@ -133,5 +134,9 @@ class Argument : BaseArgument {
                 it.followedBy!!.add(alternative)
             }
         }.toUnfinishedArgument()
+    }
+
+    fun copy(): Argument {
+        return toArgument()
     }
 }

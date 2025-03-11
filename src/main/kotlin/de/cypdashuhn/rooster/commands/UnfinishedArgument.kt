@@ -1,6 +1,6 @@
-package de.cypdashuhn.rooster.commands_new.constructors
+package de.cypdashuhn.rooster.commands
 
-class UnfinishedArgument : BaseArgument {
+open class UnfinishedArgument : BaseArgument {
     constructor(
         key: String,
         isEnabled: (ArgumentPredicate)? = { true },
@@ -69,5 +69,9 @@ class UnfinishedArgument : BaseArgument {
                 transformValue = transformValue,
             )
         }
+    }
+
+    open fun copy(): UnfinishedArgument {
+        return toUnfinishedArgument()
     }
 }

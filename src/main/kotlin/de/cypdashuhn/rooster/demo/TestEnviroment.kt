@@ -1,43 +1,30 @@
 package de.cypdashuhn.rooster.demo
 
+import de.cypdashuhn.rooster.commands.Argument
+import de.cypdashuhn.rooster.commands.Arguments
 import de.cypdashuhn.rooster.commands.RoosterCommand
-import de.cypdashuhn.rooster.commands.argument_constructors.CentralArgument
-import de.cypdashuhn.rooster.commands.argument_constructors.CentralizedArgumentList
-import de.cypdashuhn.rooster.commands.argument_constructors.RootArgument
+import de.cypdashuhn.rooster.commands.UnfinishedArgument
 import de.cypdashuhn.rooster.core.Rooster
-import de.cypdashuhn.rooster.localization.tSend
 import de.cypdashuhn.rooster.ui.interfaces.Context
 import de.cypdashuhn.rooster.ui.interfaces.Interface
 import org.bukkit.entity.Player
 
-const val INTERFACE_KEY = "interface"
+object TestInterfacesCommand : RoosterCommand("testInterfaces") {
+    const val INTERFACE_KEY = "interface"
 
-@RoosterCommand
-val testInterfaces = RootArgument(
-    startingUnit = {
-        it is Player
-    },
-    label = "testInterface",
-    followingArguments = CentralizedArgumentList(
-        CentralArgument(
-            key = INTERFACE_KEY,
-            isValid = { argInfo ->
-                Rooster.registeredInterfaces.any { it.interfaceName == argInfo.arg } to {
-                    it.sender.tSend(
-                        "No such interface ${argInfo.arg}"
-                    )
-                }
-            },
-            tabCompletions = { argInfo ->
-                Rooster.registeredInterfaces.map { it.interfaceName }
-            },
-            argumentHandler = { argInfo -> Rooster.registeredInterfaces.first { it.interfaceName == argInfo.arg } },
-            errorMissing = { argInfo -> argInfo.sender.tSend("No such interface ${argInfo.arg}") },
-            invoke = {
-                val targetInterface = it.values[INTERFACE_KEY] as Interface<Context>
+    override fun content(arg: UnfinishedArgument): Argument {
+        return arg.followedBy(
+            Arguments.list.single(
+                key = INTERFACE_KEY,
+                list = Rooster.registeredInterfaces.map { it.interfaceName },
+                notMatchingError = { info, name -> info.sender.sendMessage("No such interface $name") },
+                onMissing = { info -> info.sender.sendMessage("Please specify an interface") },
+                transformValue = { _, name -> Rooster.registeredInterfaces.first { it.interfaceName == name } }
+            ).onExecute {
+                val targetInterface = it.context[INTERFACE_KEY] as Interface<Context>
                 val context = targetInterface.getContext(it.sender as Player)
-                targetInterface.openInventory(it.sender, context)
-            },
+                targetInterface.openInventory(it.sender as Player, context)
+            }
         )
-    )
-)
+    }
+}

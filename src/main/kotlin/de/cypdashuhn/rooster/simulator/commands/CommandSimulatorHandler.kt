@@ -1,7 +1,7 @@
 package de.cypdashuhn.rooster.simulator.commands
 
-import de.cypdashuhn.rooster.commands.ArgumentParser
-import de.cypdashuhn.rooster.commands.Completer.withStarting
+import de.cypdashuhn.rooster.commands.parsing.ArgumentParser
+import de.cypdashuhn.rooster.commands.parsing.Completer.withStarting
 import de.cypdashuhn.rooster.core.Rooster
 import de.cypdashuhn.rooster.simulator.Simulator
 
@@ -45,7 +45,7 @@ object CommandSimulatorHandler {
     fun command(command: String, type: ArgumentParser.CommandParseType): ArgumentParser.ReturnResult {
         val (label, args) = commandTokenized(command)
 
-        if (!Rooster.registeredRootArguments.any { it.labels.any { it.lowercase() == label.lowercase() }}) {
+        if (!Rooster.registeredRootArguments.any { it.labels.any { it.lowercase() == label.lowercase() } }) {
             println("Unknown command: $command")
             return ArgumentParser.ReturnResult()
         }

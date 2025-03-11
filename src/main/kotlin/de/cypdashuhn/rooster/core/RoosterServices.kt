@@ -3,21 +3,18 @@ package de.cypdashuhn.rooster.core
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KClass
 
-interface RoosterService
+interface RoosterService {
+    fun targetClass(): KClass<out RoosterService>
+}
 
 object RoosterServices {
 
     private val services: MutableMap<KClass<out RoosterService>, RoosterService> = mutableMapOf()
 
-    fun <T : RoosterService, S : T> set(clazz: KClass<T>, instance: S): S {
-        require(clazz.supertypes.any { it.classifier == RoosterService::class }) {
-            "Service class must directly extend RoosterService, but ${clazz.simpleName} does not."
-        }
-        services[clazz] = instance
+    fun <T : RoosterService> set(instance: T): T {
+        services[instance.targetClass()] = instance
         return instance
     }
-
-    inline fun <reified T : RoosterService> set(instance: T) = set(T::class, instance)
 
     fun <T : RoosterService> get(clazz: KClass<T>): T {
         return services[clazz] as? T ?: error("Service ${clazz.simpleName} not found.")
@@ -33,13 +30,10 @@ object RoosterServices {
 
     inline fun <reified T : RoosterService> delegate(): Delegate<T> = delegate(T::class)
 
-    fun <T : RoosterService, S : T> setDelegate(clazz: KClass<T>, instance: S): Delegate<T> {
-        set(clazz, instance)
-        return delegate(clazz)
+    fun <T : RoosterService> setDelegate(instance: T): Delegate<T> {
+        set(instance)
+        return delegate(instance::class)
     }
-
-    inline fun <reified T : RoosterService, S : T> setDelegate(instance: S): Delegate<T> =
-        setDelegate(T::class, instance)
 }
 
 typealias Delegate<T> = ReadOnlyProperty<Any?, T>

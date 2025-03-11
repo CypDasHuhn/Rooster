@@ -1,6 +1,5 @@
 package de.cypdashuhn.rooster.listeners
 
-import de.cypdashuhn.rooster.core.Rooster
 import de.cypdashuhn.rooster.core.RoosterServices
 import de.cypdashuhn.rooster.database.utility_tables.PlayerManager
 import org.bukkit.event.EventHandler
@@ -13,8 +12,9 @@ object PlayerJoinListener : Listener {
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
         RoosterServices.getIfPresent<PlayerManager>()?.let {
-            
+            it.beforePlayerJoin(event)
             it.playerLogin(event.player)
+            it.onPlayerJoin(event)
         }
     }
 }

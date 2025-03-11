@@ -1,8 +1,8 @@
-package de.cypdashuhn.rooster.commands_new.utility_constructors
+package de.cypdashuhn.rooster.commands.constructors
 
-import de.cypdashuhn.rooster.commands_new.constructors.ArgumentInfo
-import de.cypdashuhn.rooster.commands_new.constructors.IsValidResult
-import de.cypdashuhn.rooster.commands_new.constructors.UnfinishedArgument
+import de.cypdashuhn.rooster.commands.ArgumentInfo
+import de.cypdashuhn.rooster.commands.IsValidResult
+import de.cypdashuhn.rooster.commands.UnfinishedArgument
 import de.cypdashuhn.rooster.localization.t
 import de.cypdashuhn.rooster.localization.tSend
 import org.jetbrains.exposed.sql.*
@@ -16,7 +16,7 @@ object NameArgument {
     ): UnfinishedArgument {
         return UnfinishedArgument(
             key = key,
-            suggestions = { listOf(t("rooster.name_placeholder")) },
+            suggestions = { listOf(t("rooster.name.placeholder")) },
             isValid = isValid
         )
     }
@@ -24,12 +24,12 @@ object NameArgument {
     fun unique(
         usedNames: List<String>,
         key: String = "name",
-        uniqueErrorKey: String = "rooster.name_used",
+        uniqueErrorKey: String = "rooster.name.reserved_error",
         isValid: ((ArgumentInfo) -> IsValidResult)? = null
     ): UnfinishedArgument {
         return UnfinishedArgument(
             key = key,
-            suggestions = { listOf(t("rooster.name_placeholder")) },
+            suggestions = { listOf(t("rooster.name.placeholder")) },
             isValid = {
                 if (usedNames.contains(it.arg)) {
                     IsValidResult.Invalid { info -> info.sender.tSend(uniqueErrorKey) }
@@ -46,18 +46,19 @@ object NameArgument {
         extraQuery: Op<Boolean>? = null,
         isValid: ((ArgumentInfo) -> IsValidResult)? = null,
         key: String = "name",
-        uniqueErrorKey: String = "rooster.name_used"
+        uniqueErrorKey: String = "rooster.name.reserved_error",
+        nameArg: String = "name"
     ): UnfinishedArgument {
         return UnfinishedArgument(
             key = key,
-            suggestions = { listOf(t("rooster.name_placeholder")) },
+            suggestions = { listOf(t("rooster.name.placeholder")) },
             isValid = {
                 transaction {
                     var query = targetColumn eq it.arg
                     extraQuery?.let { query = query and it }
 
                     if (table.selectAll().where { query }.firstOrNull() != null) {
-                        IsValidResult.Invalid { info -> info.sender.tSend(uniqueErrorKey) }
+                        IsValidResult.Invalid { info -> info.sender.tSend(uniqueErrorKey, nameArg to it.arg) }
                     } else {
                         isValid?.invoke(it) ?: IsValidResult.Valid()
                     }

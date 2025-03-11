@@ -2,9 +2,9 @@ package de.cypdashuhn.rooster.core
 
 import com.google.common.cache.CacheBuilder
 import de.cypdashuhn.rooster.RoosterCache
-import de.cypdashuhn.rooster.commands_new.Command
-import de.cypdashuhn.rooster.commands_new.Completer
-import de.cypdashuhn.rooster.commands_new.constructors.RoosterCommand
+import de.cypdashuhn.rooster.commands.RoosterCommand
+import de.cypdashuhn.rooster.commands.parsing.Command
+import de.cypdashuhn.rooster.commands.parsing.Completer
 import de.cypdashuhn.rooster.database.RoosterTable
 import de.cypdashuhn.rooster.database.initDatabase
 import de.cypdashuhn.rooster.database.utility_tables.RoosterLambda
@@ -72,7 +72,7 @@ object Rooster {
     internal val interfaceContextProvider = RoosterServices.get<InterfaceContextProvider>()
 
     fun initServices() {
-        RoosterServices.set(SqlLocaleProvider(mapOf("en_US" to Locale.ENGLISH), "en_US"))
+        val s = RoosterServices.set(SqlLocaleProvider(mapOf("en_US" to Locale.ENGLISH), "en_US"))
         RoosterServices.set(SqlInterfaceContextProvider())
     }
 
