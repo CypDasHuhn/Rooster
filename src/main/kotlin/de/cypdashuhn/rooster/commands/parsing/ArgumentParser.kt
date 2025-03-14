@@ -91,7 +91,7 @@ object ArgumentParser {
             Rooster.registeredRootArguments.firstOrNull { arg -> arg.labels.any { it.lowercase() == label.lowercase() } }
         ) { "Root must be found, else command invocation wouldn't be possible" }
 
-        val continueArgument = topArgument.onStart(sender)
+        val continueArgument = topArgument.commandTarget.selector(sender) && topArgument.onStart(sender)
         if (!continueArgument) return errorWithoutInfo
 
         /* Prepends label to arguments
