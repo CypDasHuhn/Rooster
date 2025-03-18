@@ -28,7 +28,6 @@ class RoosterCache<K, V>(cacheBuilder: CacheBuilder<Any, Any>, corePoolSize: Int
     fun invalidateWithTimeout(key: K, sender: CommandSender? = null, clearTime: Long, unit: TimeUnit) {
         val typeKey = sender?.uniqueKey() ?: generalKey
 
-        // Schedule the cache invalidation
         scheduler.schedule({
             cache.invalidate(typeKey to key)
         }, clearTime, unit)

@@ -1,6 +1,8 @@
 package de.cypdashuhn.rooster.ui.interfaces
 
+import de.cypdashuhn.rooster.core.Rooster
 import de.cypdashuhn.rooster.core.Rooster.interfaceContextProvider
+import de.cypdashuhn.rooster.core.hasRoosterIgnore
 import de.cypdashuhn.rooster.ui.items.InterfaceItem
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryCloseEvent
@@ -12,13 +14,17 @@ import kotlin.reflect.KClass
  * ingredient is [getInterfaceItems], which get resolved dynamically. The
  * field [interfaceName] is the key connected to the particular Interface.
  */
-abstract class Interface<T : Context>(
+abstract class RoosterInterface<T : Context>(
     open val interfaceName: String,
     open val contextClass: KClass<T>,
     val cancelEvent: (ClickInfo<T>) -> Boolean = { true },
     val ignorePlayerInventory: Boolean = true,
     val ignoreEmptySlots: Boolean = true
 ) {
+    init {
+        if (!hasRoosterIgnore(this)) Rooster.registeredInterfaces += this
+    }
+
     val items
         get() = getInterfaceItems()
 

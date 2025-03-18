@@ -7,7 +7,7 @@ import de.cypdashuhn.rooster.database.utility_tables.PlayerManager
 import de.cypdashuhn.rooster.simulator.commands.CommandSimulatorHandler
 import de.cypdashuhn.rooster.simulator.interfaces.InterfaceSimulatorHandler
 import de.cypdashuhn.rooster.ui.interfaces.Context
-import de.cypdashuhn.rooster.ui.interfaces.Interface
+import de.cypdashuhn.rooster.ui.interfaces.RoosterInterface
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerJoinEvent
@@ -16,7 +16,7 @@ import org.bukkit.inventory.Inventory
 object Simulator {
     var currentInventory: Inventory? = null
     var currentContext: Context? = null
-    var currentInterface: Interface<Context>? = null
+    var currentInterface: RoosterInterface<Context>? = null
     var player: Player? = null
 
     fun initializeSimulator(roosterSimulator: RoosterSimulator): Player {
@@ -33,7 +33,6 @@ object Simulator {
         roosterSimulator.initializeRooster(plugin, roosterSimulator.pluginName)
 
         roosterSimulator.onInitialize()
-
 
         val player = server.addPlayer()
 

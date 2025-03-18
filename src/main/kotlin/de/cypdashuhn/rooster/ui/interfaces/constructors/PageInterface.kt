@@ -4,7 +4,7 @@ import de.cypdashuhn.rooster.core.config.RoosterOptions
 import de.cypdashuhn.rooster.listeners.ClickState
 import de.cypdashuhn.rooster.listeners.hasClicks
 import de.cypdashuhn.rooster.ui.interfaces.Context
-import de.cypdashuhn.rooster.ui.interfaces.Interface
+import de.cypdashuhn.rooster.ui.interfaces.RoosterInterface
 import de.cypdashuhn.rooster.ui.items.InterfaceItem
 import de.cypdashuhn.rooster.ui.items.Slots
 import de.cypdashuhn.rooster.ui.items.constructors.ContextModifierItem
@@ -20,7 +20,7 @@ abstract class PageInterface<T : PageInterface.PageContext>(
     override val contextClass: KClass<T>,
     /** Value between 1-5 (last row is bottom bar) */
     private val contentRowAmount: Int = 5
-) : Interface<T>(interfaceName, contextClass) {
+) : RoosterInterface<T>(interfaceName, contextClass) {
     companion object {
         const val PAGE_CONDITION_KEY = "page"
     }

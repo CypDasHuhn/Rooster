@@ -88,7 +88,7 @@ object ArgumentParser {
         val errorWithoutInfo = ReturnResult()
 
         val topArgument = requireNotNull(
-            Rooster.registeredRootArguments.firstOrNull { arg -> arg.labels.any { it.lowercase() == label.lowercase() } }
+            Rooster.registeredCommands.firstOrNull { arg -> arg.labels.any { it.lowercase() == label.lowercase() } }
         ) { "Root must be found, else command invocation wouldn't be possible" }
 
         val continueArgument = topArgument.commandTarget.selector(sender) && topArgument.onStart(sender)

@@ -24,7 +24,7 @@ object InterfaceManager {
     fun closeInterface(player: Player, event: InventoryCloseEvent) {
         playerInterfaceMap[player] = ""
 
-        val correspondingInterface = currentInterface(player) as Interface<Context>? ?: return
+        val correspondingInterface = currentInterface(player) as RoosterInterface<Context>? ?: return
 
         val context = correspondingInterface.getContext(player)
 
@@ -38,7 +38,7 @@ object InterfaceManager {
      * [targetInterface] for the given [player] applied with the current state
      * of the interface ([context]).
      */
-    fun <T : Context> openTargetInterface(player: Player, targetInterface: Interface<T>, context: T): Inventory {
+    fun <T : Context> openTargetInterface(player: Player, targetInterface: RoosterInterface<T>, context: T): Inventory {
         Rooster.cache.put(CHANGES_INTERFACE_KEY, player, true)
 
         playerInterfaceMap[player] = targetInterface.interfaceName
@@ -79,7 +79,7 @@ object InterfaceManager {
     }
 
     fun <T : Context> getInventory(
-        targetInventory: Interface<T>,
+        targetInventory: RoosterInterface<T>,
         context: T,
         player: Player
     ): Inventory {
@@ -95,7 +95,7 @@ object InterfaceManager {
         return inventory
     }
 
-    fun currentInterface(player: Player): Interface<*>? {
+    fun currentInterface(player: Player): RoosterInterface<*>? {
         val interfaceName = playerInterfaceMap[player] ?: return null
         if (interfaceName.isEmpty()) return null
 
@@ -119,11 +119,11 @@ object InterfaceManager {
     fun <T : Context> click(
         click: Click,
         inventoryClickEvent: InventoryClickEvent,
-        targetInterface: Interface<T>,
+        targetInterface: RoosterInterface<T>,
         player: Player
     ) {
         @Suppress("UNCHECKED_CAST")
-        val typedInterface = targetInterface as Interface<Context>
+        val typedInterface = targetInterface as RoosterInterface<Context>
 
         val context = typedInterface.getContext(player)
 

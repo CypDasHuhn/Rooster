@@ -6,7 +6,7 @@ import de.cypdashuhn.rooster.commands.RoosterCommand
 import de.cypdashuhn.rooster.commands.UnfinishedArgument
 import de.cypdashuhn.rooster.core.Rooster
 import de.cypdashuhn.rooster.ui.interfaces.Context
-import de.cypdashuhn.rooster.ui.interfaces.Interface
+import de.cypdashuhn.rooster.ui.interfaces.RoosterInterface
 import org.bukkit.entity.Player
 
 object TestInterfacesCommand : RoosterCommand("testInterfaces") {
@@ -21,7 +21,7 @@ object TestInterfacesCommand : RoosterCommand("testInterfaces") {
                 onMissing = { info -> info.sender.sendMessage("Please specify an interface") },
                 transformValue = { _, name -> Rooster.registeredInterfaces.first { it.interfaceName == name } }
             ).onExecute {
-                val targetInterface = it.context[INTERFACE_KEY] as Interface<Context>
+                val targetInterface = it.context[INTERFACE_KEY] as RoosterInterface<Context>
                 val context = targetInterface.getContext(it.sender as Player)
                 targetInterface.openInventory(it.sender as Player, context)
             }

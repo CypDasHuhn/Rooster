@@ -1,5 +1,7 @@
 package de.cypdashuhn.rooster.commands
 
+import de.cypdashuhn.rooster.core.Rooster
+import de.cypdashuhn.rooster.core.hasRoosterIgnore
 import de.cypdashuhn.rooster.util.isCommandBlock
 import de.cypdashuhn.rooster.util.isConsole
 import de.cypdashuhn.rooster.util.isMinecart
@@ -22,6 +24,11 @@ abstract class RoosterCommand {
     internal val onStart: (CommandSender) -> Boolean
     internal var commandTarget: CommandTarget
     private lateinit var key: String
+
+    init {
+        val s = ""
+        if (!hasRoosterIgnore(this)) Rooster.registeredCommands += this
+    }
 
     constructor(
         labels: List<String>,

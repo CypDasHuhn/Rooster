@@ -13,7 +13,7 @@ object _InterfaceManager {
     fun <T : Context> click(
         click: Click,
         inventoryClickEvent: InventoryClickEvent,
-        targetInterface: Interface<T>,
+        targetInterface: RoosterInterface<T>,
         player: Player
     ) {
         val context = targetInterface.getContext(player)
@@ -28,7 +28,7 @@ object _InterfaceManager {
     }
 
     fun <T : Context> getInventory(
-        targetInventory: Interface<T>,
+        targetInventory: RoosterInterface<T>,
         context: T,
         player: Player
     ): Inventory {
@@ -53,7 +53,7 @@ object _InterfaceManager {
     internal inline fun <reified T : Context> updateInventory(
         event: InventoryClickEvent,
         player: Player,
-        targetInterface: Interface<T>,
+        targetInterface: RoosterInterface<T>,
         oldContext: T,
         context: T,
     ) {
