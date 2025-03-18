@@ -27,7 +27,7 @@ abstract class RoosterCommand {
 
     init {
         val s = ""
-        if (!hasRoosterIgnore(this)) Rooster.registeredCommands += this
+        if (!hasRoosterIgnore(this)) Rooster.registered.commands += this
     }
 
     constructor(

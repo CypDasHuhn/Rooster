@@ -15,13 +15,13 @@ fun initDatabase(tables: List<Table>) {
     if (Rooster.databasePath == null) Rooster.databasePath =
         Rooster.plugin.dataFolder.resolve("database.db").absolutePath
 
-    Database.connect("jdbc:sqlite:$databasePath", "org.sqlite.JDBC")
+    Database.connect("jdbc:sqlite:${Rooster.databasePath}", "org.sqlite.JDBC")
 
     transaction {
         SchemaUtils.createMissingTablesAndColumns(*tables.toTypedArray())
     }
 }
 
-fun <T : IntEntity> IntEntityClass<T>.findEntry(query: Op<Boolean>): T {
+fun <T : IntEntity> IntEntityClass<T>.findEntry(query: Op<Boolean>): T? {
     return transaction { this@findEntry.find(query).firstOrNull() }
 }

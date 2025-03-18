@@ -46,7 +46,7 @@ object InterfaceSimulatorHandler {
         val interfaceName = command.split(" ").first()
 
         val targetInterface =
-            Rooster.registeredInterfaces
+            Rooster.registered.interfaces
                 .firstOrNull { it.interfaceName.equals(interfaceName, ignoreCase = true) } as RoosterInterface<Context>?
 
         if (targetInterface == null) {

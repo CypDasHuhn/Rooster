@@ -49,7 +49,7 @@ object Rooster {
     val pluginFolder: String by lazy { plugin.dataFolder.absolutePath }
     val roosterFolder: String by lazy { plugin.dataFolder.parentFile.resolve("Rooster").absolutePath }
 
-    val registered = object {
+    object registered {
         val commands: MutableList<RoosterCommand> = mutableListOf()
         val interfaces: MutableList<RoosterInterface<*>> = mutableListOf()
         val tables: MutableList<Table> = mutableListOf()
@@ -82,16 +82,16 @@ object Rooster {
             plugin.dataFolder.mkdirs()
         }
 
-        initDatabase(registeredTables)
+        initDatabase(registered.tables)
 
         // listeners
         val pluginManager = Bukkit.getPluginManager()
-        for (listener in registeredListeners) {
+        for (listener in registered.listeners) {
             pluginManager.registerEvents(listener, plugin)
         }
 
         // commands
-        registeredCommands.flatMap { it.labels }.forEach { label ->
+        registered.commands.flatMap { it.labels }.forEach { label ->
             plugin.getCommand(label)?.let {
                 it.setExecutor(Command)
                 it.tabCompleter = Completer

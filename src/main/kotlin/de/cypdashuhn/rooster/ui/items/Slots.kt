@@ -24,6 +24,4 @@ class Slots {
     companion object {
         fun all() = Slots()
     }
-
 }
-

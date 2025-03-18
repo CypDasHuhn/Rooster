@@ -11,7 +11,7 @@ class CRUDArgument<T : IntEntity>(
     entity: IntEntityClass<T>,
     displayField: Column<String>
 ) {
-    val newNameArgument = Arguments.names.unique(entity.table, displayField)
+    val newNameArgument = Arguments.names.unique(displayField)
     val nameArgument = Arguments.list.dbList(entity, displayField)
 
     fun arg(arg: UnfinishedArgument): Argument {

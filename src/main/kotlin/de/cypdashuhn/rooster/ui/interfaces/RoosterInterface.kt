@@ -22,7 +22,7 @@ abstract class RoosterInterface<T : Context>(
     val ignoreEmptySlots: Boolean = true
 ) {
     init {
-        if (!hasRoosterIgnore(this)) Rooster.registeredInterfaces += this
+        if (!hasRoosterIgnore(this)) Rooster.registered.interfaces += this
     }
 
     val items

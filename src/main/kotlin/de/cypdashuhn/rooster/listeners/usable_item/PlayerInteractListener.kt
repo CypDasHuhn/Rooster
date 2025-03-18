@@ -1,5 +1,6 @@
-package de.cypdashuhn.rooster.listeners
+package de.cypdashuhn.rooster.listeners.usable_item
 
+import de.cypdashuhn.rooster.listeners.RoosterListener
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractEvent
 

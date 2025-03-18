@@ -1,4 +1,4 @@
-package de.cypdashuhn.rooster.listeners
+package de.cypdashuhn.rooster.listeners.usable_item
 
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerInteractEvent

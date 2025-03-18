@@ -20,7 +20,8 @@ object InterfaceManager {
      * InventoryOpeningListener, which would else set it as empty.
      * This needs to be performed while changing between interfaces)
      */
-    var playerInterfaceMap = HashMap<Player, InterfaceName>()
+    private var playerInterfaceMap = HashMap<Player, InterfaceName>()
+
     fun closeInterface(player: Player, event: InventoryCloseEvent) {
         playerInterfaceMap[player] = ""
 
@@ -99,7 +100,7 @@ object InterfaceManager {
         val interfaceName = playerInterfaceMap[player] ?: return null
         if (interfaceName.isEmpty()) return null
 
-        return Rooster.registeredInterfaces
+        return Rooster.registered.interfaces
             .firstOrNull { currentInterface -> currentInterface.interfaceName == interfaceName }
     }
 

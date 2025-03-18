@@ -6,7 +6,9 @@ plugins {
 
 group = "de.cypdashuhn"
 description = "Rooster Framework"
-version = "1.0-SNAPSHOT"
+val roosterVersion: String by project
+version = roosterVersion
+val javaVersion: String by project
 
 repositories {
     mavenCentral()
@@ -55,32 +57,31 @@ tasks.test {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
+        languageVersion.set(JavaLanguageVersion.of(javaVersion))
     }
 }
 
 kotlin {
-    jvmToolchain(21)
-}
-
-tasks.withType<JavaCompile>() {
-    options.encoding = "UTF-8"
-}
-
-tasks.withType<Javadoc>() {
-    options.encoding = "UTF-8"
+    jvmToolchain(javaVersion.toInt())
 }
 
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
             from(components["java"])
-            groupId = "de.cypdashuhn"
+            groupId = group as String
             artifactId = "Rooster"
-            version = "1.0-SNAPSHOT"
+            version = version
         }
     }
     repositories {
         mavenLocal()
     }
+}
+
+tasks.withType<JavaCompile>() {
+    options.encoding = "UTF-8"
+}
+tasks.withType<Javadoc>() {
+    options.encoding = "UTF-8"
 }

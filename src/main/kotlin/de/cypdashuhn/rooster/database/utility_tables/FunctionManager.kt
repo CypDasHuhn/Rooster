@@ -28,7 +28,7 @@ class FunctionManager : UtilityDatabase(Functions) {
     }
 
     fun getFunction(key: String): Method? {
-        return Rooster.registeredFunctions[key]
+        return Rooster.registered.functions[key]
     }
 }
 

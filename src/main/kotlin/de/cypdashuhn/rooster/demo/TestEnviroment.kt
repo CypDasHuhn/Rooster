@@ -16,10 +16,10 @@ object TestInterfacesCommand : RoosterCommand("testInterfaces") {
         return arg.followedBy(
             Arguments.list.single(
                 key = INTERFACE_KEY,
-                list = Rooster.registeredInterfaces.map { it.interfaceName },
+                list = Rooster.registered.interfaces.map { it.interfaceName },
                 notMatchingError = { info, name -> info.sender.sendMessage("No such interface $name") },
                 onMissing = { info -> info.sender.sendMessage("Please specify an interface") },
-                transformValue = { _, name -> Rooster.registeredInterfaces.first { it.interfaceName == name } }
+                transformValue = { _, name -> Rooster.registered.interfaces.first { it.interfaceName == name } }
             ).onExecute {
                 val targetInterface = it.context[INTERFACE_KEY] as RoosterInterface<Context>
                 val context = targetInterface.getContext(it.sender as Player)

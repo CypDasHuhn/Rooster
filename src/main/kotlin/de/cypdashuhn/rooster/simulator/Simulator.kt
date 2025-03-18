@@ -28,7 +28,7 @@ object Simulator {
 
 
         roosterSimulator.beforeInitialize()
-        Rooster.dynamicTables.addAll(Rooster.registeredDemoTables)
+        //TODO: Yeah... Rooster.dynamicTables.addAll(Rooster.registeredDemoTables)
 
         roosterSimulator.initializeRooster(plugin, roosterSimulator.pluginName)
 

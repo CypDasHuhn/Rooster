@@ -38,7 +38,7 @@ class LocationManager : UtilityDatabase(Locations), RoosterService {
         companion object : IntEntityClass<Location>(Locations)
 
         var key by Locations.key
-        var data by Locations.data.transform()
+        var data: Any by Locations.data
 
         var x by Locations.x
         var y by Locations.y

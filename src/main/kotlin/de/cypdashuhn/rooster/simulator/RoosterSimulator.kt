@@ -23,8 +23,13 @@ abstract class RoosterSimulator(val pluginName: String = "demo") : RoosterShell 
         if (!preserveFolder) Simulator.deleteMockDirectory()
     }
 
-    final override fun initializeRooster(plugin: JavaPlugin, pluginName: String) {
-        super.initializeRooster(plugin, pluginName)
+    final override fun initializeRooster(
+        plugin: JavaPlugin,
+        pluginName: String,
+        version: String,
+        apiVersion: String
+    ) {
+        super.initializeRooster(plugin, pluginName, version, apiVersion)
         val directoryPath = Rooster.plugin.dataFolder.absolutePath
         val clickablePath =
             "file:///$directoryPath".replace("\\", "/")

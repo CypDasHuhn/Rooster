@@ -22,11 +22,16 @@ interface RoosterShell {
     fun onInitialize() {}
 
 
-    fun initializeRooster(plugin: JavaPlugin, pluginName: String) {
+    fun initializeRooster(
+        plugin: JavaPlugin,
+        pluginName: String,
+        version: String = "1.0.0",
+        apiVersion: String = "1.21.4"
+    ) {
         beforeInitialize()
         Rooster.initialize(
             plugin = plugin,
-            pluginName = pluginName,
+            pluginInfo = PluginInfo(pluginName, version, apiVersion),
         )
         onInitialize()
     }

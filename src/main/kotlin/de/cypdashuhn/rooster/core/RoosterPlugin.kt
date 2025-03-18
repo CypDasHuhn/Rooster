@@ -22,6 +22,10 @@ abstract class RoosterPlugin(private val pluginName: String) : JavaPlugin(), Roo
         initializeRooster(this, pluginName)
     }
 
-    final override fun initializeRooster(plugin: JavaPlugin, pluginName: String) =
-        super.initializeRooster(plugin, pluginName)
+    final override fun initializeRooster(
+        plugin: JavaPlugin,
+        pluginName: String,
+        version: String,
+        apiVersion: String
+    ) = super.initializeRooster(plugin, pluginName, version, apiVersion)
 }

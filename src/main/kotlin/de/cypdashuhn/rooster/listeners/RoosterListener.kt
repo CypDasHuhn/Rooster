@@ -6,6 +6,6 @@ import org.bukkit.event.Listener
 
 open class RoosterListener : Listener {
     init {
-        if (!hasRoosterIgnore(this)) Rooster.registeredListeners += this
+        if (!hasRoosterIgnore(this)) Rooster.registered.listeners += this
     }
 }
