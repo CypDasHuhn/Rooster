@@ -29,6 +29,22 @@ enum class ClickType(
     RIGHT_NORMAL_CLICK(false, MouseClickType.RIGHT)
 }
 
+fun InventoryClickEvent.mouseClickType(): MouseClickType {
+    return when {
+        isLeftClick -> MouseClickType.LEFT
+        isRightClick -> MouseClickType.RIGHT
+        else -> MouseClickType.MIDDLE
+    }
+}
+
+fun PlayerInteractEvent.mouseClickType(): MouseClickType {
+    return when {
+        this.action.isLeftClick -> MouseClickType.LEFT
+        this.action.isRightClick -> MouseClickType.RIGHT
+        else -> MouseClickType.MIDDLE
+    }
+}
+
 infix fun InventoryClickEvent.typeOf(clickType: ClickType): Boolean {
     return typeOf(clickType, allTrue = true)
 }
@@ -36,36 +52,27 @@ infix fun InventoryClickEvent.typeOf(clickType: ClickType): Boolean {
 fun InventoryClickEvent.typeOf(vararg clickTypes: ClickType, allTrue: Boolean): Boolean {
     val condition = { it: ClickType ->
         it.isShift == null || it.isShift == this.isShiftClick &&
-                it.isLeft == null || it.isLeft == this.isLeftClick
+                it.mouseClickType == null || it.mouseClickType == this.mouseClickType()
     }
     return if (allTrue) clickTypes.all(condition) else clickTypes.any(condition)
 }
 
 infix fun InventoryClickEvent.typeOf(clickTypes: List<ClickType>): Boolean {
-    return typeOf(clickTypes, allTrue = true)
+    return typeOf(clickTypes = clickTypes.toTypedArray(), allTrue = true)
 }
 
 infix fun PlayerInteractEvent.typeOf(clickType: ClickType) {
 
 }
 
-fun InventoryClickEvent.typeOf(vararg clickTypes: ClickType, allTrue: Boolean): Boolean {
+fun PlayerInteractEvent.typeOf(vararg clickTypes: ClickType, allTrue: Boolean): Boolean {
     val condition = { it: ClickType ->
-        it.isShift == null || it.isShift == this.isShiftClick &&
-                it.isLeft == null || it.isLeft == this.isLeftClick
+        it.isShift == null || it.isShift == this.player.isSneaking &&
+                it.mouseClickType == null || it.mouseClickType == this.mouseClickType()
     }
     return if (allTrue) clickTypes.all(condition) else clickTypes.any(condition)
 }
 
-infix fun InventoryClickEvent.typeOf(clickTypes: List<ClickType>): Boolean {
-    return typeOf(clickTypes, allTrue = true)
-}
-
-fun example() {
-    var event = InventoryClickEvent(null, null, null, null, null)
-
-    when {
-        event typeOf ClickType.LEFT_CLICK -> {}
-        event typeOf ClickType.RIGHT_CLICK -> {}
-    }
+infix fun PlayerInteractEvent.typeOf(clickTypes: List<ClickType>): Boolean {
+    return typeOf(clickTypes = clickTypes.toTypedArray(), allTrue = true)
 }
