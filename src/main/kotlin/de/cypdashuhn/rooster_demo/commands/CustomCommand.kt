@@ -7,7 +7,7 @@ import de.cypdashuhn.rooster.commands.UnfinishedArgument
 import de.cypdashuhn.rooster.util.isPlayer
 
 // /custom (example1|example2)
-object CustomCommand : RoosterCommand("custom") {
+object CustomCommand : RoosterCommand("custom-command") {
     override fun content(arg: UnfinishedArgument): Argument {
         val options = listOf("example1", "example2")
         val key = "exampleKey"
@@ -28,5 +28,4 @@ object CustomCommand : RoosterCommand("custom") {
             }
         )
     }
-
 }

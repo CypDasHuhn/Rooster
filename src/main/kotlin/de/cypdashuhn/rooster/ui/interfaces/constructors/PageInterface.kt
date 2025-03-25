@@ -1,8 +1,8 @@
 package de.cypdashuhn.rooster.ui.interfaces.constructors
 
 import de.cypdashuhn.rooster.core.config.RoosterOptions
-import de.cypdashuhn.rooster.listeners.ClickState
-import de.cypdashuhn.rooster.listeners.hasClicks
+import de.cypdashuhn.rooster.listeners.usable_item.ClickState
+import de.cypdashuhn.rooster.listeners.usable_item.hasClicks
 import de.cypdashuhn.rooster.ui.interfaces.Context
 import de.cypdashuhn.rooster.ui.interfaces.RoosterInterface
 import de.cypdashuhn.rooster.ui.items.InterfaceItem
@@ -10,7 +10,10 @@ import de.cypdashuhn.rooster.ui.items.Slots
 import de.cypdashuhn.rooster.ui.items.constructors.ContextModifierItem
 import de.cypdashuhn.rooster.util.createItem
 import net.kyori.adventure.text.Component
+import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.entity.Player
+import org.bukkit.inventory.Inventory
 import kotlin.reflect.KClass
 
 /** Generally unfinished in every aspect. just ignore! */
@@ -87,4 +90,10 @@ abstract class PageInterface<T : PageInterface.PageContext>(
 
         return baseItems
     }
+
+    override fun getInventory(player: Player, context: T): Inventory {
+        return Bukkit.createInventory(player, (contentRowAmount + 1) * 9, getInventoryName(player, context))
+    }
+
+    abstract fun getInventoryName(player: Player, context: T): String
 }

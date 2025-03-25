@@ -1,38 +1,15 @@
 package de.cypdashuhn.rooster.listeners.usable_item
 
+import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 
-/** Everything here is unfinished. Ignore! */
-
-typealias IsShift = Boolean
-typealias IsLeft = Boolean
-
-enum class ClickState(
-    val isShift: IsShift?,
-    val isLeft: IsLeft?
-) {
-    CLICK(null, null),
-    SHIFT_CLICK(true, null),
-    NORMAL_CLICK(false, null),
-    LEFT_CLICK(null, true),
-    RIGHT_CLICK(null, false),
-    LEFT_SHIFT_CLICK(true, true),
-    RIGHT_SHIFT_CLICK(true, false),
-    LEFT_NORMAL_CLICK(false, true),
-    RIGHT_NORMAL_CLICK(false, false)
-}
-
-private fun eventHasClicks(clickStates: Array<out ClickState>, isLeft: Boolean, isShift: Boolean): Boolean {
-    for (clickState in clickStates) {
-        if ((clickState.isShift == null || clickState.isShift == isShift) &&
-            (clickState.isLeft == null || clickState.isLeft == isLeft)
-        ) {
-            return true
-        }
+private fun eventHasClicks(clickStates: Array<out ClickType>, isLeft: Boolean, isShift: Boolean): Boolean {
+    return clickStates.any {
+        it.isShift == null || it.isShift == isShift &&
+                it.isLeft == null || it.isLeft == isLeft
     }
-    return false
 }
 
 fun PlayerInteractEvent.hasClicks(vararg clickStates: ClickState): Boolean {
@@ -46,13 +23,15 @@ fun InventoryClickEvent.hasClicks(vararg clickStates: ClickState): Boolean {
 class UsableItem() {
     lateinit var condition: (PlayerInteractEvent) -> Boolean
     lateinit var clickEffect: (PlayerInteractEvent) -> Unit
-    var itemGenerator: (() -> ItemStack)? = null
+    private var itemGenerator: (() -> ItemStack)? = null
+    val item
+        get() = itemGenerator!!()
     lateinit var subEffects: List<ItemEffect>
 
     constructor(
         condition: (PlayerInteractEvent) -> Boolean,
         clickEffect: (PlayerInteractEvent) -> Unit,
-        itemGenerator: (() -> ItemStack)? = null,
+        itemGenerator: (() -> ItemStack),
         vararg subEffects: ItemEffect
     ) : this() {
         this.condition = condition
@@ -71,6 +50,16 @@ class UsableItem() {
         this.clickEffect = clickEffect
         this.subEffects = subEffects.toList()
     }
+
+    constructor(
+        itemStack: ItemStack,
+        vararg subEffects: ItemEffect
+    ) : this() {
+        condition = { event -> event.item == itemStack }
+        itemGenerator = { itemStack }
+        this.clickEffect = {}
+        this.subEffects = subEffects.toList()
+    }
 }
 
 class ItemEffect() {
@@ -85,6 +74,15 @@ class ItemEffect() {
     ) : this() {
         this.condition = condition
         this.clickEffect = clickEffect
+        this.subEffects = subEffects.toList()
+    }
+
+    constructor(
+        condition: (PlayerInteractEvent) -> Boolean,
+        vararg subEffects: ItemEffect
+    ) : this() {
+        this.condition = condition
+        this.clickEffect = { }
         this.subEffects = subEffects.toList()
     }
 }
