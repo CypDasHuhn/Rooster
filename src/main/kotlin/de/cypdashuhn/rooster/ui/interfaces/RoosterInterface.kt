@@ -1,8 +1,6 @@
 package de.cypdashuhn.rooster.ui.interfaces
 
-import de.cypdashuhn.rooster.core.Rooster
 import de.cypdashuhn.rooster.core.Rooster.interfaceContextProvider
-import de.cypdashuhn.rooster.core.hasRoosterIgnore
 import de.cypdashuhn.rooster.ui.items.InterfaceItem
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryCloseEvent
@@ -21,10 +19,6 @@ abstract class RoosterInterface<T : Context>(
     val ignorePlayerInventory: Boolean = true,
     val ignoreEmptySlots: Boolean = true
 ) {
-    init {
-        if (!hasRoosterIgnore(this)) Rooster.registered.interfaces += this
-    }
-
     val items
         get() = getInterfaceItems()
 

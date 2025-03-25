@@ -5,6 +5,7 @@ import de.cypdashuhn.rooster.commands.IsValidResult
 import de.cypdashuhn.rooster.commands.RoosterCommand
 import de.cypdashuhn.rooster.commands.UnfinishedArgument
 import de.cypdashuhn.rooster.util.isPlayer
+import de.cypdashuhn.rooster_ksp_processor.RoosterIgnore
 
 // /custom (example1|example2)
 object CustomCommand : RoosterCommand("custom-command") {
@@ -28,4 +29,12 @@ object CustomCommand : RoosterCommand("custom-command") {
             }
         )
     }
+}
+
+@RoosterIgnore
+object TestCommand : RoosterCommand("test-command") {
+    override fun content(arg: UnfinishedArgument): Argument {
+        TODO("Not yet implemented")
+    }
+
 }

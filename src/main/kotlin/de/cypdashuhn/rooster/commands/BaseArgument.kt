@@ -224,7 +224,7 @@ abstract class BaseArgument(
     }
 
     fun byKey(key: String, s: () -> BaseArgument) {
-        
+
     }
 }
 

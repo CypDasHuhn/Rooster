@@ -1,12 +1,12 @@
 package de.cypdashuhn.rooster.ui.interfaces.constructors.indexed_content
 
-import de.cypdashuhn.rooster.listeners.ClickState
-import de.cypdashuhn.rooster.listeners.hasClicks
+import de.cypdashuhn.rooster.listeners.usable_item.hasClicks
 import de.cypdashuhn.rooster.ui.interfaces.Context
 import de.cypdashuhn.rooster.ui.interfaces.Slot
 import de.cypdashuhn.rooster.ui.items.InterfaceItem
 import de.cypdashuhn.rooster.ui.items.Slots
 import de.cypdashuhn.rooster.ui.items.constructors.ContextModifierItem
+import de.cypdashuhn.rooster.util.ClickType
 import de.cypdashuhn.rooster.util.createItem
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -28,8 +28,8 @@ abstract class GraphInterface<ContextType : GraphInterface.GraphContext, DataTyp
         contextModifier = { clickInfo ->
             clickInfo.context.also { context ->
                 val y = context.position.second
-                var scrollAmount = if (clickInfo.event.hasClicks(ClickState.SHIFT_CLICK)) 5 else 1
-                if (clickInfo.event.hasClicks(ClickState.LEFT_CLICK)) scrollAmount *= -1
+                var scrollAmount = if (clickInfo.event.hasClicks(ClickType.SHIFT_CLICK)) 5 else 1
+                if (clickInfo.event.hasClicks(ClickType.LEFT_CLICK)) scrollAmount *= -1
                 context.position = context.position.first to y + scrollAmount
             }
         }
@@ -43,8 +43,8 @@ abstract class GraphInterface<ContextType : GraphInterface.GraphContext, DataTyp
         contextModifier = { clickInfo ->
             clickInfo.context.also { context ->
                 val x = context.position.first
-                var scrollAmount = if (clickInfo.event.hasClicks(ClickState.SHIFT_CLICK)) 5 else 1
-                if (clickInfo.event.hasClicks(ClickState.LEFT_CLICK)) scrollAmount *= -1
+                var scrollAmount = if (clickInfo.event.hasClicks(ClickType.SHIFT_CLICK)) 5 else 1
+                if (clickInfo.event.hasClicks(ClickType.LEFT_CLICK)) scrollAmount *= -1
                 context.position = x + scrollAmount to context.position.second
             }
         }

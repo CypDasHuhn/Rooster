@@ -1,6 +1,7 @@
 plugins {
-    kotlin("jvm") version "1.9.23"
-    kotlin("plugin.serialization") version "1.9.23"
+    kotlin("jvm") version "2.1.20"
+    id("com.google.devtools.ksp") version "2.1.20-1.0.31"
+    kotlin("plugin.serialization") version "2.1.0"
     `maven-publish`
 }
 
@@ -46,6 +47,9 @@ dependencies {
 
     implementation("net.kyori:adventure-api:4.17.0")
     implementation("com.github.seeseemelk:MockBukkit-v1.21:3.127.1")
+
+    implementation(project(":rooster-ksp-processor"))
+    ksp(project(":rooster-ksp-processor"))
 
     // Uncomment when ready to use AnvilGUI
     // implementation("net.wesjd:anvilgui:1.9.4-SNAPSHOT")

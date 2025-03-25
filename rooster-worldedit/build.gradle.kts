@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "de.cypdashuhn"
-version = "1.0-SNAPSHOT"
+version = "0.0.1"
 val javaVersion: String by project
 
 repositories {

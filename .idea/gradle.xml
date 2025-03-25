@@ -5,11 +5,11 @@
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="gradleHome" value="$PROJECT_DIR$/../../../../Gradle/gradle-8.10" />
-        <option name="gradleJvm" value="graalvm-jdk-21" />
+        <option name="gradleHome" value="$PROJECT_DIR$/../../../../../Gradle/gradle-8.10" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/rooster-ksp-processor" />
             <option value="$PROJECT_DIR$/rooster-worldedit" />
           </set>
         </option>

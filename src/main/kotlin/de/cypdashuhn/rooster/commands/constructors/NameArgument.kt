@@ -2,23 +2,27 @@ package de.cypdashuhn.rooster.commands.constructors
 
 import de.cypdashuhn.rooster.commands.ArgumentInfo
 import de.cypdashuhn.rooster.commands.IsValidResult
+import de.cypdashuhn.rooster.commands.TypedArgument
 import de.cypdashuhn.rooster.commands.UnfinishedArgument
 import de.cypdashuhn.rooster.localization.t
 import de.cypdashuhn.rooster.localization.tSend
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.Column
+import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object NameArgument {
     fun simple(
         key: String = "name",
         isValid: ((ArgumentInfo) -> IsValidResult)? = null
-    ): UnfinishedArgument {
+    ): TypedArgument<String> {
         return UnfinishedArgument(
             key = key,
             suggestions = { listOf(t("rooster.name.placeholder")) },
             isValid = isValid
-        )
+        ).toTyped()
     }
 
     fun unique(
@@ -26,7 +30,7 @@ object NameArgument {
         key: String = "name",
         uniqueErrorKey: String = "rooster.name.reserved_error",
         isValid: ((ArgumentInfo) -> IsValidResult)? = null
-    ): UnfinishedArgument {
+    ): TypedArgument<String> {
         return UnfinishedArgument(
             key = key,
             suggestions = { listOf(t("rooster.name.placeholder")) },
@@ -37,7 +41,7 @@ object NameArgument {
                     isValid?.invoke(it) ?: IsValidResult.Valid()
                 }
             }
-        )
+        ).toTyped()
     }
 
     fun unique(
@@ -47,7 +51,7 @@ object NameArgument {
         key: String = "name",
         uniqueErrorKey: String = "rooster.name.reserved_error",
         nameArg: String = "name"
-    ): UnfinishedArgument {
+    ): TypedArgument<String> {
         return UnfinishedArgument(
             key = key,
             suggestions = { listOf(t("rooster.name.placeholder")) },
@@ -64,6 +68,6 @@ object NameArgument {
                     }
                 }
             }
-        )
+        ).toTyped()
     }
 }

@@ -3,3 +3,4 @@ plugins {
 }
 rootProject.name = "Rooster"
 include("rooster-worldedit")
+include("rooster-ksp-processor")

@@ -72,4 +72,8 @@ open class UnfinishedArgument : BaseArgument {
     open fun copy(): UnfinishedArgument {
         return toUnfinishedArgument()
     }
+
+    fun <T> toTyped(): TypedArgument<T> {
+        return SimpleArgumentType("Simple", this, this.key)
+    }
 }

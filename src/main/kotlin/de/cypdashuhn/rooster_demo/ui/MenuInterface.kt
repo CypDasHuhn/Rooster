@@ -1,7 +1,11 @@
 package de.cypdashuhn.rooster_demo.ui
 
+import de.cypdashuhn.rooster.ui.interfaces.Context
+import de.cypdashuhn.rooster.ui.interfaces.RoosterInterface
 import de.cypdashuhn.rooster.ui.interfaces.constructors.PageInterface
+import de.cypdashuhn.rooster.ui.items.InterfaceItem
 import org.bukkit.entity.Player
+import org.bukkit.inventory.Inventory
 
 object MenuInterface : PageInterface<MenuInterface.MenuContext>("", MenuContext::class) {
     class MenuContext(
@@ -25,4 +29,21 @@ object MenuInterface : PageInterface<MenuInterface.MenuContext>("", MenuContext:
     override fun defaultContext(player: Player): MenuContext {
         return MenuContext(0)
     }
+}
+
+class EmptyContext : Context()
+
+object TestInterface : RoosterInterface<EmptyContext>("", EmptyContext::class) {
+    override fun getInventory(player: Player, context: EmptyContext): Inventory {
+        TODO("Not yet implemented")
+    }
+
+    override fun getInterfaceItems(): List<InterfaceItem<EmptyContext>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun defaultContext(player: Player): EmptyContext {
+        TODO("Not yet implemented")
+    }
+
 }

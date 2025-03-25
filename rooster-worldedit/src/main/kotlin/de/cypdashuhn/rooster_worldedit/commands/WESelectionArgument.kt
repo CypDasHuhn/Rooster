@@ -23,7 +23,7 @@ object WESelectionArgument {
         val arg = Arguments.literal.single(
             name = name,
             key = key,
-            isEnabled = { (it.sender is Player) && (selectionNotPresentErrorKey != null || it.sender.worldEditSelection() != null) },
+            isEnabled = { (it.sender is Player) && (selectionNotPresentErrorKey != null || (it.sender as Player).worldEditSelection() != null) },
             isValid = {
                 if (selectionNotPresentErrorKey == null) IsValidResult.Valid()
                 else if ((it.sender as Player).worldEditSelection() == null) IsValidResult.Invalid { info ->
@@ -34,7 +34,7 @@ object WESelectionArgument {
                 else IsValidResult.Valid()
             },
             transformValue = {
-                val region = (it.sender as Player).worldEditSelection()!!.toRegion(it.sender)
+                val region = (it.sender as Player).worldEditSelection()!!.toRegion(it.sender as Player)
                 if (useMinCorner) region.min else region.max
             }
         )
@@ -52,7 +52,7 @@ object WESelectionArgument {
         val arg = Arguments.literal.single(
             name = name,
             key = key,
-            isEnabled = { (it.sender is Player) && (selectionNotPresentErrorKey != null || it.sender.worldEditSelection() != null) },
+            isEnabled = { (it.sender is Player) && (selectionNotPresentErrorKey != null || (it.sender as Player).worldEditSelection() != null) },
             isValid = {
                 if (selectionNotPresentErrorKey == null) IsValidResult.Valid()
                 else if ((it.sender as Player).worldEditSelection() == null) IsValidResult.Invalid { info ->
@@ -62,7 +62,7 @@ object WESelectionArgument {
                 }
                 else IsValidResult.Valid()
             },
-            transformValue = { (it.sender as Player).worldEditSelection()!!.toRegion(it.sender) }
+            transformValue = { (it.sender as Player).worldEditSelection()!!.toRegion(it.sender as Player) }
         )
 
         return WERegionArgumentType(arg, key)
