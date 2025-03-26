@@ -42,10 +42,10 @@ object LocaleFileParser {
 
         for (i in 0 until keys.size - 1) {
             val currentNode = currentMap[keys[i]]
-            if (currentNode == null || currentNodev.children.isEmpty()) {
+            if (currentNode == null || currentNode.children.isEmpty()) {
                 return null
             }
-            currentMap = currentNodev.children
+            currentMap = currentNode.children
         }
 
         return currentMap[keys.last()]?.value

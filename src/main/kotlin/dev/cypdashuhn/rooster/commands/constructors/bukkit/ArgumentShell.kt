@@ -1,8 +1,10 @@
 package dev.cypdashuhn.rooster.commands.constructors.bukkit
 
-import dev.cypdashuhn.rooster.commands.*
+import dev.cypdashuhn.rooster.commands.ArgumentInfo
+import dev.cypdashuhn.rooster.commands.SimpleArgumentType
+import dev.cypdashuhn.rooster.commands.playerMessage
 
-abstract class ArgumentShell <T> protected constructor(
+abstract class ArgumentShell<T> protected constructor(
     val defaultKey: String,
     val argumentName: String,
     val onMissingKey: String,

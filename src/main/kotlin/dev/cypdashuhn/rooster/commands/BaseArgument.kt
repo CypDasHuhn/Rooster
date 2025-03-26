@@ -78,9 +78,9 @@ abstract class BaseArgument(
     open var onArgumentOverflow: ((ArgumentInfo) -> Unit)? = null,
     internal var internalLastChange: BaseArgument? = null
 ) {
-    protected fun toArgument(): dev.cypdashuhn.rooster.commands.Argument {
-        if (this is dev.cypdashuhn.rooster.commands.Argument) return this
-        return if (isOptional) dev.cypdashuhn.rooster.commands.Argument.optional(
+    protected fun toArgument(): Argument {
+        if (this is Argument) return this
+        return if (isOptional) Argument.optional(
             key = key,
             isEnabled = isEnabled,
             isTarget = isTarget,
@@ -89,7 +89,7 @@ abstract class BaseArgument(
             transformValue = transformValue,
         ).also { it.internalLastChange = internalLastChange }
         else if (followedBy == null) {
-            dev.cypdashuhn.rooster.commands.Argument(
+            Argument(
                 key = key,
                 isEnabled = isEnabled,
                 isTarget = isTarget,
@@ -102,7 +102,7 @@ abstract class BaseArgument(
                 transformValue = transformValue,
             ).also { it.internalLastChange = internalLastChange }
         } else {
-            dev.cypdashuhn.rooster.commands.Argument(
+            Argument(
                 key = key,
                 isEnabled = isEnabled,
                 isTarget = isTarget,
@@ -174,11 +174,11 @@ abstract class BaseArgument(
     }
 
 
-    fun onExecute(onExecute: ((InvokeInfo) -> Unit)): dev.cypdashuhn.rooster.commands.Argument {
+    fun onExecute(onExecute: ((InvokeInfo) -> Unit)): Argument {
         return appendChange { it.onExecute = onExecute }.toArgument()
     }
 
-    fun followedBy(followedBy: List<dev.cypdashuhn.rooster.commands.Argument>): dev.cypdashuhn.rooster.commands.Argument {
+    fun followedBy(followedBy: List<Argument>): Argument {
         return appendChange { it.followedBy = followedBy.toMutableList() }.toArgument()
     }
 
@@ -186,31 +186,31 @@ abstract class BaseArgument(
         return appendChange { it.followedBy = mutableListOf(followedBy) } as UnfinishedArgument
     }
 
-    fun followedBy(followedBy: dev.cypdashuhn.rooster.commands.Argument): dev.cypdashuhn.rooster.commands.Argument {
+    fun followedBy(followedBy: Argument): Argument {
         return appendChange { it.followedBy = mutableListOf(followedBy) }.toArgument()
     }
 
-    fun followedBy(vararg followedBy: dev.cypdashuhn.rooster.commands.Argument): dev.cypdashuhn.rooster.commands.Argument {
+    fun followedBy(vararg followedBy: Argument): Argument {
         return appendChange { it.followedBy = followedBy.toMutableList() }.toArgument()
     }
 
-    fun onMissing(onMissing: ((ArgumentInfo) -> Unit)?): dev.cypdashuhn.rooster.commands.Argument {
+    fun onMissing(onMissing: ((ArgumentInfo) -> Unit)?): Argument {
         return appendChange { it.onMissing = onMissing }.toArgument()
     }
 
-    fun onMissingChild(onMissingChild: ((ArgumentInfo) -> Unit)?): dev.cypdashuhn.rooster.commands.Argument {
+    fun onMissingChild(onMissingChild: ((ArgumentInfo) -> Unit)?): Argument {
         return appendChange { it.onMissingChild = onMissingChild }.toArgument()
     }
 
-    fun onArgumentOverflow(onArgumentOverflow: ((ArgumentInfo) -> Unit)?): dev.cypdashuhn.rooster.commands.Argument {
+    fun onArgumentOverflow(onArgumentOverflow: ((ArgumentInfo) -> Unit)?): Argument {
         return appendChange { it.onArgumentOverflow = onArgumentOverflow }.toArgument()
     }
 
-    fun isValid(isValid: ((ArgumentInfo) -> IsValidResult)?): dev.cypdashuhn.rooster.commands.Argument {
+    fun isValid(isValid: ((ArgumentInfo) -> IsValidResult)?): Argument {
         return appendChange { it.isValid = isValid }.toArgument()
     }
 
-    fun isEnabled(isEnabled: (ArgumentPredicate)?): dev.cypdashuhn.rooster.commands.Argument {
+    fun isEnabled(isEnabled: (ArgumentPredicate)?): Argument {
         return appendChange { it.isEnabled = isEnabled }.toArgument()
     }
 
@@ -243,19 +243,19 @@ internal fun <T : BaseArgument> T.appendChange(changeArgument: (BaseArgument) ->
     return this
 }
 
-fun List<BaseArgument>.eachOnExecute(onExecute: (InvokeInfo) -> Unit): List<dev.cypdashuhn.rooster.commands.Argument> {
+fun List<BaseArgument>.eachOnExecute(onExecute: (InvokeInfo) -> Unit): List<Argument> {
     return this.map {
         it.onExecute(onExecute)
     }
 }
 
-fun List<BaseArgument>.eachFollowedBy(followedBy: List<dev.cypdashuhn.rooster.commands.Argument>): List<dev.cypdashuhn.rooster.commands.Argument> {
+fun List<BaseArgument>.eachFollowedBy(followedBy: List<Argument>): List<Argument> {
     return this.map { arg ->
         arg.followedBy(followedBy)
     }
 }
 
-fun List<BaseArgument>.eachFollowedBy(vararg followedBy: dev.cypdashuhn.rooster.commands.Argument): List<dev.cypdashuhn.rooster.commands.Argument> {
+fun List<BaseArgument>.eachFollowedBy(vararg followedBy: Argument): List<Argument> {
     return eachFollowedBy(followedBy.toList())
 }
 
@@ -265,15 +265,15 @@ fun List<BaseArgument>.eachFollowedBy(followedBy: UnfinishedArgument): List<Unfi
     }
 }
 
-infix fun List<dev.cypdashuhn.rooster.commands.Argument>.or(followedBy: List<dev.cypdashuhn.rooster.commands.Argument>): List<dev.cypdashuhn.rooster.commands.Argument> {
+infix fun List<Argument>.or(followedBy: List<Argument>): List<Argument> {
     return this + followedBy
 }
 
-infix fun List<dev.cypdashuhn.rooster.commands.Argument>.or(followedBy: UnfinishedArgument): List<UnfinishedArgument> {
+infix fun List<Argument>.or(followedBy: UnfinishedArgument): List<UnfinishedArgument> {
     return (this as List<BaseArgument> + followedBy as BaseArgument).map { it.toUnfinishedArgument() }
 }
 
-infix fun List<dev.cypdashuhn.rooster.commands.Argument>.or(followedBy: dev.cypdashuhn.rooster.commands.Argument): List<dev.cypdashuhn.rooster.commands.Argument> {
+infix fun List<Argument>.or(followedBy: Argument): List<Argument> {
     return this + followedBy
 }
 

@@ -31,7 +31,3 @@ class FunctionManager : UtilityDatabase(Functions) {
         return Rooster.registered.functions[key]
     }
 }
-
-@Target(AnnotationTarget.FUNCTION)
-@Retention(AnnotationRetention.RUNTIME)
-annotation class RoosterLambda(val key: String)

@@ -1,23 +1,32 @@
 package dev.cypdashuhn.rooster.listeners.usable_item
 
-import org.bukkit.event.inventory.ClickType
+import dev.cypdashuhn.rooster.util.ClickType
+import dev.cypdashuhn.rooster.util.MouseClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 
-private fun eventHasClicks(clickStates: Array<out ClickType>, isLeft: Boolean, isShift: Boolean): Boolean {
+private fun eventHasClicks(
+    clickStates: Array<out ClickType>,
+    mouseClickType: MouseClickType,
+    isShift: Boolean
+): Boolean {
     return clickStates.any {
         it.isShift == null || it.isShift == isShift &&
-                it.isLeft == null || it.isLeft == isLeft
+                it.mouseClickType == null || it.mouseClickType == mouseClickType
     }
 }
 
-fun PlayerInteractEvent.hasClicks(vararg clickStates: ClickState): Boolean {
-    return eventHasClicks(clickStates, this.action.isLeftClick, this.player.isSneaking)
+fun PlayerInteractEvent.hasClicks(vararg clickStates: ClickType): Boolean {
+    val clickType =
+        if (this.action.isRightClick) MouseClickType.RIGHT else if (this.action.isLeftClick) MouseClickType.LEFT else MouseClickType.MIDDLE
+    return eventHasClicks(clickStates, clickType, this.player.isSneaking)
 }
 
-fun InventoryClickEvent.hasClicks(vararg clickStates: ClickState): Boolean {
-    return eventHasClicks(clickStates, this.isLeftClick, this.isShiftClick)
+fun InventoryClickEvent.hasClicks(vararg clickStates: ClickType): Boolean {
+    val clickType =
+        if (this.isRightClick) MouseClickType.RIGHT else if (this.isLeftClick) MouseClickType.LEFT else MouseClickType.MIDDLE
+    return eventHasClicks(clickStates, clickType, this.isShiftClick)
 }
 
 class UsableItem() {

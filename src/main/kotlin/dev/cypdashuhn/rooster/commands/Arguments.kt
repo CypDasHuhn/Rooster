@@ -20,7 +20,7 @@ object Arguments {
     val player = PlayerArgument
     val location = LocationArgument
 
-    fun branch(map: Map<String, dev.cypdashuhn.rooster.commands.Argument>): List<dev.cypdashuhn.rooster.commands.Argument> {
+    fun branch(map: Map<String, Argument>): List<Argument> {
         return map.map { (key, arg) ->
             literal.single(key).followedBy(arg)
         }

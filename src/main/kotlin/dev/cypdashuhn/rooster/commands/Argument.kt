@@ -1,17 +1,17 @@
 package dev.cypdashuhn.rooster.commands
 
-class Argument : _root_ide_package_.dev.cypdashuhn.rooster.commands.BaseArgument {
+class Argument : BaseArgument {
     constructor(
         key: String,
-        isEnabled: (_root_ide_package_.dev.cypdashuhn.rooster.commands.ArgumentPredicate)? = { true },
-        isTarget: (_root_ide_package_.dev.cypdashuhn.rooster.commands.ArgumentPredicate) = { true },
-        suggestions: ((_root_ide_package_.dev.cypdashuhn.rooster.commands.ArgumentInfo) -> List<String>)? = null,
-        onExecute: (_root_ide_package_.dev.cypdashuhn.rooster.commands.InvokeInfo) -> Unit,
+        isEnabled: (ArgumentPredicate)? = { true },
+        isTarget: (ArgumentPredicate) = { true },
+        suggestions: ((ArgumentInfo) -> List<String>)? = null,
+        onExecute: (InvokeInfo) -> Unit,
         followedBy: List<Argument>? = null,
-        isValid: ((_root_ide_package_.dev.cypdashuhn.rooster.commands.ArgumentInfo) -> IsValidResult)? = null,
-        onMissing: ((_root_ide_package_.dev.cypdashuhn.rooster.commands.ArgumentInfo) -> Unit)? = null,
-        onMissingChild: ((_root_ide_package_.dev.cypdashuhn.rooster.commands.ArgumentInfo) -> Unit)? = null,
-        transformValue: ((_root_ide_package_.dev.cypdashuhn.rooster.commands.ArgumentInfo) -> Any) = { it.arg },
+        isValid: ((ArgumentInfo) -> IsValidResult)? = null,
+        onMissing: ((ArgumentInfo) -> Unit)? = null,
+        onMissingChild: ((ArgumentInfo) -> Unit)? = null,
+        transformValue: ((ArgumentInfo) -> Any) = { it.arg },
         toBeDeleted: Boolean = false
     ) : super(
         key = key,
@@ -29,15 +29,15 @@ class Argument : _root_ide_package_.dev.cypdashuhn.rooster.commands.BaseArgument
 
     constructor(
         key: String,
-        isEnabled: (_root_ide_package_.dev.cypdashuhn.rooster.commands.ArgumentPredicate)? = { true },
-        isTarget: (_root_ide_package_.dev.cypdashuhn.rooster.commands.ArgumentPredicate) = { true },
-        suggestions: ((_root_ide_package_.dev.cypdashuhn.rooster.commands.ArgumentInfo) -> List<String>)? = null,
-        onExecute: ((_root_ide_package_.dev.cypdashuhn.rooster.commands.InvokeInfo) -> Unit)? = null,
+        isEnabled: (ArgumentPredicate)? = { true },
+        isTarget: (ArgumentPredicate) = { true },
+        suggestions: ((ArgumentInfo) -> List<String>)? = null,
+        onExecute: ((InvokeInfo) -> Unit)? = null,
         followedBy: List<Argument>,
-        isValid: ((_root_ide_package_.dev.cypdashuhn.rooster.commands.ArgumentInfo) -> IsValidResult)? = null,
-        onMissing: ((_root_ide_package_.dev.cypdashuhn.rooster.commands.ArgumentInfo) -> Unit)? = null,
-        onMissingChild: ((_root_ide_package_.dev.cypdashuhn.rooster.commands.ArgumentInfo) -> Unit)? = null,
-        transformValue: ((_root_ide_package_.dev.cypdashuhn.rooster.commands.ArgumentInfo) -> Any) = { it.arg },
+        isValid: ((ArgumentInfo) -> IsValidResult)? = null,
+        onMissing: ((ArgumentInfo) -> Unit)? = null,
+        onMissingChild: ((ArgumentInfo) -> Unit)? = null,
+        transformValue: ((ArgumentInfo) -> Any) = { it.arg },
     ) : super(
         key = key,
         isEnabled = isEnabled,
@@ -54,11 +54,11 @@ class Argument : _root_ide_package_.dev.cypdashuhn.rooster.commands.BaseArgument
 
     private constructor(
         key: String,
-        isEnabled: (_root_ide_package_.dev.cypdashuhn.rooster.commands.ArgumentPredicate)? = { true },
-        isTarget: (_root_ide_package_.dev.cypdashuhn.rooster.commands.ArgumentPredicate) = { true },
-        suggestions: ((_root_ide_package_.dev.cypdashuhn.rooster.commands.ArgumentInfo) -> List<String>)? = null,
-        isValid: ((_root_ide_package_.dev.cypdashuhn.rooster.commands.ArgumentInfo) -> IsValidResult)? = null,
-        transformValue: ((_root_ide_package_.dev.cypdashuhn.rooster.commands.ArgumentInfo) -> Any) = { it.arg },
+        isEnabled: (ArgumentPredicate)? = { true },
+        isTarget: (ArgumentPredicate) = { true },
+        suggestions: ((ArgumentInfo) -> List<String>)? = null,
+        isValid: ((ArgumentInfo) -> IsValidResult)? = null,
+        transformValue: ((ArgumentInfo) -> Any) = { it.arg },
     ) : super(
         key = key,
         isEnabled = isEnabled,
@@ -77,11 +77,11 @@ class Argument : _root_ide_package_.dev.cypdashuhn.rooster.commands.BaseArgument
     internal companion object {
         fun optional(
             key: String,
-            isEnabled: (_root_ide_package_.dev.cypdashuhn.rooster.commands.ArgumentPredicate)? = { true },
-            isTarget: (_root_ide_package_.dev.cypdashuhn.rooster.commands.ArgumentPredicate) = { true },
-            suggestions: ((_root_ide_package_.dev.cypdashuhn.rooster.commands.ArgumentInfo) -> List<String>)? = null,
-            isValid: ((_root_ide_package_.dev.cypdashuhn.rooster.commands.ArgumentInfo) -> IsValidResult)? = null,
-            transformValue: ((_root_ide_package_.dev.cypdashuhn.rooster.commands.ArgumentInfo) -> Any) = { it.arg },
+            isEnabled: (ArgumentPredicate)? = { true },
+            isTarget: (ArgumentPredicate) = { true },
+            suggestions: ((ArgumentInfo) -> List<String>)? = null,
+            isValid: ((ArgumentInfo) -> IsValidResult)? = null,
+            transformValue: ((ArgumentInfo) -> Any) = { it.arg },
         ) = Argument(
             key = key,
             isEnabled = isEnabled,

@@ -1,13 +1,13 @@
 package dev.cypdashuhn.rooster.ui.interfaces.constructors
 
 import dev.cypdashuhn.rooster.core.config.RoosterOptions
-import dev.cypdashuhn.rooster.listeners.usable_item.ClickState
 import dev.cypdashuhn.rooster.listeners.usable_item.hasClicks
 import dev.cypdashuhn.rooster.ui.interfaces.Context
 import dev.cypdashuhn.rooster.ui.interfaces.RoosterInterface
 import dev.cypdashuhn.rooster.ui.items.InterfaceItem
 import dev.cypdashuhn.rooster.ui.items.Slots
 import dev.cypdashuhn.rooster.ui.items.constructors.ContextModifierItem
+import dev.cypdashuhn.rooster.util.ClickType
 import dev.cypdashuhn.rooster.util.createItem
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
@@ -44,7 +44,7 @@ abstract class PageInterface<T : PageInterface.PageContext>(
         itemStack = createItem(Material.COMPASS, name = Component.empty()),
         contextModifier = { clickInfo ->
             clickInfo.context.also {
-                if (clickInfo.event.hasClicks(ClickState.LEFT_CLICK)) it.page += 1
+                if (clickInfo.event.hasClicks(ClickType.LEFT_CLICK)) it.page += 1
                 else it.page -= 1
             }.also { if (it.page < 0) it.page = 0 }
         }

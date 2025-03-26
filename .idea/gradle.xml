@@ -9,8 +9,10 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/rooster-ksp-processor" />
-            <option value="$PROJECT_DIR$/rooster-worldedit" />
+            <option value="$PROJECT_DIR$/demo-plugin" />
+            <option value="$PROJECT_DIR$/generator" />
+            <option value="$PROJECT_DIR$/simulator" />
+            <option value="$PROJECT_DIR$/worldedit" />
           </set>
         </option>
       </GradleProjectSettings>

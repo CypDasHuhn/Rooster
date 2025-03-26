@@ -2,8 +2,6 @@ package dev.cypdashuhn.rooster.ui.interfaces
 
 import dev.cypdashuhn.rooster.*
 import dev.cypdashuhn.rooster.core.Rooster
-import dev.cypdashuhn.rooster.simulator.Simulator
-import dev.cypdashuhn.rooster.simulator.interfaces.InterfaceSimulatorHandler
 import dev.cypdashuhn.rooster.ui.items.InterfaceItem
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -50,6 +48,8 @@ object InterfaceManager {
 
         Rooster.interfaceContextProvider.updateContext(player, targetInterface, context)
 
+        /*
+        TODO: Look out how to properly handle this with a decentralized Simulator now
         Simulator.onlyTest {
             if (Simulator.isTerminal) InterfaceSimulatorHandler.printInterface(inventory)
             Simulator.currentInventory = inventory
@@ -57,6 +57,7 @@ object InterfaceManager {
         Simulator.nonTest {
             player.openInventory(inventory)
         }
+        */
         return inventory
     }
 

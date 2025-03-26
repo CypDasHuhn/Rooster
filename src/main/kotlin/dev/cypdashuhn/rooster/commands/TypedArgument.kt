@@ -19,16 +19,16 @@ abstract class TypedArgument<T>(
 ) {
     abstract fun value(sender: CommandSender, context: CommandContext): TypeResult<T>
 
-    fun onExecuteWithThis(onExecuteCallback: (_root_ide_package_.dev.cypdashuhn.rooster.commands.InvokeInfo, TypedArgument<T>) -> Unit): TypedArgument<T> {
+    fun onExecuteWithThis(onExecuteCallback: (InvokeInfo, TypedArgument<T>) -> Unit): TypedArgument<T> {
         return this.onExecuteTyped { onExecuteCallback(it, this) }
     }
 
 
-    fun onExecuteTyped(onExecute: ((_root_ide_package_.dev.cypdashuhn.rooster.commands.InvokeInfo) -> Unit)): TypedArgument<T> {
+    fun onExecuteTyped(onExecute: ((InvokeInfo) -> Unit)): TypedArgument<T> {
         return appendChange { it.onExecute = onExecute }
     }
 
-    fun onExecuteWithThisFinished(onExecuteCallback: (_root_ide_package_.dev.cypdashuhn.rooster.commands.InvokeInfo, TypedArgument<T>) -> Unit): dev.cypdashuhn.rooster.commands.Argument {
+    fun onExecuteWithThisFinished(onExecuteCallback: (InvokeInfo, TypedArgument<T>) -> Unit): Argument {
         return this.onExecute { onExecuteCallback(it, this) }
     }
 
@@ -37,11 +37,11 @@ abstract class TypedArgument<T>(
     }
 }
 
-fun <T> List<TypedArgument<T>>.eachOnExecuteWithThis(onExecuteCallback: (_root_ide_package_.dev.cypdashuhn.rooster.commands.InvokeInfo, TypedArgument<T>) -> Unit): List<dev.cypdashuhn.rooster.commands.Argument> {
+fun <T> List<TypedArgument<T>>.eachOnExecuteWithThis(onExecuteCallback: (InvokeInfo, TypedArgument<T>) -> Unit): List<Argument> {
     return this.map { arg -> arg.onExecute { onExecuteCallback(it, arg) } }
 }
 
-fun <T> List<TypedArgument<T>>.eachOnExecuteWithThisUnfinished(onExecuteCallback: (_root_ide_package_.dev.cypdashuhn.rooster.commands.InvokeInfo, TypedArgument<T>) -> Unit): List<TypedArgument<T>> {
+fun <T> List<TypedArgument<T>>.eachOnExecuteWithThisUnfinished(onExecuteCallback: (InvokeInfo, TypedArgument<T>) -> Unit): List<TypedArgument<T>> {
     return this.map { arg -> arg.onExecuteTyped { onExecuteCallback(it, arg) } }
 }
 

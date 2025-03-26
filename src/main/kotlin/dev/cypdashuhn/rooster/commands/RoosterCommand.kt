@@ -49,6 +49,13 @@ abstract class RoosterCommand {
         this.commandTarget = commandTarget
     }
 
-    internal val command: dev.cypdashuhn.rooster.commands.Argument by lazy { content(dev.cypdashuhn.rooster.commands.Arguments.literal.single(key, isTarget = { true })) }
-    abstract fun content(arg: UnfinishedArgument): dev.cypdashuhn.rooster.commands.Argument
+    internal val command: Argument by lazy {
+        content(
+            Arguments.literal.single(
+                key,
+                isTarget = { true })
+        )
+    }
+
+    abstract fun content(arg: UnfinishedArgument): Argument
 }

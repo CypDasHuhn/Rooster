@@ -21,7 +21,8 @@ object WorldArgument {
         return WorldArgumentType(arg, key)
     }
 
-    class WorldArgumentType(argument: UnfinishedArgument, argKey: String) : SimpleArgumentType<World>("World", argument, argKey)
+    class WorldArgumentType(argument: UnfinishedArgument, argKey: String) :
+        SimpleArgumentType<World>("World", argument, argKey)
 
     fun multiple(
         key: String
@@ -38,6 +39,8 @@ object WorldArgument {
 
         return WorldListArgumentType(arg, key)
     }
-    class WorldListArgumentType(argument: UnfinishedArgument, argKey: String) : SimpleArgumentType<List<World>>("WorldList", argument, argKey)
+
+    class WorldListArgumentType(argument: UnfinishedArgument, argKey: String) :
+        SimpleArgumentType<List<World>>("WorldList", argument, argKey)
 
 }

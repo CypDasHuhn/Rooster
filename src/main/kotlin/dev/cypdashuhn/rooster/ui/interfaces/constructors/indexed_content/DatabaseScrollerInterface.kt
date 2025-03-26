@@ -28,7 +28,10 @@ abstract class DatabaseScrollerInterface<T : DatabaseScrollerInterface.DatabaseS
 ) : ScrollInterface<T, ResultRow>(interfaceName, contextClass, scrollDirection) {
     open class DatabaseScrollerContext : ScrollContext()
 
-    override fun contentCreator(data: ResultRow, context: T): Pair<(InterfaceInfo<T>) -> ItemStack, (ClickInfo<T>) -> Unit> {
+    override fun contentCreator(
+        data: ResultRow,
+        context: T
+    ): Pair<(InterfaceInfo<T>) -> ItemStack, (ClickInfo<T>) -> Unit> {
         if (itemColumn != null) {
             //val item = ItemStack.deserialize(Gson().fromJson(data[itemColumn], Map::class.java) as Map<String, Any>)
         }

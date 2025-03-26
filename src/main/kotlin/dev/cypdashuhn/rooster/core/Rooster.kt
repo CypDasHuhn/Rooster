@@ -1,7 +1,6 @@
 package dev.cypdashuhn.rooster.core
 
 import com.google.common.cache.CacheBuilder
-import dev.cypdashuhn.rooster.RoosterCache
 import dev.cypdashuhn.rooster.commands.RoosterCommand
 import dev.cypdashuhn.rooster.commands.parsing.Command
 import dev.cypdashuhn.rooster.commands.parsing.Completer
@@ -15,7 +14,6 @@ import dev.cypdashuhn.rooster.ui.interfaces.RoosterInterface
 import org.bukkit.Bukkit
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
-import org.eclipse.sisu.inject.Guice4.lazy
 import org.jetbrains.exposed.sql.Table
 import java.lang.reflect.Method
 import java.util.*

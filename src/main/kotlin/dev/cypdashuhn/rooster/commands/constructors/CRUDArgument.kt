@@ -11,15 +11,15 @@ class CRUDArgument<T : IntEntity>(
     entity: IntEntityClass<T>,
     displayField: Column<String>
 ) {
-    val newNameArgument = dev.cypdashuhn.rooster.commands.Arguments.names.unique(displayField)
-    val nameArgument = dev.cypdashuhn.rooster.commands.Arguments.list.dbList(entity, displayField)
+    val newNameArgument = Arguments.names.unique(displayField)
+    val nameArgument = Arguments.list.dbList(entity, displayField)
 
-    fun arg(arg: UnfinishedArgument): dev.cypdashuhn.rooster.commands.Argument {
+    fun arg(arg: UnfinishedArgument): Argument {
         return arg.followedBy(
-            dev.cypdashuhn.rooster.commands.Arguments.literal.single("create").followedBy(newNameArgument).onExecute { },
-            dev.cypdashuhn.rooster.commands.Arguments.literal.single("edit").followedBy(nameArgument).onExecute { },
-            dev.cypdashuhn.rooster.commands.Arguments.literal.single("delete").followedBy(nameArgument).onExecute { },
-            dev.cypdashuhn.rooster.commands.Arguments.literal.single("get").followedBy(nameArgument).onExecute { },
+            Arguments.literal.single("create").followedBy(newNameArgument).onExecute { },
+            Arguments.literal.single("edit").followedBy(nameArgument).onExecute { },
+            Arguments.literal.single("delete").followedBy(nameArgument).onExecute { },
+            Arguments.literal.single("get").followedBy(nameArgument).onExecute { },
         )
     }
 }

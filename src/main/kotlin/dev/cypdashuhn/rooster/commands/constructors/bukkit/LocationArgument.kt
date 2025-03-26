@@ -2,7 +2,7 @@ package dev.cypdashuhn.rooster.commands.constructors.bukkit
 
 import dev.cypdashuhn.rooster.commands.*
 import dev.cypdashuhn.rooster.commands.constructors.NumberArgument
-import dev.cypdashuhn.rooster.region.Region
+import dev.cypdashuhn.rooster.gameengine.region.Region
 import dev.cypdashuhn.rooster.util.location
 import org.bukkit.Location
 import org.bukkit.command.CommandSender
