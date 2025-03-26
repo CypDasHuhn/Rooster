@@ -2,7 +2,7 @@ plugins {
     kotlin("jvm")
 }
 
-group = "de.cypdashuhn"
+group = "dev.cypdashuhn"
 version = "0.0.1"
 val javaVersion: String by project
 

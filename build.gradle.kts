@@ -5,7 +5,7 @@ plugins {
     `maven-publish`
 }
 
-group = "de.cypdashuhn"
+group = "dev.cypdashuhn.rooster"
 description = "Rooster Framework"
 val roosterVersion: String by project
 version = roosterVersion

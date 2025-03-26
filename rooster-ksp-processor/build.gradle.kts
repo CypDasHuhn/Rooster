@@ -3,7 +3,7 @@ plugins {
     id("com.google.devtools.ksp")
 }
 
-group = "de.cypdashuhn"
+group = "dev.cypdashuhn"
 version = "0.0.1"
 
 repositories {

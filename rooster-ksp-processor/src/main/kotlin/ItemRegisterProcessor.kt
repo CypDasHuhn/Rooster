@@ -1,4 +1,4 @@
-package de.cypdashuhn.rooster_ksp_processor
+package dev.cypdashuhn.rooster_ksp_processor
 
 import com.google.devtools.ksp.getClassDeclarationByName
 import com.google.devtools.ksp.processing.*
@@ -9,10 +9,10 @@ import com.google.devtools.ksp.symbol.*
 annotation class RoosterIgnore
 
 val targetTypes = listOf(
-    "de.cypdashuhn.rooster.commands.RoosterCommand",
-    "de.cypdashuhn.rooster.ui.interfaces.RoosterInterface",
+    "dev.cypdashuhn.rooster.commands.RoosterCommand",
+    "dev.cypdashuhn.rooster.ui.interfaces.RoosterInterface",
     "org.jetbrains.exposed.dao.id.IntIdTable",
-    "de.cypdashuhn.rooster.listeners.RoosterListener"
+    "dev.cypdashuhn.rooster.listeners.RoosterListener"
 )
 
 data class TypeData(
@@ -38,12 +38,12 @@ class ItemRegisterProcessor(private val environment: SymbolProcessorEnvironment)
 
         val file = environment.codeGenerator.createNewFile(
             dependencies = Dependencies(aggregating = false, *resolver.getAllFiles().toList().toTypedArray()),
-            packageName = "de.cypdashuhn.rooster.generated",
+            packageName = "dev.cypdashuhn.rooster.generated",
             fileName = "GeneratedFile",
         )
 
         file.bufferedWriter().use { writer ->
-            writer.write("package de.cypdashuhn.rooster.generated \n")
+            writer.write("package dev.cypdashuhn.rooster.generated \n")
             for (typeData in results) {
                 if (typeData.foundInstances.isEmpty()) continue
                 writer.write(
