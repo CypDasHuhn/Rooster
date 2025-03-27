@@ -3,6 +3,9 @@ package dev.cypdashuhn.rooster.generator
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.*
 import dev.cypdashuhn.rooster.commands.RoosterCommand
+import dev.cypdashuhn.rooster.ui.interfaces.RoosterInterface
+import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.sql.Table
 
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS, AnnotationTarget.PROPERTY)
@@ -10,9 +13,11 @@ annotation class RoosterIgnore
 
 val targetTypes = listOf<String>(
     RoosterCommand::class.qualifiedName!!,
-    //RoosterInterface::class.qualifiedName!!,
-    //Listener::class.qualifiedName!!,
-    //Table::class.qualifiedName!!,
+    RoosterInterface::class.qualifiedName!!,
+    "org.bukkit.entity.Listener",
+    "dev.cypdashuhn.rooster.listener.RoosterListener",
+    Table::class.qualifiedName!!,
+    IntIdTable::class.qualifiedName!!
 )
 
 data class TypeData(
@@ -23,15 +28,10 @@ data class TypeData(
 
 class ItemRegisterProcessor(private val environment: SymbolProcessorEnvironment) : SymbolProcessor {
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        //getSubclassesAndProperties(resolver, Listener::class.qualifiedName!!)
-
         val results = targetTypes.map { type ->
-            /*val targetType = resolver.getClassDeclarationByName(type)?.asStarProjectedType()
-                ?: return emptyList<KSAnnotated>().also { environment.logger.warn("Target class not found") }
-*/
             val result = resolver.getAllFiles()
                 .flatMap { file ->
-                    file.declarations.flatMap { checkDeclaration(it, type) }
+                    file.declarations.flatMap { checkDeclaration(it, type, logger = environment.logger) }
                 }
                 .toList()
 
@@ -51,7 +51,7 @@ class ItemRegisterProcessor(private val environment: SymbolProcessorEnvironment)
                 writer.write(
                     """
 
-val registered${typeData.simpleTypeName}s = listOf<${typeData.typeName}>(
+val registered${typeData.simpleTypeName}s = listOf(
     ${typeData.foundInstances.joinToString(",\n    ")}
 )
 
@@ -64,19 +64,39 @@ val registered${typeData.simpleTypeName}s = listOf<${typeData.typeName}>(
     }
 }
 
-fun checkDeclaration(declaration: KSDeclaration, targetType: String): List<String> {
+fun checkDeclaration(declaration: KSDeclaration, targetType: String, logger: KSPLogger): List<String> {
     if (declaration.annotations.any { it.annotationType.resolve().declaration.simpleName.asString() == RoosterIgnore::class.simpleName }) {
         return emptyList()
     }
+
+    fun isTypeOf(declaration: KSDeclaration): Boolean {
+        return declaration.qualifiedName!!.asString() == targetType
+                || (declaration.parentDeclaration != null && isTypeOf(declaration.parentDeclaration!!))
+    }
+
     return when (declaration) {
         is KSClassDeclaration -> {
-            if (declaration.classKind == ClassKind.OBJECT && declaration.superTypes.any { it.resolve().declaration.qualifiedName!!.toString() == targetType }) {
+            if (declaration.classKind == ClassKind.OBJECT) {
+                logger.warn(declaration.qualifiedName!!.asString())
+                fun logSubType(declaration: KSDeclaration) {
+                    logger.warn(declaration.qualifiedName!!.asString())
+                    logger.warn(declaration.parent?.origin?.name ?: "no parent node")
+                    if (declaration.parentDeclaration == null) logger.warn("final declaration")
+                    if (declaration.parentDeclaration != null) logSubType(declaration.parentDeclaration!!)
+                }
+                declaration.superTypes.forEach {
+                    logSubType(it.resolve().declaration)
+                }
+                logger.warn("---")
+            }
+
+            if (declaration.classKind == ClassKind.OBJECT && declaration.superTypes.any { isTypeOf(it.resolve().declaration) }) {
                 listOf("${declaration.packageName.asString()}.${declaration.simpleName.asString()}")
             } else emptyList()
         }
 
         is KSPropertyDeclaration -> {
-            if (declaration.type.resolve().declaration.qualifiedName.toString() == targetType) {
+            if (isTypeOf(declaration.type.resolve().declaration)) {
                 listOf("${declaration.packageName.asString()}.${declaration.simpleName.asString()}")
             } else emptyList()
         }

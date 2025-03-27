@@ -1,23 +1,14 @@
 package dev.cypdashuhn.rooster.generator
 
-import com.google.devtools.ksp.getClassDeclarationByName
-import com.google.devtools.ksp.processing.*
+import com.google.devtools.ksp.processing.Resolver
+import com.google.devtools.ksp.processing.SymbolProcessor
+import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
+import com.google.devtools.ksp.processing.SymbolProcessorProvider
 import com.google.devtools.ksp.symbol.*
 
 class PluginYmlProcessor(private val environment: SymbolProcessorEnvironment) : SymbolProcessor {
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        val roosterPluginType = resolver.getClassDeclarationByName("dev.cypdashuhn.rooster.core.RoosterPlugin")
-            ?: return emptyList<KSAnnotated>().also { environment.logger.warn("Target class not found") }
-
-        val plugin = resolver.getAllFiles()
-            .flatMap { file ->
-                file.declarations.flatMap {
-                    if (it is KSClassDeclaration && it.superTypes.any { it.resolve() == roosterPluginType }) {
-                        listOf(it)
-                    } else listOf()
-                }
-            }.first()
-
+        /*
 
         val results = targetTypes.map { type ->
             val targetType = resolver.getClassDeclarationByName(type)?.asStarProjectedType()
@@ -25,7 +16,7 @@ class PluginYmlProcessor(private val environment: SymbolProcessorEnvironment) : 
 
             val result = resolver.getAllFiles()
                 .flatMap { file ->
-                    file.declarations.flatMap { checkDeclaration(it, targetType.toString()) }
+                    file.declarations.flatMap { checkDeclaration(it, targetType) }
                 }
                 .toList()
 
@@ -52,8 +43,7 @@ val registered${typeData.simpleTypeName}s = listOf<${typeData.typeName}>(
 """.trimIndent()
                 )
             }
-        }
-
+        }*/
         return emptyList()
     }
 }
