@@ -15,21 +15,20 @@ repositories {
     mavenCentral()
     maven("https://oss.sonatype.org/content/repositories/snapshots/")
     maven("https://jitpack.io")
-    maven("https://repo.papermc.io/repository/maven-public/")
+    maven {
+        name = "papermc"
+        url = uri("https://repo.papermc.io/repository/maven-public/")
+    }
 }
 
 dependencies {
     testImplementation(kotlin("test"))
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:1.9.23")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.10.0")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
 
     implementation("org.reflections:reflections:0.9.12")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.7.2")
     implementation("com.google.code.gson:gson:2.11.0")
 
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
 
     implementation("io.github.classgraph:classgraph:4.8.170")
 

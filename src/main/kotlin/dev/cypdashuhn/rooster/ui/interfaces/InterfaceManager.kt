@@ -55,9 +55,10 @@ object InterfaceManager {
             Simulator.currentInventory = inventory
         }
         Simulator.nonTest {
-            player.openInventory(inventory)
+
         }
         */
+        player.openInventory(inventory)
         return inventory
     }
 

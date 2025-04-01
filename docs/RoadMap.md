@@ -3,19 +3,8 @@ so if you don't understand stuff: sorry lol ^^'
 
 Todo:
 
-- More Opt-In DB-providers
-    - Players (UUID, Name, lastLogin)
-    - Items (Serialized ItemStack, Upsert logic)
-    - Locations (X, Y, Z, World, angle variables (forgot name), name/key)
-    -
 - Interface
-    - Item constructors
-        - Router (mostly done)
-        - Context Modifier (mostly done)
-        - Filler (needs more constructors)
     - Interface Constructors
-        - Page Interface (mostly done)
-        - Scroll Interface (needs work)
         - Filter Builder
             - NOT (FIELD OPERATOR VALUE) COMBINATOR (FIELD OPERATOR VALUE)
                 - logic when allowed
@@ -40,7 +29,6 @@ Todo:
                         - Before Value
                     - VALUE
                         - After Operator
-        - 2D Graph
 - Commands
     - Argument Constructors
         - Filter Builder (not started)

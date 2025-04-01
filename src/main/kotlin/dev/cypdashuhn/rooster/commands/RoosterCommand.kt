@@ -59,3 +59,30 @@ abstract class RoosterCommand {
 
     abstract fun content(arg: UnfinishedArgument): Argument
 }
+
+fun roosterCommand(
+    label: String,
+    onStart: (CommandSender) -> Boolean = { true },
+    key: String = "label",
+    commandTarget: CommandTarget = CommandTarget.ALL,
+    block: UnfinishedArgument.() -> Argument
+): RoosterCommand {
+    return object : RoosterCommand(label, onStart, key, commandTarget) {
+        override fun content(arg: UnfinishedArgument): Argument {
+            return block(arg)
+        }
+    }
+}
+fun roosterCommand(
+    labels: List<String>,
+    onStart: (CommandSender) -> Boolean = { true },
+    key: String = "label",
+    commandTarget: CommandTarget = CommandTarget.ALL,
+    block: UnfinishedArgument.() -> Argument
+): RoosterCommand {
+    return object : RoosterCommand(labels, onStart, key, commandTarget) {
+        override fun content(arg: UnfinishedArgument): Argument {
+            return block(arg)
+        }
+    }
+}

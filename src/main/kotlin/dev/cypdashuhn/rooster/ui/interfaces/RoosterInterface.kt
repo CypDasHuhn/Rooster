@@ -15,9 +15,9 @@ import kotlin.reflect.KClass
 abstract class RoosterInterface<T : Context>(
     open val interfaceName: String,
     open val contextClass: KClass<T>,
-    val cancelEvent: (ClickInfo<T>) -> Boolean = { true },
-    val ignorePlayerInventory: Boolean = true,
-    val ignoreEmptySlots: Boolean = true
+    open val cancelEvent: (ClickInfo<T>) -> Boolean = { true },
+    open val ignorePlayerInventory: Boolean = true,
+    open val ignoreEmptySlots: Boolean = true
 ) {
     val items
         get() = getInterfaceItems()

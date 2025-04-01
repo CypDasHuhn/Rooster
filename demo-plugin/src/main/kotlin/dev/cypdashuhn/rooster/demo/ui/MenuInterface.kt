@@ -33,7 +33,7 @@ object MenuInterface : PageInterface<MenuInterface.MenuContext>("", MenuContext:
 
 class EmptyContext : Context()
 
-object TestInterface : RoosterInterface<EmptyContext>("", EmptyContext::class) {
+object TestInterface : NoContextInterface("") {
     override fun getInventory(player: Player, context: EmptyContext): Inventory {
         TODO("Not yet implemented")
     }
@@ -41,9 +41,4 @@ object TestInterface : RoosterInterface<EmptyContext>("", EmptyContext::class) {
     override fun getInterfaceItems(): List<InterfaceItem<EmptyContext>> {
         TODO("Not yet implemented")
     }
-
-    override fun defaultContext(player: Player): EmptyContext {
-        TODO("Not yet implemented")
-    }
-
 }

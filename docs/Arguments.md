@@ -13,6 +13,7 @@ or recommend them to the Rooster Repos! The API is very flexible.
 To Register a new command, simply create an annotated field anywhere.
 
 ```kotlin
+
 @RoosterCommand
 val yourCommand = RootArgument(
         /* further information here */

@@ -12,9 +12,8 @@ less of the boilerplate code, so you can actually focus on your logic.
 
 ### Features
 
-- [ArgumentAPI](./Arguments.md), a hew way of registering Commands
+- [ArgumentAPI](./Arguments.md), a new way of registering Commands
 - [InterfaceAPI](Interface.md), a new way of registering Interfaces
-- [Rooster Annotations](RoosterAnnotations.md), Register Core pieces using Annotations
 - [Database Support](Database.md), Database Integration using SQLite and SQL Exposed
 - [Localization](Localization.md)
 - More
@@ -31,10 +30,10 @@ To use Rooster, you need to download it as a dependency. <br>
 Once you have Rooster installed, put this into your onEnable for your Main file:
 
 ```kotlin  
-class YourPlugin : JavaPlugin() {
-    fun onEnable() {
-        Rooster.initialize(this)
-    }
+class YourPlugin : RoosterPlugin("[YourPluginName]") {
+    /* optionally, you can override methods
+     of Rooster here for configration
+    */
 }  
 ```  
 

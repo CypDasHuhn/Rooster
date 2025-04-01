@@ -1,8 +1,6 @@
 package dev.cypdashuhn.rooster.demo.commands
 
-import dev.cypdashuhn.rooster.commands.IsValidResult
-import dev.cypdashuhn.rooster.commands.RoosterCommand
-import dev.cypdashuhn.rooster.commands.UnfinishedArgument
+import dev.cypdashuhn.rooster.commands.*
 import dev.cypdashuhn.rooster.generator.RoosterIgnore
 import dev.cypdashuhn.rooster.util.isPlayer
 
@@ -30,10 +28,16 @@ object CustomCommand : RoosterCommand("custom-command") {
     }
 }
 
-@RoosterIgnore
 object TestCommand : RoosterCommand("test-command") {
-    override fun content(arg: UnfinishedArgument): dev.cypdashuhn.rooster.commands.Argument {
-        TODO("Not yet implemented")
+    override fun content(arg: UnfinishedArgument): Argument {
+        return arg.onExecute {
+            it.sender.sendMessage("")
+        }
     }
+}
 
+val TestFastCommand = roosterCommand("fast-test-command") {
+    onExecute {
+        it.sender.sendMessage("msg")
+    }
 }
