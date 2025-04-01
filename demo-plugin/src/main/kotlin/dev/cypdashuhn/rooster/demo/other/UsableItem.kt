@@ -1,5 +1,6 @@
 package dev.cypdashuhn.rooster.demo.other
 
+import dev.cypdashuhn.rooster.demo.ui.MenuInterface
 import dev.cypdashuhn.rooster.listeners.usable_item.ItemEffect
 import dev.cypdashuhn.rooster.listeners.usable_item.UsableItem
 import dev.cypdashuhn.rooster.listeners.usable_item.hasClicks
@@ -7,7 +8,6 @@ import dev.cypdashuhn.rooster.localization.tSend
 import dev.cypdashuhn.rooster.util.ClickType
 import dev.cypdashuhn.rooster.util.createItem
 import dev.cypdashuhn.rooster.util.giveItem
-import dev.cypdashuhn.rooster_demo.ui.MenuInterface
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.entity.Player

@@ -1,9 +1,6 @@
 package dev.cypdashuhn.rooster.commands.constructors
 
-import dev.cypdashuhn.rooster.commands.ArgumentInfo
-import dev.cypdashuhn.rooster.commands.InvokeInfo
-import dev.cypdashuhn.rooster.commands.playerMessage
-import dev.cypdashuhn.rooster.commands.playerMessageExtra
+import dev.cypdashuhn.rooster.commands.*
 import dev.cypdashuhn.rooster.core.Rooster
 import dev.cypdashuhn.rooster.localization.t
 import dev.cypdashuhn.rooster.localization.tSend
@@ -35,17 +32,17 @@ object LocalizationArgument {
             argKey
         ),
         onMissingLanguage: (ArgumentInfo) -> Unit = playerMessage("rooster.language.missing_error")
-    ): dev.cypdashuhn.rooster.commands.Argument {
-        return dev.cypdashuhn.rooster.commands.Arguments.list.single(
+    ): Argument {
+        return Arguments.list.single(
             key = "language",
             isEnabled = { it.sender is Player },
             list = Rooster.localeProvider.getLanguageCodes(),
             notMatchingError = onInvalidLanguage,
             onMissing = onMissingLanguage
         ).onExecute {
-            val arg = it.context["language"] as String
-            Rooster.localeProvider.changeLanguage(it as Player, arg)
-            onChange(it)
+            val arg = context["language"] as String
+            Rooster.localeProvider.changeLanguage(sender as Player, arg)
+            onChange(this)
         }
     }
 }

@@ -4,6 +4,7 @@ import dev.cypdashuhn.rooster.core.config.RoosterOptions
 import dev.cypdashuhn.rooster.listeners.usable_item.hasClicks
 import dev.cypdashuhn.rooster.ui.interfaces.Context
 import dev.cypdashuhn.rooster.ui.interfaces.RoosterInterface
+import dev.cypdashuhn.rooster.ui.interfaces.constructors.PageInterface.Page
 import dev.cypdashuhn.rooster.ui.items.InterfaceItem
 import dev.cypdashuhn.rooster.ui.items.Slots
 import dev.cypdashuhn.rooster.ui.items.constructors.ContextModifierItem
@@ -96,4 +97,21 @@ abstract class PageInterface<T : PageInterface.PageContext>(
     }
 
     abstract fun getInventoryName(player: Player, context: T): String
+
+    fun pages(block: PageListBuilder<T>.() -> Unit): List<Page<T>> {
+        val builder = PageListBuilder<T>()
+        builder.block()
+        return builder.build()
+    }
+}
+
+class PageListBuilder<T : Context> {
+    private val pages = mutableListOf<Page<T>>()
+
+    fun page(pageNumber: Int, block: MutableList<InterfaceItem<T>>.() -> Unit) {
+        val items = mutableListOf<InterfaceItem<T>>().apply(block)
+        pages += Page(pageNumber, items)
+    }
+
+    fun build() = pages.toList()
 }

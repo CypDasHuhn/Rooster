@@ -1,9 +1,12 @@
 package dev.cypdashuhn.rooster.demo.ui
 
 import dev.cypdashuhn.rooster.ui.interfaces.Context
-import dev.cypdashuhn.rooster.ui.interfaces.RoosterInterface
+import dev.cypdashuhn.rooster.ui.interfaces.constructors.NoContextInterface
 import dev.cypdashuhn.rooster.ui.interfaces.constructors.PageInterface
 import dev.cypdashuhn.rooster.ui.items.InterfaceItem
+import dev.cypdashuhn.rooster.ui.items.Slots
+import dev.cypdashuhn.rooster.util.createItem
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 
@@ -12,14 +15,10 @@ object MenuInterface : PageInterface<MenuInterface.MenuContext>("", MenuContext:
         override var page: Int
     ) : PageContext(page)
 
-    override fun initializePages(): List<Page<MenuContext>> {
-        return listOf(
-            Page(
-                1, listOf(
-
-                )
-            )
-        )
+    override fun initializePages(): List<Page<MenuContext>> = pages {
+        page(1) {
+            add(InterfaceItem(slots = Slots(5), itemStack = createItem(Material.GRAVEL), action = { }))
+        }
     }
 
     override fun getInventoryName(player: Player, context: MenuContext): String {

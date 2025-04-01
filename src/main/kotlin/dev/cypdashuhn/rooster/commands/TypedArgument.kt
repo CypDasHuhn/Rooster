@@ -28,8 +28,8 @@ abstract class TypedArgument<T>(
         return appendChange { it.onExecute = onExecute }
     }
 
-    fun onExecuteWithThisFinished(onExecuteCallback: (InvokeInfo, TypedArgument<T>) -> Unit): Argument {
-        return this.onExecute { onExecuteCallback(it, this) }
+    fun onExecuteWithThisFinished(onExecuteCallback: InvokeInfo.(TypedArgument<T>) -> Unit): Argument {
+        return this.onExecute { onExecuteCallback(this@TypedArgument) }
     }
 
     override fun copy(): TypedArgument<T> {
@@ -37,8 +37,8 @@ abstract class TypedArgument<T>(
     }
 }
 
-fun <T> List<TypedArgument<T>>.eachOnExecuteWithThis(onExecuteCallback: (InvokeInfo, TypedArgument<T>) -> Unit): List<Argument> {
-    return this.map { arg -> arg.onExecute { onExecuteCallback(it, arg) } }
+fun <T> List<TypedArgument<T>>.eachOnExecuteWithThis(onExecuteCallback: InvokeInfo.(TypedArgument<T>) -> Unit): List<Argument> {
+    return this.map { arg -> arg.onExecute { onExecuteCallback(arg) } }
 }
 
 fun <T> List<TypedArgument<T>>.eachOnExecuteWithThisUnfinished(onExecuteCallback: (InvokeInfo, TypedArgument<T>) -> Unit): List<TypedArgument<T>> {
