@@ -18,8 +18,6 @@ less of the boilerplate code, so you can actually focus on your logic.
 - [Localization](Localization.md)
 - More
     - [Region Helper Class](Regions.md)
-    - [Particle Support](Particles.md)
-    - [Process helper](Process.md)
     - [Util functions](UtilFunctions.md)
 
 # How to start
