@@ -1,11 +1,11 @@
 plugins {
-    kotlin("jvm") version "1.9.22"
-    id("com.google.devtools.ksp") version "1.9.23-1.0.20"
-    kotlin("plugin.serialization") version "1.9.22"
+    kotlin("jvm") version "2.1.20"
+    kotlin("plugin.serialization") version "2.1.20"
     `maven-publish`
 }
 
-group = "dev.cypdashuhn.rooster"
+val roosterGroup: String by project
+group = roosterGroup
 description = "Rooster Framework"
 val roosterVersion: String by project
 version = roosterVersion
@@ -58,10 +58,12 @@ java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(javaVersion))
     }
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 kotlin {
-    //jvmToolchain(javaVersion.toInt())
+    jvmToolchain(javaVersion.toInt())
 }
 
 publishing {
@@ -78,9 +80,9 @@ publishing {
     }
 }
 
-tasks.withType<JavaCompile>() {
+tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
 }
-tasks.withType<Javadoc>() {
+tasks.withType<Javadoc> {
     options.encoding = "UTF-8"
 }

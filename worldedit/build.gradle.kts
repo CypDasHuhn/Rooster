@@ -6,6 +6,7 @@ val roosterGroup: String by project
 group = roosterGroup
 val roosterVersion: String by project
 version = roosterVersion
+val javaVersion: String by project
 
 repositories {
     mavenCentral()
@@ -29,5 +30,5 @@ tasks.test {
     useJUnitPlatform()
 }
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(javaVersion.toInt())
 }
