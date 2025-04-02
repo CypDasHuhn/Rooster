@@ -1,7 +1,7 @@
 plugins {
-    kotlin("jvm") version "2.1.20"
-    id("com.google.devtools.ksp") version "2.1.20-1.0.31"
-    kotlin("plugin.serialization") version "2.1.0"
+    kotlin("jvm") version "1.9.22"
+    id("com.google.devtools.ksp") version "1.9.23-1.0.20"
+    kotlin("plugin.serialization") version "1.9.22"
     `maven-publish`
 }
 
@@ -61,7 +61,7 @@ java {
 }
 
 kotlin {
-    jvmToolchain(javaVersion.toInt())
+    //jvmToolchain(javaVersion.toInt())
 }
 
 publishing {

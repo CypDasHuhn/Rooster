@@ -1,6 +1,6 @@
 plugins {
     kotlin("jvm")
-    id("com.google.devtools.ksp") version "2.1.20-1.0.31"
+    //id("com.google.devtools.ksp") version "2.1.20-1.0.31"
 }
 
 val roosterGroup: String by project
@@ -17,7 +17,7 @@ dependencies {
     testImplementation(kotlin("test"))
 
     implementation(project(":generator"))
-    ksp(project(":generator"))
+    //ksp(project(":generator"))
 
     implementation(project(":"))
     compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")

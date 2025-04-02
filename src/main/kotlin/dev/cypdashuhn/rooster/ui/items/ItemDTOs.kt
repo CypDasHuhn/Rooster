@@ -5,9 +5,23 @@ import dev.cypdashuhn.rooster.ui.interfaces.InterfaceInfo
 import dev.cypdashuhn.rooster.ui.interfaces.Slot
 import dev.cypdashuhn.rooster.util.createItem
 import dev.cypdashuhn.rooster.util.infix_gate.and
+import dev.cypdashuhn.rooster.util.nextName
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
+
+class ConditionMap<T : Context> {
+    private var conditionMap: MutableMap<String, InterfaceInfo<T>.() -> Boolean> = mutableMapOf()
+
+    fun add(condition: InterfaceInfo<T>.() -> Boolean, key: String = "anonymous") {
+        conditionMap[nextName(key, conditionMap.keys.toList())] = condition
+    }
+    fun set(condition: InterfaceInfo<T>.() -> Boolean, key: String = "anonymous") {
+        conditionMap[key] = condition
+    }
+
+    fun flatten(): InterfaceInfo<T>.() -> Boolean = { conditionMap.values.all { it(this) } }
+}
 
 class Condition<T : Context> {
     var condition: (InterfaceInfo<T>) -> Boolean = { true }
