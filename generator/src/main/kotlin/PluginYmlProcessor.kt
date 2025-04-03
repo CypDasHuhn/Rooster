@@ -28,6 +28,46 @@ class PluginYmlProcessor(private val environment: SymbolProcessorEnvironment) : 
             appendLine("name: ${pluginInfo?.name ?: pluginClass.simpleName.asString()}")
             appendLine("version: ${pluginInfo?.version ?: "1.0.0"}")
             appendLine("main: ${pluginClass.qualifiedName!!.asString()}")
+            appendLine("apiVersion: ${pluginInfo?.apiVersion ?: "1.21.4"}")
+
+            fun addIfNotNull(key: String, value: String?) {
+                if (value == null) return
+                if (value.equals("[none]", ignoreCase = false)) return
+                if (value == "![none]") appendLine("$key: [none]")
+                appendLine("$key: $value")
+            }
+            addIfNotNull("description", pluginInfo?.description)
+            addIfNotNull("author", pluginInfo?.author)
+            addIfNotNull("website", pluginInfo?.website)
+            addIfNotNull("prefix", pluginInfo?.prefix)
+
+            appendLine("load: ${pluginInfo?.load?.toString() ?: "POSTWORLD"}")
+
+            fun addList(key: String, value: Array<String>?) {
+                if (value == null) return
+                if (value.isEmpty()) return
+                appendLine("$key:")
+                value.forEach { appendLine("  - $it") }
+            }
+            addList("dependencies", pluginInfo?.authors)
+            addList("contributors", pluginInfo?.contributors)
+            addList("libraries", pluginInfo?.libraries)
+            addList("depend", pluginInfo?.depend)
+            addList("softdepend", pluginInfo?.softdepend)
+            addList("loadbefore", pluginInfo?.loadbefore)
+            addList("loadafter", pluginInfo?.loadbefore)
+            addList("provides", pluginInfo?.provides)
+
+            if (pluginInfo != null && pluginInfo.permissions.isNotEmpty()) {
+                appendLine("permissions:")
+                pluginInfo.permissions.forEach { permission ->
+                    appendLine("    ${permission.name}: ")
+                    appendLine("        description: ${permission.description}")
+                    appendLine("        default: ${permission.default.bukkitName}")
+                    appendLine("        children:")
+                    permission.children.forEach { appendLine("            $it: true") }
+                }
+            }
         }
 
         environment.codeGenerator.createNewFile(

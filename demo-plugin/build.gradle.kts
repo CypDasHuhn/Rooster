@@ -21,10 +21,14 @@ dependencies {
 
     implementation(project(":generator"))
     ksp(project(":generator"))
+    ksp(project(":"))
 
     implementation(project(":"))
     compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
     implementation("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
+
+    implementation("org.jetbrains.exposed:exposed-core:0.49.0")
+    implementation("org.jetbrains.exposed:exposed-dao:0.49.0")
 }
 
 tasks.test {

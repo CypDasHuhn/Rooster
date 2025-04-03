@@ -4,6 +4,7 @@ import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.*
 import dev.cypdashuhn.rooster.commands.RoosterCommand
 import dev.cypdashuhn.rooster.ui.interfaces.RoosterInterface
+import org.bukkit.event.Listener
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.Table
 
@@ -14,10 +15,8 @@ annotation class RoosterIgnore
 val targetTypes = listOf<String>(
     RoosterCommand::class.qualifiedName!!,
     RoosterInterface::class.qualifiedName!!,
-    "org.bukkit.entity.Listener",
-    "dev.cypdashuhn.rooster.listener.RoosterListener",
+    Listener::class.qualifiedName!!,
     Table::class.qualifiedName!!,
-    IntIdTable::class.qualifiedName!!
 )
 
 data class TypeData(
@@ -69,34 +68,31 @@ fun checkDeclaration(declaration: KSDeclaration, targetType: String, logger: KSP
         return emptyList()
     }
 
-    fun isTypeOf(declaration: KSDeclaration): Boolean {
-        return declaration.qualifiedName!!.asString() == targetType
-                || (declaration.parentDeclaration != null && isTypeOf(declaration.parentDeclaration!!))
+    fun isTypeOf(declaration: KSClassDeclaration): Boolean {
+        return declaration.qualifiedName?.asString() == targetType
+                || declaration.superTypes.any { it.resolve().declaration is KSClassDeclaration && isTypeOf(it.resolve().declaration as KSClassDeclaration) }
     }
+
+    fun printDeclaration(declaration: KSDeclaration) {
+        logger.warn(declaration.qualifiedName?.asString() ?: "no-name")
+        if (declaration is KSClassDeclaration) {
+            declaration.superTypes.forEach { printDeclaration(it.resolve().declaration) }
+        } else if (declaration is KSPropertyDeclaration) {
+            printDeclaration(declaration.type.resolve().declaration)
+        }
+    }
+    printDeclaration(declaration)
+    logger.warn("---")
 
     return when (declaration) {
         is KSClassDeclaration -> {
-            if (declaration.classKind == ClassKind.OBJECT) {
-                logger.warn(declaration.qualifiedName!!.asString())
-                fun logSubType(declaration: KSDeclaration) {
-                    logger.warn(declaration.qualifiedName!!.asString())
-                    logger.warn(declaration.parent?.origin?.name ?: "no parent node")
-                    if (declaration.parentDeclaration == null) logger.warn("final declaration")
-                    if (declaration.parentDeclaration != null) logSubType(declaration.parentDeclaration!!)
-                }
-                declaration.superTypes.forEach {
-                    logSubType(it.resolve().declaration)
-                }
-                logger.warn("---")
-            }
-
-            if (declaration.classKind == ClassKind.OBJECT && declaration.superTypes.any { isTypeOf(it.resolve().declaration) }) {
+            if (declaration.classKind == ClassKind.OBJECT && isTypeOf(declaration)) {
                 listOf("${declaration.packageName.asString()}.${declaration.simpleName.asString()}")
             } else emptyList()
         }
 
         is KSPropertyDeclaration -> {
-            if (isTypeOf(declaration.type.resolve().declaration)) {
+            if (declaration.type.resolve().declaration is KSClassDeclaration && isTypeOf(declaration.type.resolve().declaration as KSClassDeclaration)) {
                 listOf("${declaration.packageName.asString()}.${declaration.simpleName.asString()}")
             } else emptyList()
         }

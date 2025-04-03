@@ -24,8 +24,8 @@ repositories {
 dependencies {
     testImplementation(kotlin("test"))
 
-    implementation("org.reflections:reflections:0.9.12")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.7.2")
+    implementation("org.reflections:reflections:0.10.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.8.1")
     implementation("com.google.code.gson:gson:2.11.0")
 
     compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
@@ -33,8 +33,8 @@ dependencies {
     implementation("io.github.classgraph:classgraph:4.8.170")
 
     implementation("org.jetbrains.exposed:exposed-core:0.49.0")
-    implementation("org.jetbrains.exposed:exposed-crypt:0.49.0")
     implementation("org.jetbrains.exposed:exposed-dao:0.49.0")
+    implementation("org.jetbrains.exposed:exposed-crypt:0.49.0")
     implementation("org.jetbrains.exposed:exposed-java-time:0.49.0")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.49.0")
     implementation("org.jetbrains.exposed:exposed-jodatime:0.49.0")
