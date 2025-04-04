@@ -12,6 +12,7 @@ enum class LoadType {
     POSTWORLD,
     STARTUP
 }
+
 enum class PermissionType(val bukkitName: String) {
     ALL("true"),
     NONE("false"),
@@ -22,7 +23,8 @@ enum class PermissionType(val bukkitName: String) {
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS)
 annotation class PluginInfo(
-    val name: String,
+    /** If none, the plugin name will be the same as the class name */
+    val name: String = "[none]",
     val version: String = "1.0.0",
     /** The API version of the plugin. If not filled, the API version will be the newest version of Paper */
     val apiVersion: String = "1.21.4",

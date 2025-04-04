@@ -25,7 +25,9 @@ class PluginYmlProcessor(private val environment: SymbolProcessorEnvironment) : 
         val pluginInfo = pluginClass.getAnnotationsByType(PluginInfo::class).firstOrNull()
 
         val pluginYml = buildString {
-            appendLine("name: ${pluginInfo?.name ?: pluginClass.simpleName.asString()}")
+            val pluginName = pluginInfo?.name?.takeUnless { it.equals("[none]", ignoreCase = false) }
+                ?: pluginClass.simpleName.asString()
+            appendLine("name: $pluginName")
             appendLine("version: ${pluginInfo?.version ?: "1.0.0"}")
             appendLine("main: ${pluginClass.qualifiedName!!.asString()}")
             appendLine("apiVersion: ${pluginInfo?.apiVersion ?: "1.21.4"}")
@@ -67,6 +69,12 @@ class PluginYmlProcessor(private val environment: SymbolProcessorEnvironment) : 
                     appendLine("        children:")
                     permission.children.forEach { appendLine("            $it: true") }
                 }
+            }
+
+            val commandNames = listOf("")
+            appendLine("commands:")
+            commandNames.forEach {
+                appendLine("    $it: {}")
             }
         }
 
