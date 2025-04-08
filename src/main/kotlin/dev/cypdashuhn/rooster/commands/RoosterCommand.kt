@@ -18,7 +18,7 @@ enum class CommandTarget(val selector: (CommandSender) -> Boolean) {
 }
 
 abstract class RoosterCommand {
-    internal val labels: List<String>
+    val labels: List<String>
     internal val onStart: (CommandSender) -> Boolean
     internal var commandTarget: CommandTarget
     private lateinit var key: String
@@ -73,6 +73,7 @@ fun roosterCommand(
         }
     }
 }
+
 fun roosterCommand(
     labels: List<String>,
     onStart: (CommandSender) -> Boolean = { true },

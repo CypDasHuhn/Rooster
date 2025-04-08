@@ -24,12 +24,9 @@ abstract class RoosterSimulator(val pluginName: String = "demo") : RoosterShell 
     }
 
     final override fun initializeRooster(
-        plugin: JavaPlugin,
-        pluginName: String,
-        version: String,
-        apiVersion: String
+        plugin: JavaPlugin
     ) {
-        super.initializeRooster(plugin, pluginName, version, apiVersion)
+        super.initializeRooster(plugin)
         val directoryPath = Rooster.plugin.dataFolder.absolutePath
         val clickablePath =
             "file:///$directoryPath".replace("\\", "/")

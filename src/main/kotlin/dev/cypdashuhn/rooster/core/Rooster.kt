@@ -38,8 +38,6 @@ object Rooster {
         Bukkit.getScheduler().runTask(plugin, Runnable { task() })
     }
 
-    lateinit var pluginInfo: PluginInfo
-
     val services = RoosterServices
     val options = RoosterOptions
 
@@ -71,10 +69,8 @@ object Rooster {
 
     fun initialize(
         plugin: JavaPlugin,
-        pluginInfo: PluginInfo,
     ) {
         Rooster.plugin = plugin
-        Rooster.pluginInfo = pluginInfo
 
         if (!plugin.dataFolder.exists()) {
             plugin.dataFolder.mkdirs()

@@ -1,12 +1,15 @@
 plugins {
     kotlin("jvm")
-    id("com.google.devtools.ksp") version "2.1.20-1.0.31"
+    id("com.google.devtools.ksp") version "2.1.20-1.0.32"
+
+    id("xyz.jpenilla.run-paper") version "2.3.1"
 }
 
 val roosterGroup: String by project
 group = roosterGroup
 val roosterVersion: String by project
 version = roosterVersion
+val javaVersion: String by project
 
 repositories {
     mavenCentral()
@@ -18,15 +21,19 @@ dependencies {
 
     implementation(project(":generator"))
     ksp(project(":generator"))
+    ksp(project(":"))
 
     implementation(project(":"))
     compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
     implementation("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
+
+    implementation("org.jetbrains.exposed:exposed-core:0.49.0")
+    implementation("org.jetbrains.exposed:exposed-dao:0.49.0")
 }
 
 tasks.test {
     useJUnitPlatform()
 }
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(javaVersion.toInt())
 }

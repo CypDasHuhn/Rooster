@@ -30,7 +30,7 @@ object Simulator {
         roosterSimulator.beforeInitialize()
         //TODO: Yeah... Rooster.dynamicTables.addAll(Rooster.registeredDemoTables)
 
-        roosterSimulator.initializeRooster(plugin, roosterSimulator.pluginName)
+        roosterSimulator.initializeRooster(plugin)
 
         roosterSimulator.onInitialize()
 
@@ -39,9 +39,9 @@ object Simulator {
         val event = PlayerJoinEvent(player, Component.empty())
 
         RoosterServices.getIfPresent<PlayerManager>()?.let {
-            it.beforePlayerJoin(event)
+            // it.beforePlayerJoin(event) TODO: Make this work
             it.playerLogin(event.player)
-            it.onPlayerJoin(event)
+            // it.onPlayerJoin(event) TODO: Make this work
         }
 
         Simulator.player = player

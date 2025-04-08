@@ -1,1 +1,2 @@
 dev.cypdashuhn.rooster.generator.ItemRegisterProcessorProvider
+dev.cypdashuhn.rooster.generator.PluginYmlProcessorProvider

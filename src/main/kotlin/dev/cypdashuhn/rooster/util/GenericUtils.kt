@@ -9,3 +9,10 @@ fun appendNumber(name: String): String {
         "${name}2"
     }
 }
+
+fun nextName(name: String, list: List<String>): String {
+    return when {
+        name in list -> nextName(appendNumber(name), list)
+        else -> name
+    }
+}

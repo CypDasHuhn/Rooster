@@ -3,22 +3,23 @@ package dev.cypdashuhn.rooster.commands.constructors.bukkit
 import dev.cypdashuhn.rooster.commands.SimpleArgumentType
 import dev.cypdashuhn.rooster.commands.UnfinishedArgument
 import dev.cypdashuhn.rooster.commands.constructors.ListArgument
-import dev.cypdashuhn.rooster.localization.tSend
+import dev.cypdashuhn.rooster.commands.playerMessage
+import dev.cypdashuhn.rooster.commands.playerMessageExtra
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
 object PlayerArgument {
     fun single(
         key: String = "player",
-        notMatchingKey: String = "rooster.player.not_matching_error",
-        notMatchingArg: String = "player",
+        notMatchingMessage: String = "rooster.player.not_matching_error",
+        playerPlaceholder: String = "player",
         onMissingKey: String = "rooster.player.missing_error",
     ): UnfinishedArgument {
         return ListArgument.single(
             key = key,
             list = Bukkit.getOnlinePlayers().map { it.name },
-            notMatchingError = { info, player -> info.sender.tSend(notMatchingKey, notMatchingArg to player) },
-            onMissing = { it.sender.tSend(onMissingKey) },
+            notMatchingError = playerMessageExtra(notMatchingMessage, playerPlaceholder),
+            onMissing = playerMessage(onMissingKey),
         )
     }
 
@@ -27,15 +28,15 @@ object PlayerArgument {
 
     fun multiple(
         key: String = "player",
-        notMatchingKey: String = "rooster.player.not_matching_error",
-        notMatchingArg: String = "player",
+        notMatchingMessage: String = "rooster.player.not_matching_error",
+        playerPlaceholder: String = "player",
         onMissingKey: String = "rooster.player.missing_error",
     ): UnfinishedArgument {
         return ListArgument.chainable(
             key = key,
             list = Bukkit.getOnlinePlayers().map { it.name },
-            notMatchingError = { info, player -> info.sender.tSend(notMatchingKey, notMatchingArg to player) },
-            onMissing = { it.sender.tSend(onMissingKey) },
+            notMatchingError = playerMessageExtra(notMatchingMessage, playerPlaceholder),
+            onMissing = playerMessage(onMissingKey),
         )
     }
 

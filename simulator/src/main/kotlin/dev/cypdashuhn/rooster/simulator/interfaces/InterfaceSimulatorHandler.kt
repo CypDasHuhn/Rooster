@@ -16,9 +16,6 @@ import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty1
-import kotlin.reflect.full.memberProperties
-import kotlin.reflect.full.primaryConstructor
-import kotlin.reflect.jvm.isAccessible
 
 object InterfaceSimulatorHandler {
     private fun Material.short(): String {
@@ -226,7 +223,7 @@ object InterfaceSimulatorHandler {
                 .map { it.trim() }
                 .map { it.split("=").let { Pair(it[0].trim(), it[1].trim()) } }
                 .map { (fieldName, fieldValue) ->
-                    val field = targetInterface.contextClass.memberProperties
+                    val field = targetInterface.contextClass.members
                         .firstOrNull { it.name.equals(fieldName, ignoreCase = true) }
                         ?: return@map null to null
 
@@ -237,12 +234,11 @@ object InterfaceSimulatorHandler {
                 .toMap()
 
             val context =
-                targetInterface.contextClass.primaryConstructor?.call()
+                targetInterface.contextClass.constructors.first().call()
                     ?: return "Failed to create context instance" to null
 
             fieldAssignments.forEach { (field, value) ->
                 (field as? KMutableProperty1<Any, Any>)?.let {
-                    it.isAccessible = true
                     it.call(context, value) // Use call for setting properties
                 }
             }

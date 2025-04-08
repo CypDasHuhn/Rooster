@@ -5,9 +5,55 @@ import dev.cypdashuhn.rooster.ui.interfaces.InterfaceInfo
 import dev.cypdashuhn.rooster.ui.interfaces.Slot
 import dev.cypdashuhn.rooster.util.createItem
 import dev.cypdashuhn.rooster.util.infix_gate.and
+import dev.cypdashuhn.rooster.util.nextName
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
+import kotlin.reflect.KClass
+
+class ConditionMap<T : Context> {
+    private constructor(map: Map<String, ItemBuilder.CachableLambda<T, Boolean>>, clazz: KClass<T>) {
+        this.conditionMap = map.toMutableMap()
+        this.clazz = clazz
+    }
+
+    constructor(clazz: KClass<T>) {
+        this.clazz = clazz
+    }
+
+    companion object {
+        const val ANONYMOUS_KEY = "ANONYMOUS"
+    }
+
+    private var conditionMap: MutableMap<String, ItemBuilder.CachableLambda<T, Boolean>> = mutableMapOf()
+    private val clazz: KClass<T>
+
+    fun add(
+        condition: InterfaceInfo<T>.() -> Boolean,
+        key: String = ANONYMOUS_KEY,
+        dependency: Dependency<T> = Dependency.all<T>()
+    ) {
+        conditionMap[nextName(key, conditionMap.keys.toList())] = condition.toCachableLambda(clazz, dependency)
+    }
+
+    fun set(
+        condition: InterfaceInfo<T>.() -> Boolean,
+        key: String = ANONYMOUS_KEY,
+        dependency: Dependency<T> = Dependency.all<T>()
+    ) {
+        conditionMap[key] = condition.toCachableLambda(clazz, dependency)
+    }
+
+    fun resetConditions(excludingConditionKeys: List<String>) {
+        conditionMap.keys
+            .filter { it !in excludingConditionKeys }
+            .forEach { conditionMap.remove(it) }
+    }
+
+    fun flatten(): InterfaceInfo<T>.() -> Boolean = { conditionMap.values.all { it.get(this) } }
+    fun getMap(): Map<String, ItemBuilder.CachableLambda<T, Boolean>> = conditionMap
+    fun copy(): ConditionMap<T> = ConditionMap(conditionMap, clazz)
+}
 
 class Condition<T : Context> {
     var condition: (InterfaceInfo<T>) -> Boolean = { true }

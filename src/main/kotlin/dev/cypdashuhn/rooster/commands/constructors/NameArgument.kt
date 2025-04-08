@@ -35,10 +35,10 @@ object NameArgument {
             key = key,
             suggestions = { listOf(t("rooster.name.placeholder")) },
             isValid = {
-                if (usedNames.contains(it.arg)) {
-                    IsValidResult.Invalid { info -> info.sender.tSend(uniqueErrorKey) }
+                if (usedNames.contains(arg)) {
+                    IsValidResult.Invalid { sender.tSend(uniqueErrorKey) }
                 } else {
-                    isValid?.invoke(it) ?: IsValidResult.Valid()
+                    isValid?.invoke(this) ?: IsValidResult.Valid()
                 }
             }
         ).toTyped()
@@ -58,13 +58,13 @@ object NameArgument {
             isValid = {
                 transaction {
                     val table = targetColumn.table
-                    var query = targetColumn eq it.arg
+                    var query = targetColumn eq arg
                     extraQuery?.let { query = query and it }
 
                     if (table.selectAll().where { query }.firstOrNull() != null) {
-                        IsValidResult.Invalid { info -> info.sender.tSend(uniqueErrorKey, nameArg to it.arg) }
+                        IsValidResult.Invalid { sender.tSend(uniqueErrorKey, nameArg to arg) }
                     } else {
-                        isValid?.invoke(it) ?: IsValidResult.Valid()
+                        isValid?.invoke(this@UnfinishedArgument) ?: IsValidResult.Valid()
                     }
                 }
             }

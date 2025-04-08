@@ -35,7 +35,7 @@ object TestCommand : RoosterCommand("test-command") {
     }
 }
 
-val TestCommand2 = roosterCommand("test-command") {
+val simpleCommand = roosterCommand("test-command") {
     onExecute {
         sender.sendMessage("msg")
     }

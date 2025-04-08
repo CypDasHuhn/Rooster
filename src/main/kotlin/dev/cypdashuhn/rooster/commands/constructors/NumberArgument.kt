@@ -17,9 +17,7 @@ object NumberArgument {
     ): IntegerArgumentType {
         val arg = UnfinishedArgument(
             key = key,
-            isValid = { argInfo ->
-                val arg = argInfo.arg
-
+            isValid = {
                 Rules(
                     ArgumentRule.create(decimalNotAcceptedErrorMessageKey) to { arg.toDoubleOrNull() != null && arg.toDouble() % 1 != 0.0 },
                     ArgumentRule.create(notANumberError) to { arg.toIntOrNull() == null }
@@ -28,14 +26,14 @@ object NumberArgument {
                     Rules(
                         negativeRule to { intNum < 0 },
                         zeroRule to { intNum == 0 },
-                        furtherCondition.toRule(argInfo)
+                        furtherCondition.toRule(this)
                     )
                 }.result()
             },
             transformValue = {
-                val num = it.arg.toInt()
+                val num = arg.toInt()
 
-                transformValue(it, num)
+                transformValue(this, num)
             },
             onMissing = onMissing,
             suggestions = { listOf(tabCompleterPlaceholder) }
@@ -61,25 +59,21 @@ object NumberArgument {
     ): DoubleArgumentType {
         val arg = UnfinishedArgument(
             key = key,
-            isValid = { argInfo ->
-                val arg = argInfo.arg
-
+            isValid = {
                 val rules = Rules(
                     ArgumentRule.create(notANumberError) to { arg.toDoubleOrNull() == null }
                 ) {
                     val intNum = arg.toDouble()
                     Rules(
                         negativeRule to { intNum < 0 },
-                        furtherCondition.toRule(argInfo)
+                        furtherCondition.toRule(this)
                     )
                 }
 
                 rules.result()
             },
             transformValue = {
-                val num = it.arg.toDouble()
-
-                transformValue(it, num)
+                transformValue(this, arg.toDouble())
             },
             onMissing = onMissing,
             suggestions = { listOf(tabCompleterPlaceholder) }

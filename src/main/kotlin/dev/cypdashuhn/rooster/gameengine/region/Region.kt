@@ -15,8 +15,8 @@ import org.joml.Vector3d
 
 @Suppress("unused")
 class Region(
-    var edge1: Location,
-    var edge2: Location
+    val edge1: Location,
+    val edge2: Location
 ) {
     init {
         require(edge1.world == edge2.world) { "Locations of a Region must be in the same World" }
@@ -96,7 +96,7 @@ class Region(
             }
         }
 
-    val blocksArray: Array<Array<Array<Block?>>>
+    val blocksArray: Array<Array<Array<Block>>>
         get() {
             val blocksArray = Array(sizeX) { Array(sizeY) { arrayOfNulls<Block>(sizeZ) } }
 
@@ -106,7 +106,7 @@ class Region(
                 val z = index / (sizeX * sizeY)
                 blocksArray[x][y][z] = block
             }
-            return blocksArray
+            return blocksArray as Array<Array<Array<Block>>>
         }
 
     val entities: List<Entity>
