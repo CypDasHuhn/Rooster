@@ -20,11 +20,11 @@ abstract class TypedArgument<T>(
     abstract fun value(sender: CommandSender, context: CommandContext): TypeResult<T>
 
     fun onExecuteWithThis(onExecuteCallback: (InvokeInfo, TypedArgument<T>) -> Unit): TypedArgument<T> {
-        return this.onExecuteTyped { onExecuteCallback(it, this) }
+        return this.onExecuteTyped { onExecuteCallback(this, this@TypedArgument) }
     }
 
 
-    fun onExecuteTyped(onExecute: ((InvokeInfo) -> Unit)): TypedArgument<T> {
+    fun onExecuteTyped(onExecute: (InvokeInfo.() -> Unit)): TypedArgument<T> {
         return appendChange { it.onExecute = onExecute }
     }
 
@@ -37,12 +37,12 @@ abstract class TypedArgument<T>(
     }
 }
 
-fun <T> List<TypedArgument<T>>.eachOnExecuteWithThis(onExecuteCallback: InvokeInfo.(TypedArgument<T>) -> Unit): List<Argument> {
+fun <T> List<TypedArgument<T>>.eachOnExecuteWithSelf(onExecuteCallback: InvokeInfo.(TypedArgument<T>) -> Unit): List<Argument> {
     return this.map { arg -> arg.onExecute { onExecuteCallback(arg) } }
 }
 
-fun <T> List<TypedArgument<T>>.eachOnExecuteWithThisUnfinished(onExecuteCallback: (InvokeInfo, TypedArgument<T>) -> Unit): List<TypedArgument<T>> {
-    return this.map { arg -> arg.onExecuteTyped { onExecuteCallback(it, arg) } }
+fun <T> List<TypedArgument<T>>.eachOnExecuteWithSelfUnfinished(onExecuteCallback: (InvokeInfo, TypedArgument<T>) -> Unit): List<TypedArgument<T>> {
+    return this.map { arg -> arg.onExecuteTyped { onExecuteCallback(this, arg) } }
 }
 
 sealed class TypeResult<T> {

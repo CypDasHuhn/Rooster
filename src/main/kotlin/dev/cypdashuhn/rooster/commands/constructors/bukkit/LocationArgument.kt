@@ -28,16 +28,16 @@ object LocationArgument {
         errorMissingXMessageKey: String = "rooster.location.missing.x",
         errorMissingYMessageKey: String = "rooster.location.missing.y",
         errorMissingZMessageKey: String = "rooster.location.missing.z",
-        xCondition: ((ArgumentInfo) -> IsValidResult)? = null,
+        xCondition: (ArgumentInfo.() -> IsValidResult)? = null,
         disableYCondition: Boolean = false,
-        yCondition: ((ArgumentInfo) -> IsValidResult)? = { info ->
-            val num = info.arg.toDouble()
+        yCondition: (ArgumentInfo.() -> IsValidResult)? = {
+            val num = arg.toDouble()
             Rules(
                 ArgumentRule.create("rooster.location.y.too_low") to { num <= -65.0 },
                 ArgumentRule.create("rooster.location.y.too_high") to { num >= 321.0 }
             ).result()
         },
-        zCondition: ((ArgumentInfo) -> IsValidResult)? = null,
+        zCondition: (ArgumentInfo.() -> IsValidResult)? = null,
         xTransformValue: ((ArgumentInfo, Int) -> Int) = { _, num -> num },
         yTransformValue: ((ArgumentInfo, Int) -> Int) = { _, num -> num },
         zTransformValue: ((ArgumentInfo, Int) -> Int) = { _, num -> num },

@@ -1,87 +1,111 @@
 package dev.cypdashuhn.rooster.ui.items
 
-import com.google.gson.Gson
 import dev.cypdashuhn.rooster.ui.interfaces.Context
-import dev.cypdashuhn.rooster.ui.interfaces.Slot
-import dev.cypdashuhn.rooster.util.uuid
-import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
+import dev.cypdashuhn.rooster.ui.interfaces.InterfaceInfo
+import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 
-class Dependency<T : Context> private constructor(
-    private val dependOnPlayer: Boolean,
-    private val dependOnSlot: Boolean,
-    private val contextDependencies: List<KProperty1<T, *>>?
-) {
-    internal data class UpdateValue<T : Any>(val old: T, val new: T)
+typealias PropertyListProvider<T> = T.() -> List<KProperty1<T, *>>
 
-    internal fun shouldUpdate(
-        playerValue: UpdateValue<Player>,
-        slotValue: UpdateValue<Slot>,
-        contextValue: UpdateValue<T>
-    ): Boolean {
-        return (dependOnPlayer && playerValue.old != playerValue.new) ||
-                (dependOnSlot && slotValue.old != slotValue.new) ||
-                contextDependencies != null && contextDependencies.any { it.get(contextValue.new) != it.get(contextValue.old) }
+infix fun <T : Context> PropertyListProvider<T>.and(type: DependencyType): Dependency<T> {
+    return Dependency.default<T>().dependsOnContext(this) and type
+}
+
+enum class DependencyType {
+    PLAYER,
+    SLOT;
+
+    infix fun and(type: DependencyType): Dependency<Context> {
+        return Dependency.default<Context>() and this and type
     }
 
-    internal fun value(
-        playerValue: UpdateValue<Player>,
-        slotValue: UpdateValue<Slot>,
-        contextValue: UpdateValue<T>,
-        fallback: () -> ItemStack
-    ): ItemStack {
-        if (shouldUpdate(playerValue, slotValue, contextValue)) return fallback()
-        else return fallback() // todo: actually implement
+    infix fun <T : Context> and(contextDependencySelector: PropertyListProvider<T>): Dependency<T> {
+        return Dependency.default<T>() and (this) and contextDependencySelector
+    }
+}
+
+class Dependency<T : Context> {
+    var dependsOnPlayer: Boolean = false
+        private set
+    var dependsOnSlot: Boolean = false
+        private set
+    var dependsOnContext: Boolean = true
+        private set
+    var contextDependencySelector: PropertyListProvider<T>? = null
+        private set
+
+    fun getDependencyList(contextClass: KClass<T>): List<KProperty1<T, *>> {
+        val obj = contextClass.constructors.first { it.parameters.isEmpty() }.call()
+        return contextDependencySelector?.invoke(obj) ?: emptyList()
     }
 
-    internal fun dependencyKey(
-        player: Player,
-        slot: Slot,
-        context: T,
-    ): String {
-        val keys = mutableListOf<String>()
-        if (dependOnPlayer) keys += "P:${player.uuid()}"
-        if (dependOnSlot) keys += "S:$slot"
-        if (contextDependencies == null) {
-            keys += "CC:${Gson().toJson(context)}"
-        } else if (contextDependencies.isNotEmpty()) {
-            val gson = Gson()
-
-            val serializedFields = contextDependencies.joinToString(",") {
-                "${it.name}:${gson.toJson(it.get(context))}"
-            }
-            keys += "C:$serializedFields"
-        }
-
-        return keys.joinToString(",")
-    }
+    val dependsOnNothing
+        get() = !dependsOnPlayer && !dependsOnSlot && !dependsOnContext
+    val dependsOnEverything
+        get() = dependsOnPlayer && dependsOnSlot && dependsOnContext && contextDependencySelector == null
 
     companion object {
-        fun none(): Dependency<Context> = Dependency(false, false, emptyList())
-
-        fun player(): Dependency<Context> = Dependency(true, false, emptyList())
-
-        fun slot(): Dependency<Context> = Dependency(false, true, emptyList())
-
-        fun playerAndSlot(): Dependency<Context> = Dependency(true, true, emptyList())
-
-        fun <ContextType : Context> context(
-            vararg contextDependencies: KProperty1<ContextType, *>,
-            dependOnPlayer: Boolean = true,
-            dependOnSlot: Boolean = true
-        ): Dependency<ContextType> {
-            return Dependency(dependOnPlayer, dependOnSlot, contextDependencies.toList())
+        fun <T : Context> none() = Dependency<T>().also {
+            it.dependsOnContext = false
         }
 
-        fun <ContextType : Context> onlyContext(
-            vararg contextDependencies: KProperty1<ContextType, *>
-        ): Dependency<ContextType> {
-            return Dependency(false, false, contextDependencies.toList())
+        fun <T : Context> default() = Dependency<T>()
+
+        fun <T : Context> all() = default<T>()
+            .dependsOnPlayer()
+            .dependsOnContext()
+    }
+
+    private constructor()
+
+    fun dependsOnPlayer(value: Boolean = true): Dependency<T> = copy { it.dependsOnPlayer = value }
+    fun dependsOnSlot(value: Boolean = true): Dependency<T> = copy { it.dependsOnSlot = value }
+    fun dependsOnContext(selector: PropertyListProvider<T>? = null) = copy {
+        it.dependsOnContext = true
+        it.contextDependencySelector = selector
+    }
+
+    fun doesntDependOnContext() = copy {
+        it.dependsOnContext = false
+    }
+
+    fun copy(block: (Dependency<T>) -> Unit) = Dependency<T>().also {
+        it.dependsOnPlayer = dependsOnPlayer
+        it.dependsOnSlot = dependsOnSlot
+        it.dependsOnContext = dependsOnContext
+        it.contextDependencySelector = contextDependencySelector
+        block(it)
+    }
+
+    infix fun and(type: DependencyType): Dependency<T> {
+        return when (type) {
+            DependencyType.SLOT -> dependsOnSlot()
+            DependencyType.PLAYER -> dependsOnPlayer()
+        }
+    }
+
+    infix fun and(contextDependencySelector: PropertyListProvider<T>): Dependency<T> {
+        return dependsOnContext(contextDependencySelector)
+    }
+
+    var createKey: (clazz: KClass<T>) -> ((InterfaceInfo<T>) -> Int) = { clazz ->
+        val mapEntries = mutableListOf<(InterfaceInfo<T>) -> Int>()
+        if (dependsOnPlayer) mapEntries += { it.player.hashCode() }
+        if (dependsOnSlot) mapEntries += { it.slot }
+        if (dependsOnContext) getDependencyList(clazz).forEach { dep ->
+            mapEntries += { dep.get(it.context).hashCode() }
         }
 
-        fun anyContext(): Dependency<Context> = Dependency(false, false, null)
+        createKey = { clazz ->
+            val keyCreator = { info: InterfaceInfo<T> ->
+                mapEntries.map { it(info) }.hashCode()
+            }
+            keyCreator
+        }
 
-        fun all(): Dependency<Context> = Dependency(true, true, null)
+        val keyCreator = { info: InterfaceInfo<T> ->
+            mapEntries.map { it(info) }.hashCode()
+        }
+        keyCreator
     }
 }

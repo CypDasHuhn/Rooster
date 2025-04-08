@@ -2,7 +2,7 @@ package dev.cypdashuhn.rooster.commands
 
 import dev.cypdashuhn.rooster.localization.tSend
 
-fun ((ArgumentInfo) -> IsValidResult)?.toRule(argumentInfo: ArgumentInfo): Pair<ArgumentRule, () -> Boolean> {
+fun (ArgumentInfo.() -> IsValidResult)?.toRule(argumentInfo: ArgumentInfo): Pair<ArgumentRule, () -> Boolean> {
     if (this == null) return ArgumentRule.Accepted to { false }
 
     val result = this(argumentInfo)
@@ -21,7 +21,7 @@ class Rules(vararg rules: Pair<ArgumentRule, () -> Boolean>, private val further
         }
 
         if (further != null) {
-            return further.let { it() }.result()
+            return further().result()
         }
         return IsValidResult.Valid()
     }
@@ -29,10 +29,10 @@ class Rules(vararg rules: Pair<ArgumentRule, () -> Boolean>, private val further
 
 sealed class IsValidResult(
     val isValid: Boolean,
-    val error: ((ArgumentInfo) -> Unit)? = null
+    val error: (ArgumentInfo.() -> Unit)? = null
 ) {
     class Valid : IsValidResult(true, null)
-    class Invalid(error: ((ArgumentInfo) -> Unit)) : IsValidResult(false, error)
+    class Invalid(error: (ArgumentInfo.() -> Unit)) : IsValidResult(false, error)
 
     fun toRule(): ArgumentRule = when (this) {
         is Valid -> ArgumentRule.Accepted
@@ -42,7 +42,7 @@ sealed class IsValidResult(
 
 sealed class ArgumentRule {
     data object Accepted : ArgumentRule()
-    data class NotAccepted(val error: ((ArgumentInfo) -> Unit)) : ArgumentRule() {
+    data class NotAccepted(val error: (ArgumentInfo.() -> Unit)) : ArgumentRule() {
         fun errorResult() = IsValidResult.Invalid(error)
     }
 
@@ -52,15 +52,15 @@ sealed class ArgumentRule {
             else NotAccepted(playerMessage(messageKey, arg))
         }
 
-        fun create(error: ((ArgumentInfo) -> Unit)?): ArgumentRule {
+        fun create(error: (ArgumentInfo.() -> Unit)?): ArgumentRule {
             return if (error == null) Accepted
             else NotAccepted(error)
         }
     }
 }
 
-fun playerMessage(messageKey: String, arg: String = "arg"): (ArgumentInfo) -> Unit = {
-    it.sender.tSend(messageKey, arg to it.arg)
+fun playerMessage(messageKey: String, arg: String = "arg"): ArgumentInfo.() -> Unit = {
+    sender.tSend(messageKey, arg to this.arg)
 }
 
 fun <T> playerMessageExtra(messageKey: String, arg: String = "arg"): (ArgumentInfo, T) -> Unit = { info, field ->

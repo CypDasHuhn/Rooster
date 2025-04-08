@@ -16,7 +16,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 object NameArgument {
     fun simple(
         key: String = "name",
-        isValid: ((ArgumentInfo) -> IsValidResult)? = null
+        isValid: (ArgumentInfo.() -> IsValidResult)? = null
     ): TypedArgument<String> {
         return UnfinishedArgument(
             key = key,
@@ -29,16 +29,16 @@ object NameArgument {
         usedNames: List<String>,
         key: String = "name",
         uniqueErrorKey: String = "rooster.name.reserved_error",
-        isValid: ((ArgumentInfo) -> IsValidResult)? = null
+        isValid: (ArgumentInfo.() -> IsValidResult)? = null
     ): TypedArgument<String> {
         return UnfinishedArgument(
             key = key,
             suggestions = { listOf(t("rooster.name.placeholder")) },
             isValid = {
-                if (usedNames.contains(it.arg)) {
-                    IsValidResult.Invalid { info -> info.sender.tSend(uniqueErrorKey) }
+                if (usedNames.contains(arg)) {
+                    IsValidResult.Invalid { sender.tSend(uniqueErrorKey) }
                 } else {
-                    isValid?.invoke(it) ?: IsValidResult.Valid()
+                    isValid?.invoke(this) ?: IsValidResult.Valid()
                 }
             }
         ).toTyped()
@@ -47,7 +47,7 @@ object NameArgument {
     fun unique(
         targetColumn: Column<String>,
         extraQuery: Op<Boolean>? = null,
-        isValid: ((ArgumentInfo) -> IsValidResult)? = null,
+        isValid: (ArgumentInfo.() -> IsValidResult)? = null,
         key: String = "name",
         uniqueErrorKey: String = "rooster.name.reserved_error",
         nameArg: String = "name"
@@ -58,13 +58,13 @@ object NameArgument {
             isValid = {
                 transaction {
                     val table = targetColumn.table
-                    var query = targetColumn eq it.arg
+                    var query = targetColumn eq arg
                     extraQuery?.let { query = query and it }
 
                     if (table.selectAll().where { query }.firstOrNull() != null) {
-                        IsValidResult.Invalid { info -> info.sender.tSend(uniqueErrorKey, nameArg to it.arg) }
+                        IsValidResult.Invalid { sender.tSend(uniqueErrorKey, nameArg to arg) }
                     } else {
-                        isValid?.invoke(it) ?: IsValidResult.Valid()
+                        isValid?.invoke(this@UnfinishedArgument) ?: IsValidResult.Valid()
                     }
                 }
             }

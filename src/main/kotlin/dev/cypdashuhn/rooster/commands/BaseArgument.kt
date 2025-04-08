@@ -7,7 +7,7 @@ open class InvokeInfo(
     open val context: CommandContext,
     open val args: List<String>,
 ) {
-    fun <T> arg(argType: TypedArgument<T>): T {
+     fun <T> arg(argType: TypedArgument<T>): T {
         return when (val result = argType.value(sender, context)) {
             is TypeResult.Success -> result.value
             is TypeResult.Failure -> {
@@ -61,21 +61,21 @@ data class ArgumentInfo(
     override val context: CommandContext
 ) : InvokeInfo(sender, context, args)
 
-typealias ArgumentPredicate = (ArgumentInfo) -> Boolean
+typealias ArgumentPredicate = ArgumentInfo.() -> Boolean
 
 abstract class BaseArgument(
     open var key: String,
-    open var isEnabled: (ArgumentPredicate)? = { true },
-    open var isTarget: (ArgumentPredicate) = { true },
-    open var suggestions: ((ArgumentInfo) -> List<String>)? = null,
-    open var onExecute: ((InvokeInfo) -> Unit)? = null,
+    open var isEnabled: ArgumentPredicate? = { true },
+    open var isTarget: ArgumentPredicate = { true },
+    open var suggestions: (ArgumentInfo.() -> List<String>)? = null,
+    open var onExecute: (InvokeInfo.() -> Unit)? = null,
     open var followedBy: MutableList<BaseArgument>? = null,
-    open var isValid: ((ArgumentInfo) -> IsValidResult)? = null,
-    open var onMissing: ((ArgumentInfo) -> Unit)? = null,
-    open var onMissingChild: ((ArgumentInfo) -> Unit)? = null,
-    open var transformValue: ((ArgumentInfo) -> Any) = { it.arg },
+    open var isValid: (ArgumentInfo.() -> IsValidResult)? = null,
+    open var onMissing: (ArgumentInfo.() -> Unit)? = null,
+    open var onMissingChild: (ArgumentInfo.() -> Unit)? = null,
+    open var transformValue: ArgumentInfo.() -> Any = { arg },
     open var isOptional: Boolean = false,
-    open var onArgumentOverflow: ((ArgumentInfo) -> Unit)? = null,
+    open var onArgumentOverflow: (ArgumentInfo.() -> Unit)? = null,
     internal var internalLastChange: BaseArgument? = null
 ) {
     protected fun toArgument(): Argument {
@@ -89,7 +89,7 @@ abstract class BaseArgument(
             transformValue = transformValue,
         ).also { it.internalLastChange = internalLastChange }
         else if (followedBy == null) {
-            Argument(
+            Argument.createWithExecute(
                 key = key,
                 isEnabled = isEnabled,
                 isTarget = isTarget,
@@ -102,7 +102,7 @@ abstract class BaseArgument(
                 transformValue = transformValue,
             ).also { it.internalLastChange = internalLastChange }
         } else {
-            Argument(
+            Argument.createWithFollowing(
                 key = key,
                 isEnabled = isEnabled,
                 isTarget = isTarget,
@@ -194,19 +194,19 @@ abstract class BaseArgument(
         return appendChange { it.followedBy = followedBy.toMutableList() }.toArgument()
     }
 
-    fun onMissing(onMissing: ((ArgumentInfo) -> Unit)?): Argument {
+    fun onMissing(onMissing: (ArgumentInfo.() -> Unit)?): Argument {
         return appendChange { it.onMissing = onMissing }.toArgument()
     }
 
-    fun onMissingChild(onMissingChild: ((ArgumentInfo) -> Unit)?): Argument {
+    fun onMissingChild(onMissingChild: (ArgumentInfo.() -> Unit)?): Argument {
         return appendChange { it.onMissingChild = onMissingChild }.toArgument()
     }
 
-    fun onArgumentOverflow(onArgumentOverflow: ((ArgumentInfo) -> Unit)?): Argument {
+    fun onArgumentOverflow(onArgumentOverflow: (ArgumentInfo.() -> Unit)?): Argument {
         return appendChange { it.onArgumentOverflow = onArgumentOverflow }.toArgument()
     }
 
-    fun isValid(isValid: ((ArgumentInfo) -> IsValidResult)?): Argument {
+    fun isValid(isValid: (ArgumentInfo.() -> IsValidResult)?): Argument {
         return appendChange { it.isValid = isValid }.toArgument()
     }
 
@@ -215,16 +215,40 @@ abstract class BaseArgument(
     }
 
     fun byKey(key: String): List<BaseArgument> {
-        fun arg(arg: BaseArgument): List<BaseArgument> {
-            val s = if (this.key == key) listOf(this) else listOf()
-            val c = (this.followedBy?.map { arg(it) } ?: listOf()).flatten()
-            return s + c
+        val results = mutableListOf<BaseArgument>()
+        if (this.key == key) results.add(this)
+        followedBy?.forEach { child ->
+            results.addAll(child.byKey(key))
         }
-        return arg(this)
+        return results
     }
+}
 
-    fun byKey(key: String, s: () -> BaseArgument) {
-
+internal fun <T : BaseArgument> T.copy(
+    key: String? = null,
+    isEnabled: (ArgumentPredicate)? = null,
+    isTarget: (ArgumentPredicate)? = null,
+    suggestions: (ArgumentInfo.() -> List<String>)? = null,
+    onExecute: (InvokeInfo.() -> Unit)? = null,
+    followedBy: List<Argument>? = null,
+    isValid: (ArgumentInfo.() -> IsValidResult)? = null,
+    onMissing: (ArgumentInfo.() -> Unit)? = null,
+    onMissingChild: (ArgumentInfo.() -> Unit)? = null,
+    transformValue: (ArgumentInfo.() -> Any)? = null,
+    isOptional: Boolean? = null
+): T {
+    return this.also {
+        if (key != null) this.key = key
+        if (isEnabled != null) this.isEnabled = isEnabled
+        if (isTarget != null) this.isTarget = isTarget
+        if (suggestions != null) this.suggestions = suggestions
+        if (onExecute != null) this.onExecute = onExecute
+        if (followedBy != null) this.followedBy = followedBy.toMutableList()
+        if (isValid != null) this.isValid = isValid
+        if (onMissing != null) this.onMissing = onMissing
+        if (onMissingChild != null) this.onMissingChild = onMissingChild
+        if (transformValue != null) this.transformValue = transformValue
+        if (isOptional != null) this.isOptional = isOptional
     }
 }
 
@@ -243,7 +267,7 @@ internal fun <T : BaseArgument> T.appendChange(changeArgument: (BaseArgument) ->
     return this
 }
 
-fun List<BaseArgument>.eachOnExecute(onExecute: (InvokeInfo) -> Unit): List<Argument> {
+fun List<BaseArgument>.eachOnExecute(onExecute: InvokeInfo.() -> Unit): List<Argument> {
     return this.map {
         it.onExecute(onExecute)
     }

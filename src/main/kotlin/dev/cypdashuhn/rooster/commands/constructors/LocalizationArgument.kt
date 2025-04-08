@@ -9,15 +9,15 @@ import org.bukkit.entity.Player
 object LocalizationArgument {
     fun full(
         literalName: String = t("rooster.language.label"),
-        onChange: (InvokeInfo) -> Unit = { it.sender.tSend("rooster.language.changed") },
+        onChange: InvokeInfo.() -> Unit = { sender.tSend("rooster.language.changed") },
         argKey: String = "language",
         onInvalidLanguage: (ArgumentInfo, String) -> Unit = playerMessageExtra(
             "rooster.language.invalid_error",
             argKey
         ),
-        onMissingLanguage: (ArgumentInfo) -> Unit = playerMessage("rooster.language.missing_error")
-    ): dev.cypdashuhn.rooster.commands.Argument {
-        return dev.cypdashuhn.rooster.commands.Arguments.literal.single(literalName).followedBy(
+        onMissingLanguage: ArgumentInfo.() -> Unit = playerMessage("rooster.language.missing_error")
+    ): Argument {
+        return Arguments.literal.single(literalName).followedBy(
             languageChanger(
                 onChange, argKey, onInvalidLanguage, onMissingLanguage
             )
@@ -25,17 +25,17 @@ object LocalizationArgument {
     }
 
     fun languageChanger(
-        onChange: (InvokeInfo) -> Unit = { it.sender.tSend("rooster.language.changed") },
+        onChange: InvokeInfo.() -> Unit = { sender.tSend("rooster.language.changed") },
         argKey: String = "language",
         onInvalidLanguage: (ArgumentInfo, String) -> Unit = playerMessageExtra(
             "rooster.language.invalid_error",
             argKey
         ),
-        onMissingLanguage: (ArgumentInfo) -> Unit = playerMessage("rooster.language.missing_error")
+        onMissingLanguage: ArgumentInfo.() -> Unit = playerMessage("rooster.language.missing_error")
     ): Argument {
         return Arguments.list.single(
             key = "language",
-            isEnabled = { it.sender is Player },
+            isEnabled = { sender is Player },
             list = Rooster.localeProvider.getLanguageCodes(),
             notMatchingError = onInvalidLanguage,
             onMissing = onMissingLanguage

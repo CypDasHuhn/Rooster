@@ -16,7 +16,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 object ListArgument {
     fun single(
         key: String = "list",
-        listFunc: (ArgumentInfo) -> List<String>,
+        listFunc: ArgumentInfo.() -> List<String>,
         ignoreCase: Boolean = false,
         prefix: String = "",
         notMatchingError: (ArgumentInfo, String) -> Unit = { info, _ ->
@@ -26,7 +26,7 @@ object ListArgument {
         },
         isEnabled: (ArgumentPredicate)? = { true },
         isTarget: (ArgumentPredicate) = { true },
-        onMissing: (ArgumentInfo) -> Unit = { info -> playerMessage("rooster.list.missing")(info) },
+        onMissing: ArgumentInfo.() -> Unit = playerMessage("rooster.list.missing"),
         isValid: ((ArgumentInfo, String) -> IsValidResult)? = null,
         transformValue: ((ArgumentInfo, String) -> Any)? = null
     ): ListArgumentType {
@@ -36,26 +36,26 @@ object ListArgument {
             isTarget = isTarget,
             onMissing = onMissing,
             isValid = {
-                val arg = it.arg.substring(prefix.length)
+                val arg = arg.substring(prefix.length)
 
-                val list = listFunc(it)
+                val list = listFunc(this)
 
                 if (list.none { it.equals(arg, ignoreCase) }) {
-                    notMatchingError(it, arg)
+                    notMatchingError(this, arg)
                 }
 
                 if (isValid != null) {
-                    return@UnfinishedArgument isValid(it, arg)
+                    return@UnfinishedArgument isValid(this, arg)
                 }
 
                 IsValidResult.Valid()
             },
             transformValue = {
-                val arg = it.arg.substring(prefix.length)
+                val arg = arg.substring(prefix.length)
 
-                transformValue?.invoke(it, arg) ?: arg
+                transformValue?.invoke(this, arg) ?: arg
             },
-            suggestions = { listFunc(it).map { "$prefix$it" } }
+            suggestions = { listFunc(this).map { "$prefix$it" } }
         )
 
         return ListArgumentType(arg, key)
@@ -73,7 +73,7 @@ object ListArgument {
         },
         isEnabled: (ArgumentPredicate)? = { true },
         isTarget: (ArgumentPredicate) = { true },
-        onMissing: (ArgumentInfo) -> Unit = { info -> playerMessage("rooster.list.missing")(info) },
+        onMissing: ArgumentInfo.() -> Unit = playerMessage("rooster.list.missing"),
         isValid: ((ArgumentInfo, String) -> IsValidResult)? = null,
         transformValue: ((ArgumentInfo, String) -> Any)? = null
     ) = single(
@@ -115,10 +115,10 @@ object ListArgument {
         val arg = UnfinishedArgument(
             isTarget = isArgument,
             isEnabled = isValidCompleter,
-            transformValue = { argInfo ->
+            transformValue = {
                 transaction {
                     val condition =
-                        if (ignoreCase) displayField.lowerCase() eq argInfo.arg.lowercase() else displayField eq argInfo.arg
+                        if (ignoreCase) displayField.lowerCase() eq arg.lowercase() else displayField eq arg
 
                     val query = entity.table.selectAll()
 
@@ -127,7 +127,7 @@ object ListArgument {
                     val matchingEntries = entity.wrapRows(entries)
 
                     val filteredEntries = if (filter != null) matchingEntries.filter {
-                        filter(argInfo, it)
+                        filter(this@UnfinishedArgument, it)
                     } else matchingEntries
 
                     val entry = filteredEntries.firstOrNull()
@@ -138,7 +138,7 @@ object ListArgument {
                     arg
                 }
             },
-            isValid = { (sender, args, arg, index, values) ->
+            isValid = {
                 transaction {
                     val condition = if (ignoreCase) displayField.lowerCase() eq arg.lowercase() else displayField eq arg
 
@@ -154,14 +154,14 @@ object ListArgument {
                     val matchingEntries = entity.wrapRows(entries)
 
                     val filteredEntries = if (filter != null) matchingEntries.filter {
-                        filter(ArgumentInfo(sender, args, arg, index, values), it)
+                        filter(this@UnfinishedArgument, it)
                     } else matchingEntries
 
                     when {
                         filteredEntries.firstOrNull() == null -> IsValidResult.Invalid {
-                            it.sender.tSend(
+                            sender.tSend(
                                 errorInvalidMessageKey,
-                                argKey to it.arg
+                                argKey to arg
                             )
                         }
 
@@ -169,16 +169,16 @@ object ListArgument {
                     }
                 }
             },
-            suggestions = { argInfo ->
+            suggestions = {
                 transaction {
                     val entries = cache.get(
                         LIST_CACHE_KEY,
-                        argInfo.sender,
+                        sender,
                         { entity.wrapRows(entity.table.selectAll()) },
                         5 * 1000
                     )
 
-                    val matchingEntries = if (filter != null) entries.filter { filter(argInfo, it) } else entries
+                    val matchingEntries = if (filter != null) entries.filter { filter(this@UnfinishedArgument, it) } else entries
                     matchingEntries.map { it.readValues[displayField] }
                 }
             },
@@ -216,7 +216,7 @@ object ListArgument {
         notMatchingError: (ArgumentInfo, String) -> Unit,
         isEnabled: (ArgumentPredicate)? = { true },
         isTarget: (ArgumentPredicate) = { true },
-        onMissing: (ArgumentInfo) -> Unit,
+        onMissing: ArgumentInfo.() -> Unit,
         isValid: ((ArgumentInfo, String) -> IsValidResult)? = null,
         transformValue: ((ArgumentInfo, String) -> Any)? = null
     ): UnfinishedArgument {
@@ -225,8 +225,8 @@ object ListArgument {
             isEnabled = isEnabled,
             isTarget = isTarget,
             onMissing = onMissing,
-            suggestions = { info: ArgumentInfo ->
-                val arg = info.arg
+            suggestions = {
+                val arg = arg
                 val base = arg.substringBeforeLast(splitter)
                 val lastAfterSplit = arg.substringAfterLast(splitter)
 
@@ -242,27 +242,27 @@ object ListArgument {
                     filtered.map { "$base$splitter$it" }
                 }
             },
-            transformValue = { info: ArgumentInfo ->
-                info.arg.split(splitter).map { if (transformValue != null) transformValue(info, it) else it }
+            transformValue = {
+                arg.split(splitter).map { if (transformValue != null) transformValue(this, it) else it }
             },
-            isValid = { info: ArgumentInfo ->
-                val values = info.arg.split(splitter)
+            isValid = {
+                val values = this.arg.split(splitter)
 
                 values.groupBy { it }.forEach { group ->
                     if (!allowDuplications) {
                         if (group.value.size > 1) return@UnfinishedArgument IsValidResult.Invalid {
-                            duplicationError(info, group.key)
+                            duplicationError(this@UnfinishedArgument, group.key)
                         }
                     }
 
                     if (list.none { it.equals(group.key, ignoreCase) }) {
                         return@UnfinishedArgument IsValidResult.Invalid {
-                            notMatchingError(info, group.key)
+                            notMatchingError(this@UnfinishedArgument, group.key)
                         }
                     }
 
                     if (isValid != null) {
-                        return@UnfinishedArgument isValid(info, group.key)
+                        return@UnfinishedArgument isValid(this, group.key)
                     }
                 }
 

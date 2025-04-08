@@ -8,11 +8,11 @@ object LiteralArgument {
     fun single(
         name: String,
         isEnabled: ArgumentPredicate? = null,
-        isTarget: ArgumentPredicate = { transformMessage(name, it.sender.language()).startsWith(it.arg) },
-        isValid: ((ArgumentInfo) -> IsValidResult)? = null,
-        onMissing: ((ArgumentInfo) -> Unit)? = null,
-        onMissingChild: ((ArgumentInfo) -> Unit)? = null,
-        transformValue: ((ArgumentInfo) -> Any) = { it.arg },
+        isTarget: ArgumentPredicate = { transformMessage(name, sender.language()).startsWith(arg) },
+        isValid: (ArgumentInfo.() -> IsValidResult)? = null,
+        onMissing: (ArgumentInfo.() -> Unit)? = null,
+        onMissingChild: (ArgumentInfo.() -> Unit)? = null,
+        transformValue: (ArgumentInfo.() -> Any) = { arg },
         key: String = name,
     ): LiteralArgumentType {
         val arg = UnfinishedArgument(
@@ -34,11 +34,11 @@ object LiteralArgument {
         names: List<String>,
         key: String,
         isEnabled: ArgumentPredicate? = null,
-        isTarget: ArgumentPredicate = { names.contains(it.arg) },
-        isValid: ((ArgumentInfo) -> IsValidResult)? = null,
-        onMissing: ((ArgumentInfo) -> Unit)? = null,
-        onMissingChild: ((ArgumentInfo) -> Unit)? = null,
-        transformValue: ((ArgumentInfo) -> Any) = { it.arg },
+        isTarget: ArgumentPredicate = { names.contains(arg) },
+        isValid: (ArgumentInfo.() -> IsValidResult)? = null,
+        onMissing: (ArgumentInfo.() -> Unit)? = null,
+        onMissingChild: (ArgumentInfo.() -> Unit)? = null,
+        transformValue: (ArgumentInfo.() -> Any) = { arg },
     ): LiteralArgumentType {
         val arg = UnfinishedArgument(
             key = key,
