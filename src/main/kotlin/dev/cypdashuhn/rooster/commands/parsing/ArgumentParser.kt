@@ -25,7 +25,7 @@ object ArgumentParser {
         return false
     }
 
-    val defaultErrorArgumentsOverflow: (ArgumentInfo) -> Unit =
+    val defaultErrorArgumentsOverflow: ArgumentInfo.() -> Unit =
         { it.sender.sendMessage("Too many Arguments!") }
 
     class ReturnResult {
@@ -75,7 +75,7 @@ object ArgumentParser {
         val stringArguments: List<String>,
         val arguments: MutableList<BaseArgument>,
         val headArgument: BaseArgument,
-        val errorArgumentOverflow: ((ArgumentInfo) -> Unit)?,
+        val errorArgumentOverflow: (ArgumentInfo.() -> Unit)?,
         val context: CommandContext
     )
 

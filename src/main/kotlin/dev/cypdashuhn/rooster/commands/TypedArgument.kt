@@ -24,7 +24,7 @@ abstract class TypedArgument<T>(
     }
 
 
-    fun onExecuteTyped(onExecute: ((InvokeInfo) -> Unit)): TypedArgument<T> {
+    fun onExecuteTyped(onExecute: (InvokeInfo.() -> Unit)): TypedArgument<T> {
         return appendChange { it.onExecute = onExecute }
     }
 

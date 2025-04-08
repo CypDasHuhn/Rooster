@@ -67,15 +67,15 @@ abstract class BaseArgument(
     open var key: String,
     open var isEnabled: (ArgumentPredicate)? = { true },
     open var isTarget: (ArgumentPredicate) = { true },
-    open var suggestions: ((ArgumentInfo) -> List<String>)? = null,
-    open var onExecute: ((InvokeInfo) -> Unit)? = null,
+    open var suggestions: (ArgumentInfo.() -> List<String>)? = null,
+    open var onExecute: (InvokeInfo.() -> Unit)? = null,
     open var followedBy: MutableList<BaseArgument>? = null,
-    open var isValid: ((ArgumentInfo) -> IsValidResult)? = null,
-    open var onMissing: ((ArgumentInfo) -> Unit)? = null,
-    open var onMissingChild: ((ArgumentInfo) -> Unit)? = null,
-    open var transformValue: ((ArgumentInfo) -> Any) = { it.arg },
+    open var isValid: (ArgumentInfo.() -> IsValidResult)? = null,
+    open var onMissing: (ArgumentInfo.() -> Unit)? = null,
+    open var onMissingChild: (ArgumentInfo.() -> Unit)? = null,
+    open var transformValue: (ArgumentInfo.() -> Any) = { arg },
     open var isOptional: Boolean = false,
-    open var onArgumentOverflow: ((ArgumentInfo) -> Unit)? = null,
+    open var onArgumentOverflow: (ArgumentInfo.() -> Unit)? = null,
     internal var internalLastChange: BaseArgument? = null
 ) {
     protected fun toArgument(): Argument {
@@ -194,19 +194,19 @@ abstract class BaseArgument(
         return appendChange { it.followedBy = followedBy.toMutableList() }.toArgument()
     }
 
-    fun onMissing(onMissing: ((ArgumentInfo) -> Unit)?): Argument {
+    fun onMissing(onMissing: (ArgumentInfo.() -> Unit)?): Argument {
         return appendChange { it.onMissing = onMissing }.toArgument()
     }
 
-    fun onMissingChild(onMissingChild: ((ArgumentInfo) -> Unit)?): Argument {
+    fun onMissingChild(onMissingChild: (ArgumentInfo.() -> Unit)?): Argument {
         return appendChange { it.onMissingChild = onMissingChild }.toArgument()
     }
 
-    fun onArgumentOverflow(onArgumentOverflow: ((ArgumentInfo) -> Unit)?): Argument {
+    fun onArgumentOverflow(onArgumentOverflow: (ArgumentInfo.() -> Unit)?): Argument {
         return appendChange { it.onArgumentOverflow = onArgumentOverflow }.toArgument()
     }
 
-    fun isValid(isValid: ((ArgumentInfo) -> IsValidResult)?): Argument {
+    fun isValid(isValid: (ArgumentInfo.() -> IsValidResult)?): Argument {
         return appendChange { it.isValid = isValid }.toArgument()
     }
 
@@ -243,7 +243,7 @@ internal fun <T : BaseArgument> T.appendChange(changeArgument: (BaseArgument) ->
     return this
 }
 
-fun List<BaseArgument>.eachOnExecute(onExecute: (InvokeInfo) -> Unit): List<Argument> {
+fun List<BaseArgument>.eachOnExecute(onExecute: InvokeInfo.() -> Unit): List<Argument> {
     return this.map {
         it.onExecute(onExecute)
     }

@@ -16,7 +16,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 object NameArgument {
     fun simple(
         key: String = "name",
-        isValid: ((ArgumentInfo) -> IsValidResult)? = null
+        isValid: (ArgumentInfo.() -> IsValidResult)? = null
     ): TypedArgument<String> {
         return UnfinishedArgument(
             key = key,
@@ -29,7 +29,7 @@ object NameArgument {
         usedNames: List<String>,
         key: String = "name",
         uniqueErrorKey: String = "rooster.name.reserved_error",
-        isValid: ((ArgumentInfo) -> IsValidResult)? = null
+        isValid: (ArgumentInfo.() -> IsValidResult)? = null
     ): TypedArgument<String> {
         return UnfinishedArgument(
             key = key,
@@ -47,7 +47,7 @@ object NameArgument {
     fun unique(
         targetColumn: Column<String>,
         extraQuery: Op<Boolean>? = null,
-        isValid: ((ArgumentInfo) -> IsValidResult)? = null,
+        isValid: (ArgumentInfo.() -> IsValidResult)? = null,
         key: String = "name",
         uniqueErrorKey: String = "rooster.name.reserved_error",
         nameArg: String = "name"

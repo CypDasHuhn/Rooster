@@ -9,13 +9,13 @@ import org.bukkit.entity.Player
 object LocalizationArgument {
     fun full(
         literalName: String = t("rooster.language.label"),
-        onChange: (InvokeInfo) -> Unit = { it.sender.tSend("rooster.language.changed") },
+        onChange: InvokeInfo.() -> Unit = { it.sender.tSend("rooster.language.changed") },
         argKey: String = "language",
         onInvalidLanguage: (ArgumentInfo, String) -> Unit = playerMessageExtra(
             "rooster.language.invalid_error",
             argKey
         ),
-        onMissingLanguage: (ArgumentInfo) -> Unit = playerMessage("rooster.language.missing_error")
+        onMissingLanguage: ArgumentInfo.() -> Unit = playerMessage("rooster.language.missing_error")
     ): dev.cypdashuhn.rooster.commands.Argument {
         return dev.cypdashuhn.rooster.commands.Arguments.literal.single(literalName).followedBy(
             languageChanger(
@@ -25,13 +25,13 @@ object LocalizationArgument {
     }
 
     fun languageChanger(
-        onChange: (InvokeInfo) -> Unit = { it.sender.tSend("rooster.language.changed") },
+        onChange: InvokeInfo.() -> Unit = { it.sender.tSend("rooster.language.changed") },
         argKey: String = "language",
         onInvalidLanguage: (ArgumentInfo, String) -> Unit = playerMessageExtra(
             "rooster.language.invalid_error",
             argKey
         ),
-        onMissingLanguage: (ArgumentInfo) -> Unit = playerMessage("rooster.language.missing_error")
+        onMissingLanguage: ArgumentInfo.() -> Unit = playerMessage("rooster.language.missing_error")
     ): Argument {
         return Arguments.list.single(
             key = "language",

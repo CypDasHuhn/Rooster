@@ -16,7 +16,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 object ListArgument {
     fun single(
         key: String = "list",
-        listFunc: (ArgumentInfo) -> List<String>,
+        listFunc: ArgumentInfo.() -> List<String>,
         ignoreCase: Boolean = false,
         prefix: String = "",
         notMatchingError: (ArgumentInfo, String) -> Unit = { info, _ ->
@@ -26,7 +26,7 @@ object ListArgument {
         },
         isEnabled: (ArgumentPredicate)? = { true },
         isTarget: (ArgumentPredicate) = { true },
-        onMissing: (ArgumentInfo) -> Unit = { info -> playerMessage("rooster.list.missing")(info) },
+        onMissing: ArgumentInfo.() -> Unit = { info -> playerMessage("rooster.list.missing")(info) },
         isValid: ((ArgumentInfo, String) -> IsValidResult)? = null,
         transformValue: ((ArgumentInfo, String) -> Any)? = null
     ): ListArgumentType {
@@ -73,7 +73,7 @@ object ListArgument {
         },
         isEnabled: (ArgumentPredicate)? = { true },
         isTarget: (ArgumentPredicate) = { true },
-        onMissing: (ArgumentInfo) -> Unit = { info -> playerMessage("rooster.list.missing")(info) },
+        onMissing: ArgumentInfo.() -> Unit = { info -> playerMessage("rooster.list.missing")(info) },
         isValid: ((ArgumentInfo, String) -> IsValidResult)? = null,
         transformValue: ((ArgumentInfo, String) -> Any)? = null
     ) = single(
@@ -216,7 +216,7 @@ object ListArgument {
         notMatchingError: (ArgumentInfo, String) -> Unit,
         isEnabled: (ArgumentPredicate)? = { true },
         isTarget: (ArgumentPredicate) = { true },
-        onMissing: (ArgumentInfo) -> Unit,
+        onMissing: ArgumentInfo.() -> Unit,
         isValid: ((ArgumentInfo, String) -> IsValidResult)? = null,
         transformValue: ((ArgumentInfo, String) -> Any)? = null
     ): UnfinishedArgument {

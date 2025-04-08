@@ -17,8 +17,8 @@ abstract class ArgumentShell<T> protected constructor(
 
     fun single(
         key: String = defaultKey,
-        onMissing: (ArgumentInfo) -> Unit = playerMessage(onMissingKey),
-        onInvalid: (ArgumentInfo) -> Unit = playerMessage(onInvalidKey, messageArg),
+        onMissing: ArgumentInfo.() -> Unit = playerMessage(onMissingKey),
+        onInvalid: ArgumentInfo.() -> Unit = playerMessage(onInvalidKey, messageArg),
         filter: (T) -> Boolean = { true },
     ): SimpleArgumentType<T> {
         val arg = dev.cypdashuhn.rooster.commands.Arguments.list.single(
@@ -32,8 +32,8 @@ abstract class ArgumentShell<T> protected constructor(
 
     fun multiple(
         key: String = defaultKey,
-        onMissing: (ArgumentInfo) -> Unit = playerMessage(onMissingKey),
-        onInvalid: (ArgumentInfo) -> Unit = playerMessage(onInvalidKey, messageArg),
+        onMissing: ArgumentInfo.() -> Unit = playerMessage(onMissingKey),
+        onInvalid: ArgumentInfo.() -> Unit = playerMessage(onInvalidKey, messageArg),
         filter: (T) -> Boolean = { true },
     ): SimpleArgumentType<List<T>> {
         val arg = dev.cypdashuhn.rooster.commands.Arguments.list.single(

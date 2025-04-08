@@ -5,14 +5,14 @@ import dev.cypdashuhn.rooster.commands.*
 object NumberArgument {
     fun integer(
         key: String = "number",
-        notANumberError: (ArgumentInfo) -> Unit = playerMessage("rooster.number.not_a_number_error"),
+        notANumberError: ArgumentInfo.() -> Unit = playerMessage("rooster.number.not_a_number_error"),
         negativeRule: ArgumentRule = ArgumentRule.NotAccepted(playerMessage("rooster.number.negative_error")),
         zeroRule: ArgumentRule = ArgumentRule.NotAccepted(playerMessage("rooster.number.zero_error")),
         decimalNotAcceptedErrorMessageKey: String? = "rooster.number.decimal_error",
-        furtherCondition: ((ArgumentInfo) -> IsValidResult)? = null,
+        furtherCondition: (ArgumentInfo.() -> IsValidResult)? = null,
         /** set translations to stuff like "\[number]" */
         tabCompleterPlaceholder: String = "rooster.number.placeholder",
-        onMissing: (ArgumentInfo) -> Unit = playerMessage("rooster.number.missing_error"),
+        onMissing: ArgumentInfo.() -> Unit = playerMessage("rooster.number.missing_error"),
         transformValue: (ArgumentInfo, Int) -> Int = { _, num -> num }
     ): IntegerArgumentType {
         val arg = UnfinishedArgument(
@@ -50,13 +50,13 @@ object NumberArgument {
 
     fun double(
         key: String = "number",
-        notANumberError: (ArgumentInfo) -> Unit = playerMessage("rooster.number.not_a_number_error"),
+        notANumberError: ArgumentInfo.() -> Unit = playerMessage("rooster.number.not_a_number_error"),
         negativeRule: ArgumentRule = ArgumentRule.NotAccepted(playerMessage("rooster.number.negative_error")),
         zeroRule: ArgumentRule = ArgumentRule.Accepted,
-        furtherCondition: ((ArgumentInfo) -> IsValidResult)? = null,
+        furtherCondition: (ArgumentInfo.() -> IsValidResult)? = null,
         /** set translations to stuff like "\[number]" */
         tabCompleterPlaceholder: String = "rooster.number.placeholder",
-        onMissing: (ArgumentInfo) -> Unit,
+        onMissing: ArgumentInfo.() -> Unit,
         transformValue: (ArgumentInfo, Double) -> Double = { _, num -> num }
     ): DoubleArgumentType {
         val arg = UnfinishedArgument(
