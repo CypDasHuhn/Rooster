@@ -2,6 +2,7 @@ package dev.cypdashuhn.rooster.ui.interfaces
 
 import dev.cypdashuhn.rooster.core.Rooster.interfaceContextProvider
 import dev.cypdashuhn.rooster.ui.items.InterfaceItem
+import dev.cypdashuhn.rooster.ui.items.ItemBuilder
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.inventory.Inventory
@@ -41,6 +42,8 @@ abstract class RoosterInterface<T : Context>(
     fun getCurrentContext(player: Player): T? {
         return interfaceContextProvider.getContext(player, this)
     }
+
+    fun item(): ItemBuilder<T> = ItemBuilder(contextClass)
 
     private val currentInventorySize: MutableMap<Player, Int?> = mutableMapOf()
     private var groupedMapBySize: MutableMap<Int, Map<Slot, List<InterfaceItem<T>>>?> = mutableMapOf()

@@ -29,7 +29,7 @@ class Dependency<T : Context> {
         private set
     var dependsOnSlot: Boolean = false
         private set
-    var dependsOnContext: Boolean = true
+    var dependsOnContext: Boolean = false
         private set
     var contextDependencySelector: PropertyListProvider<T>? = null
         private set
@@ -45,15 +45,19 @@ class Dependency<T : Context> {
         get() = dependsOnPlayer && dependsOnSlot && dependsOnContext && contextDependencySelector == null
 
     companion object {
-        fun <T : Context> none() = Dependency<T>().also {
-            it.dependsOnContext = false
-        }
+        fun <T : Context> none() = Dependency<T>()
 
-        fun <T : Context> default() = Dependency<T>()
+        fun <T : Context> default() = none<T>()
 
         fun <T : Context> all() = default<T>()
             .dependsOnPlayer()
             .dependsOnContext()
+            .dependsOnContext()
+
+        fun <T : Context> dependsOnPlayer(value: Boolean = true) = default<T>().dependsOnPlayer(value)
+        fun <T : Context> dependsOnSlot(value: Boolean = true) = default<T>().dependsOnSlot(value)
+        fun <T : Context> dependsOnContext(selector: PropertyListProvider<T>? = null) =
+            default<T>().dependsOnContext(selector)
     }
 
     private constructor()

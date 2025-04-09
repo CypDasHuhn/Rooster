@@ -5,10 +5,13 @@ import dev.cypdashuhn.rooster.ui.interfaces.ClickInfo
 import dev.cypdashuhn.rooster.ui.interfaces.Context
 import dev.cypdashuhn.rooster.ui.interfaces.InterfaceInfo
 import dev.cypdashuhn.rooster.ui.interfaces.constructors.NoContextInterface
+import dev.cypdashuhn.rooster.ui.interfaces.constructors.PageInterface
 import dev.cypdashuhn.rooster.util.createItem
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
+import java.util.SortedSet
 import kotlin.reflect.KClass
+import kotlin.reflect.full.memberProperties
 
 class ItemBuilder<T : Context> {
     constructor(clazz: KClass<T>) {
@@ -21,7 +24,7 @@ class ItemBuilder<T : Context> {
     private var slots: Array<Int>? = null
     private var priority = CachableLambda<T, Int>(0)
     private var condition: ConditionMap<T>
-    private var items: (InterfaceInfo<T>.() -> ItemStack)? = null
+    private var items: CachableLambda<T, ItemStack>? = null
 
     private var action: ClickInfo<T>.() -> Unit = { }
 
@@ -38,9 +41,10 @@ class ItemBuilder<T : Context> {
 
     fun usedWhen(
         conditionKey: String = ConditionMap.ANONYMOUS_KEY,
+        dependency: Dependency<T> = Dependency.all<T>(),
         condition: InterfaceInfo<T>.() -> Boolean
     ) = copy {
-        this.condition.set(condition, conditionKey)
+        this.condition.set(condition, conditionKey, dependency)
     }
 
     fun atSlot(slot: Int) = copy {
@@ -72,10 +76,16 @@ class ItemBuilder<T : Context> {
 
     fun onClick(action: ClickInfo<T>.() -> Unit): ItemBuilder<T> = copy { this.action = action }
 
-    fun displayAs(itemStackCreator: InterfaceInfo<T>.() -> ItemStack): ItemBuilder<T> =
-        copy { this.items = itemStackCreator }
+    fun displayAs(itemStackCreator: InterfaceInfo<T>.() -> ItemStack) =
+        copy { this.items = itemStackCreator.toCachableLambda(contextClass) }
 
-    fun displayAs(itemStack: ItemStack): ItemBuilder<T> = copy { this.items = { itemStack } }
+    fun displayAs(
+        dependency: Dependency<T>,
+        itemStackCreator: InterfaceInfo<T>.() -> ItemStack,
+    ) =
+        copy { this.items = itemStackCreator.toCachableLambda(contextClass, dependency) }
+
+    fun displayAs(itemStack: ItemStack): ItemBuilder<T> = copy { this.items = CachableLambda(itemStack) }
 
     fun copy(modifyingBlock: ItemBuilder<T>.() -> Unit): ItemBuilder<T> {
         val copy = ItemBuilder<T>(contextClass).also {
@@ -94,7 +104,7 @@ class ItemBuilder<T : Context> {
     ) {
         var dynamicPriorityItems: List<ItemBuilder<T>> = listOf()
         var staticPriorityItems: List<ItemBuilder<T>> = listOf()
-        var newCombinedItems: MutableList<ItemBuilder<T>>? = null
+        var staticPriorityItemsSorted: SortedSet<ItemBuilder<T>>? = null
 
         init {
             val grouped = items.groupBy { it.priority.dependency.dependsOnNothing }
@@ -104,10 +114,7 @@ class ItemBuilder<T : Context> {
 
         var get: (InterfaceInfo<T>) -> ItemBuilder<T>? = { info ->
             val highestStaticItem = staticPriorityItems
-                .withIndex()
-                .map { (idx, item) -> item to item.priority.get(info) }
-                .minByOrNull { (_, prio) -> prio }
-                ?.first
+                }
 
             newCombinedItems = dynamicPriorityItems.toMutableList()
             if (highestStaticItem != null) newCombinedItems!!.add(highestStaticItem)
@@ -173,10 +180,16 @@ fun <T : Context, E> (InterfaceInfo<T>.() -> E).toCachableLambda(
 ) = ItemBuilder.CachableLambda(this, dependency, clazz)
 
 fun main() {
+
     ItemBuilder(NoContextInterface.EmptyContext::class)
-        .usedWhen { player.isFlying }
         .atSlot(1)
-        .priority(0)
         .displayAs { createItem(Material.COMPASS) }
         .onClick { }
+}
+
+fun s() {
+    val info = InterfaceInfo<PageInterface.PageContext>()
+    val e = info::class.
+    val s = info::class.memberProperties.first { it.name == "prop" }
+    s.get(info)
 }
