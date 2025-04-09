@@ -50,7 +50,7 @@ class ConditionMap<T : Context> {
             .forEach { conditionMap.remove(it) }
     }
 
-    fun flatten(): InterfaceInfo<T>.() -> Boolean = { conditionMap.values.all { it.get(this) } }
+    val flattend by lazy { { info: InterfaceInfo<T> -> conditionMap.values.all { it.get(info) } } }
     fun getMap(): Map<String, ItemBuilder.CachableLambda<T, Boolean>> = conditionMap
     fun copy(): ConditionMap<T> = ConditionMap(conditionMap, clazz)
 }

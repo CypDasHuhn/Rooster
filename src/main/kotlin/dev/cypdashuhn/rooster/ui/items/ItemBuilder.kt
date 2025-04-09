@@ -104,30 +104,28 @@ class ItemBuilder<T : Context> {
     ) {
         var dynamicPriorityItems: List<ItemBuilder<T>> = listOf()
         var staticPriorityItems: List<ItemBuilder<T>> = listOf()
-        var staticPriorityItemsSorted: SortedSet<ItemBuilder<T>>? = null
+        var staticPriorityItemsSorted: List<Pair<ItemBuilder<T>, Int>>? = null
+
+        var get: (InterfaceInfo<T>) -> ItemBuilder<T>? = { info ->
+            staticPriorityItemsSorted = staticPriorityItems
+                .map { it to it.priority.get(info) }
+                .sortedByDescending { it.second }
+
+            get = { info: InterfaceInfo<T> ->
+                val entry = staticPriorityItemsSorted!!.firstOrNull { (item, _) -> item.condition.flattend(info) }
+                val condition: (ItemBuilder<T>) -> Boolean =
+                    if (entry == null) { it: ItemBuilder<T> -> true } else { it -> it.priority.get(info) > entry.second }
+                val other = dynamicPriorityItems.firstOrNull { it.condition.flattend(info) && condition(it) }
+                other ?: entry?.first
+            }
+
+            get(info)
+        }
 
         init {
             val grouped = items.groupBy { it.priority.dependency.dependsOnNothing }
             staticPriorityItems = grouped[true] ?: emptyList()
             dynamicPriorityItems = (grouped[false] ?: emptyList())
-        }
-
-        var get: (InterfaceInfo<T>) -> ItemBuilder<T>? = { info ->
-            val highestStaticItem = staticPriorityItems
-                }
-
-            newCombinedItems = dynamicPriorityItems.toMutableList()
-            if (highestStaticItem != null) newCombinedItems!!.add(highestStaticItem)
-
-            get = if (newCombinedItems!!.size <= 1) {
-                { newCombinedItems!!.firstOrNull() }
-            } else {
-                { info ->
-                    newCombinedItems!!.minBy { it.priority.get(info) }
-                }
-            }
-
-            newCombinedItems!!.minBy { it.priority.get(info) }
         }
     }
 
@@ -188,8 +186,5 @@ fun main() {
 }
 
 fun s() {
-    val info = InterfaceInfo<PageInterface.PageContext>()
-    val e = info::class.
-    val s = info::class.memberProperties.first { it.name == "prop" }
-    s.get(info)
+
 }
