@@ -1,6 +1,7 @@
 package dev.cypdashuhn.rooster.core
 
 import com.google.common.cache.CacheBuilder
+import dev.cypdashuhn.rooster.caching.RoosterCache
 import dev.cypdashuhn.rooster.commands.RoosterCommand
 import dev.cypdashuhn.rooster.commands.parsing.Command
 import dev.cypdashuhn.rooster.commands.parsing.Completer
@@ -53,7 +54,7 @@ object Rooster {
         val functions: MutableMap<String, Method> = mutableMapOf()
     }
 
-    val cache = dev.cypdashuhn.rooster.RoosterCache<String, Any>(
+    val cache = RoosterCache<String, Any>(
         CacheBuilder.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES)
     )
 

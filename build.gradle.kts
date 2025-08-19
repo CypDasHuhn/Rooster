@@ -25,6 +25,7 @@ repositories {
 
 dependencies {
     testImplementation(kotlin("test"))
+    implementation("com.github.seeseemelk:MockBukkit-v1.21:3.127.1")
 
     implementation("org.reflections:reflections:0.10.2")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.8.1")
@@ -84,7 +85,7 @@ publishing {
 
 tasks.withType<KotlinCompile> {
     compilerOptions {
-        freeCompilerArgs.add("-Xcontext-receivers")
+        freeCompilerArgs.add("-Xwhen-guards")
     }
 }
 
@@ -93,4 +94,8 @@ tasks.withType<JavaCompile> {
 }
 tasks.withType<Javadoc> {
     options.encoding = "UTF-8"
+}
+val compileKotlin: KotlinCompile by tasks
+compileKotlin.compilerOptions {
+    freeCompilerArgs.set(listOf("-Xwhen-guards"))
 }

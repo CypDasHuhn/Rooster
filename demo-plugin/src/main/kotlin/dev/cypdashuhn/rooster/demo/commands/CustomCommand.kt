@@ -12,13 +12,13 @@ object CustomCommand : RoosterCommand("custom-command") {
         return arg.followedBy(
             UnfinishedArgument(
                 key = key,
-                isEnabled = { it.sender.isPlayer() },
+                isEnabled = { sender.isPlayer() },
                 suggestions = { options },
                 isValid = {
-                    if (it.arg in options) IsValidResult.Valid()
-                    else IsValidResult.Invalid { info -> info.sender.sendMessage("invalid") }
+                    if (this.arg in options) IsValidResult.Valid()
+                    else IsValidResult.Invalid { sender.sendMessage("invalid") }
                 },
-                onMissing = { info -> info.sender.sendMessage("Please specify an argument") },
+                onMissing = { sender.sendMessage("Please specify an argument") },
             ).onExecute {
                 val arg = context[key] as String
                 sender.sendMessage("You selected $arg")

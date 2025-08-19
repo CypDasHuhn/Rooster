@@ -18,7 +18,7 @@ object TestInterfacesCommand : RoosterCommand("testInterfaces") {
                 key = INTERFACE_KEY,
                 list = Rooster.registered.interfaces.map { it.interfaceName },
                 notMatchingError = { info, name -> info.sender.sendMessage("No such interface $name") },
-                onMissing = { info -> info.sender.sendMessage("Please specify an interface") },
+                onMissing = { sender.sendMessage("Please specify an interface") },
                 transformValue = { _, name -> Rooster.registered.interfaces.first { it.interfaceName == name } }
             ).onExecute {
                 val targetInterface = context[INTERFACE_KEY] as RoosterInterface<Context>
