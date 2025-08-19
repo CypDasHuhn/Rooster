@@ -19,8 +19,10 @@ repositories {
 dependencies {
     testImplementation(kotlin("test"))
 
-    implementation(project(":generator"))
-    ksp(project(":generator"))
+    implementation("com.github.seeseemelk:MockBukkit-v1.21:3.127.1")
+
+    //implementation(project(":generator"))
+    //ksp(project(":generator"))
     ksp(project(":"))
 
     implementation(project(":"))

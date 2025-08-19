@@ -20,7 +20,7 @@ fun getSubclassesAndProperties(
         .filterIsInstance<KSClassDeclaration>()
         .forEach { classDecl ->
             try {
-                val superTypes = classDecl.superTypes.mapNotNull { it.resolve() }
+                val superTypes = classDecl.superTypes.map { it.resolve() }
                 val matches = superTypes.any { superType ->
                     isMatchingSuperType(superType, targetSuperClass)
                 }

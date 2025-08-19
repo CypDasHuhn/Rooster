@@ -1,5 +1,7 @@
 package dev.cypdashuhn.rooster.ui.items
 
+import dev.cypdashuhn.rooster.caching.InterfaceChachableLambda
+import dev.cypdashuhn.rooster.caching.InterfaceDependency
 import dev.cypdashuhn.rooster.ui.interfaces.Context
 import dev.cypdashuhn.rooster.ui.interfaces.InterfaceInfo
 import dev.cypdashuhn.rooster.ui.interfaces.Slot
@@ -12,7 +14,7 @@ import org.bukkit.inventory.ItemStack
 import kotlin.reflect.KClass
 
 class ConditionMap<T : Context> {
-    private constructor(map: Map<String, ItemBuilder.CachableLambda<T, Boolean>>, clazz: KClass<T>) {
+    private constructor(map: Map<String, InterfaceChachableLambda<T, Boolean>>, clazz: KClass<T>) {
         this.conditionMap = map.toMutableMap()
         this.clazz = clazz
     }
@@ -25,23 +27,23 @@ class ConditionMap<T : Context> {
         const val ANONYMOUS_KEY = "ANONYMOUS"
     }
 
-    private var conditionMap: MutableMap<String, ItemBuilder.CachableLambda<T, Boolean>> = mutableMapOf()
+    private var conditionMap: MutableMap<String, InterfaceChachableLambda<T, Boolean>> = mutableMapOf()
     private val clazz: KClass<T>
 
     fun add(
         condition: InterfaceInfo<T>.() -> Boolean,
         key: String = ANONYMOUS_KEY,
-        dependency: Dependency<T> = Dependency.all<T>()
+        dependency: InterfaceDependency<T> = InterfaceDependency.all<T>()
     ) {
-        conditionMap[nextName(key, conditionMap.keys.toList())] = condition.toCachableLambda(clazz, dependency)
+        conditionMap[nextName(key, conditionMap.keys.toList())] = condition.toInterfaceChachableLambda(dependency)
     }
 
     fun set(
         condition: InterfaceInfo<T>.() -> Boolean,
         key: String = ANONYMOUS_KEY,
-        dependency: Dependency<T> = Dependency.all<T>()
+        dependency: InterfaceDependency<T> = InterfaceDependency.all<T>()
     ) {
-        conditionMap[key] = condition.toCachableLambda(clazz, dependency)
+        conditionMap[key] = condition.toInterfaceChachableLambda(dependency)
     }
 
     fun resetConditions(excludingConditionKeys: List<String>) {
@@ -50,8 +52,8 @@ class ConditionMap<T : Context> {
             .forEach { conditionMap.remove(it) }
     }
 
-    fun flatten(): InterfaceInfo<T>.() -> Boolean = { conditionMap.values.all { it.get(this) } }
-    fun getMap(): Map<String, ItemBuilder.CachableLambda<T, Boolean>> = conditionMap
+    val flattend by lazy { { info: InterfaceInfo<T> -> conditionMap.values.all { it.get(info) } } }
+    fun getMap(): Map<String, InterfaceChachableLambda<T, Boolean>> = conditionMap
     fun copy(): ConditionMap<T> = ConditionMap(conditionMap, clazz)
 }
 

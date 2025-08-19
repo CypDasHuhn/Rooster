@@ -1,6 +1,7 @@
 package dev.cypdashuhn.rooster.ui.items
 
-import com.google.common.cache.CacheBuilder
+import dev.cypdashuhn.rooster.caching.InterfaceChachableLambda
+import dev.cypdashuhn.rooster.caching.InterfaceDependency
 import dev.cypdashuhn.rooster.ui.interfaces.ClickInfo
 import dev.cypdashuhn.rooster.ui.interfaces.Context
 import dev.cypdashuhn.rooster.ui.interfaces.InterfaceInfo
@@ -19,9 +20,10 @@ class ItemBuilder<T : Context> {
     private val contextClass: KClass<T>
 
     private var slots: Array<Int>? = null
-    private var priority = CachableLambda<T, Int>(0)
     private var condition: ConditionMap<T>
-    private var items: (InterfaceInfo<T>.() -> ItemStack)? = null
+    private var priority = InterfaceChachableLambda<T, Int>(0)
+
+    private var items: InterfaceChachableLambda<T, ItemStack>? = null
 
     private var action: ClickInfo<T>.() -> Unit = { }
 
@@ -38,9 +40,10 @@ class ItemBuilder<T : Context> {
 
     fun usedWhen(
         conditionKey: String = ConditionMap.ANONYMOUS_KEY,
+        dependency: InterfaceDependency<T> = InterfaceDependency.all<T>(),
         condition: InterfaceInfo<T>.() -> Boolean
     ) = copy {
-        this.condition.set(condition, conditionKey)
+        this.condition.set(condition, conditionKey, dependency)
     }
 
     fun atSlot(slot: Int) = copy {
@@ -61,21 +64,27 @@ class ItemBuilder<T : Context> {
 
     fun priority(
         priority: InterfaceInfo<T>.() -> Int,
-        dependency: Dependency<T> = Dependency.all<T>()
+        dependency: InterfaceDependency<T> = InterfaceDependency.all<T>()
     ): ItemBuilder<T> = copy {
-        this.priority = CachableLambda(priority, dependency, contextClass)
+        this.priority = InterfaceChachableLambda(priority, dependency)
     }
 
     fun priority(priority: Int): ItemBuilder<T> = copy {
-        this.priority = CachableLambda(priority)
+        this.priority = InterfaceChachableLambda(priority)
     }
 
     fun onClick(action: ClickInfo<T>.() -> Unit): ItemBuilder<T> = copy { this.action = action }
 
-    fun displayAs(itemStackCreator: InterfaceInfo<T>.() -> ItemStack): ItemBuilder<T> =
-        copy { this.items = itemStackCreator }
+    fun displayAs(itemStackCreator: InterfaceInfo<T>.() -> ItemStack) =
+        copy { this.items = itemStackCreator.toInterfaceChachableLambda() }
 
-    fun displayAs(itemStack: ItemStack): ItemBuilder<T> = copy { this.items = { itemStack } }
+    fun displayAs(
+        dependency: InterfaceDependency<T>,
+        itemStackCreator: InterfaceInfo<T>.() -> ItemStack,
+    ) =
+        copy { this.items = itemStackCreator.toInterfaceChachableLambda(dependency) }
+
+    fun displayAs(itemStack: ItemStack): ItemBuilder<T> = copy { this.items = InterfaceChachableLambda(itemStack) }
 
     fun copy(modifyingBlock: ItemBuilder<T>.() -> Unit): ItemBuilder<T> {
         val copy = ItemBuilder<T>(contextClass).also {
@@ -94,89 +103,41 @@ class ItemBuilder<T : Context> {
     ) {
         var dynamicPriorityItems: List<ItemBuilder<T>> = listOf()
         var staticPriorityItems: List<ItemBuilder<T>> = listOf()
-        var newCombinedItems: MutableList<ItemBuilder<T>>? = null
+        var staticPriorityItemsSorted: List<Pair<ItemBuilder<T>, Int>>? = null
+
+        var get: (InterfaceInfo<T>) -> ItemBuilder<T>? = { info ->
+            staticPriorityItemsSorted = staticPriorityItems
+                .map { it to it.priority.get(info) }
+                .sortedByDescending { it.second }
+
+            get = { info: InterfaceInfo<T> ->
+                val entry = staticPriorityItemsSorted!!.firstOrNull { (item, _) -> item.condition.flattend(info) }
+                val condition =
+                    if (entry == null) { it: ItemBuilder<T> -> true }
+                    else { it: ItemBuilder<T> -> it.priority.get(info) > entry.second }
+                val other = dynamicPriorityItems.firstOrNull { it.condition.flattend(info) && condition(it) }
+                other ?: entry?.first
+            }
+
+            get(info)
+        }
 
         init {
             val grouped = items.groupBy { it.priority.dependency.dependsOnNothing }
             staticPriorityItems = grouped[true] ?: emptyList()
             dynamicPriorityItems = (grouped[false] ?: emptyList())
         }
-
-        var get: (InterfaceInfo<T>) -> ItemBuilder<T>? = { info ->
-            val highestStaticItem = staticPriorityItems
-                .withIndex()
-                .map { (idx, item) -> item to item.priority.get(info) }
-                .minByOrNull { (_, prio) -> prio }
-                ?.first
-
-            newCombinedItems = dynamicPriorityItems.toMutableList()
-            if (highestStaticItem != null) newCombinedItems!!.add(highestStaticItem)
-
-            get = if (newCombinedItems!!.size <= 1) {
-                { newCombinedItems!!.firstOrNull() }
-            } else {
-                { info ->
-                    newCombinedItems!!.minBy { it.priority.get(info) }
-                }
-            }
-
-            newCombinedItems!!.minBy { it.priority.get(info) }
-        }
-    }
-
-    class CachableLambda<T : Context, E> {
-        private val lambda: InterfaceInfo<T>.() -> E
-        val dependency: Dependency<T>
-        private var clazz: KClass<T>? = null
-
-        constructor(
-            lambda: InterfaceInfo<T>.() -> E,
-            dependency: Dependency<T>,
-            clazz: KClass<T>
-        ) {
-            this.lambda = lambda
-            this.dependency = dependency
-            this.clazz = clazz
-            get = lambda
-            init()
-        }
-
-        constructor(value: E) {
-            lambda = { value }
-            dependency = Dependency.none<T>()
-            get = { value }
-        }
-
-        val cache = CacheBuilder.newBuilder().build<Int, E>()
-        var get: (InterfaceInfo<T>) -> E
-
-        fun init() {
-            if (dependency.dependsOnNothing) {
-                get = { info ->
-                    var res = lambda(info)
-                    get = { res }
-                    res
-                }
-            } else if (!dependency.dependsOnEverything) {
-                get = { info ->
-                    val key = dependency.createKey(clazz!!)(info)
-                    cache.get(key) { lambda(info) }
-                }
-            }
-        }
     }
 }
 
-fun <T : Context, E> (InterfaceInfo<T>.() -> E).toCachableLambda(
-    clazz: KClass<T>,
-    dependency: Dependency<T> = Dependency.all<T>()
-) = ItemBuilder.CachableLambda(this, dependency, clazz)
+fun <T : Context, E> (InterfaceInfo<T>.() -> E).toInterfaceChachableLambda(
+    dependency: InterfaceDependency<T> = InterfaceDependency.all()
+) = InterfaceChachableLambda(this, dependency)
 
 fun main() {
+
     ItemBuilder(NoContextInterface.EmptyContext::class)
-        .usedWhen { player.isFlying }
         .atSlot(1)
-        .priority(0)
         .displayAs { createItem(Material.COMPASS) }
         .onClick { }
 }
